@@ -11,41 +11,8 @@ function pathauto_help($section = 'admin/modules#description') {
   return $output;
 }
 
-/**
- * Implementation of hook_nodeapi().
- */
-function pathauto_nodeapi(&$node, $op, $teaser, $page) {
-  if (module_exist('path')) {
-    switch ($op) {
-      case 'insert':
-      case 'update':
-        /*
-        ** If there's no explicit alias and there is a title, use the
-        ** title to automatically create an alias
-        */
-        _pathauto_generate_alias($node);
-        break;
-      case 'form pre':
-        /*
-        ** A helpful hint to the user. Because hook_nodeapi() is
-        ** called in alphabetical order of module name, this will
-        ** almost certainly appear immediately after the path alias field 
-        */
-        if (user_access('create url aliases')) {
-          $output = t('If the <b>Path alias</b> is left blank, an alias '.
-            'will be automatically generated from the title.');
-          if (user_access('administer pathauto')) {
-            $output .= t(' To control the format of the generated alias, '.
-              'see the <a href="admin/settings/pathauto">pathauto settings</a>.');
-          }
-          return $output;
-        }
-        break;
-      default:
-        break;
-    }
-  }
-}
+///////////////////////////////////////////////////////////////////
+// General functions
 
 function pathauto_perm() {
   return array('administer pathauto'); 
@@ -67,12 +34,16 @@ function pathauto_settings() {
   }
   
   // Did they ask for a bulk update?
-  if (variable_get('pathauto_bulkupdate', FALSE)) {
-    _pathauto_bulkupdate();
+  if (variable_get('pathauto_node_bulkupdate', FALSE)) {
+    _pathauto_node_bulkupdate();
   }
 
   if (variable_get('pathauto_cat_bulkupdate', FALSE)) {
     _pathauto_cat_bulkupdate();
+  }
+
+  if (variable_get('pathauto_user_bulkupdate', FALSE)) {
+    _pathauto_user_bulkupdate();
   }
 
   // Generate the form
@@ -178,7 +149,6 @@ function pathauto_settings() {
   $output .= form_group(t('Node path settings'), $items, $description);
 
   if (module_exist('taxonomy')) {
-//    $vocabularies = taxonomy_get_vocabularies();
     if (sizeof($vocabularies) > 0) {
       $items  = '';
       $items .= form_textfield('Default path pattern (applies to all vocabularies with blank patterns below)',
@@ -191,9 +161,10 @@ function pathauto_settings() {
                                FALSE);
 
       foreach ($vocabularies as $vocab) {
+        $vname = _pathauto_cleanstring($vocab->name, variable_get('pathauto_separator', '_'));
         $items .= form_textfield('Pattern for all '.$vocab->name.' paths',
-                                 $vocab->name.'_pathauto_cat_pattern',
-                                 variable_get($vocab->name.'_pathauto_cat_pattern',''),
+                                 $vname.'_pathauto_cat_pattern',
+                                 variable_get($vname.'_pathauto_cat_pattern',''),
                                  65,
                                  128,
                                  '',
@@ -215,34 +186,163 @@ function pathauto_settings() {
     }
   }
 
-  // %%% Should only show when there are unaliased nodes
+
+  $items  = '';
+  $items .= form_textfield('Pattern for user account page paths',
+                           'pathauto_user_pattern',
+                           variable_get('pathauto_user_pattern','user/[user]'),
+                           65,
+                           128,
+                           NULL,
+                           NULL,
+                           FALSE);
+
+  if (module_exist('blog')) {
+    $items .= form_textfield('Pattern for all user blog page paths',
+                             'pathauto_blog_pattern',
+                             variable_get('pathauto_blog_pattern','blog/[user]'),
+                             65,
+                             128,
+                             '',
+                             NULL,
+                             FALSE);
+  }
+
+  $description  = '';
+  $description .= '<dt>'.'[user]'.'</dt>';
+  $description .= '<dd>'.t('The name of the user.');
+  $description .= '<dt>'.'[uid]'.'</dt>';
+  $description .= '<dd>'.t('The id number of the user.</dd>');
+
+  $output .= form_group(t('User path settings'), $items, $description);
+
+
   $items = '';
-  $items .= form_checkbox(t('Bulk update node paths'), 'pathauto_bulkupdate', 1, FALSE, 
+  $items .= form_checkbox(t('Bulk update node paths'), 'pathauto_node_bulkupdate', 1, FALSE, 
     t('Generate aliases for all existing nodes which do not already have aliases.'));
-  variable_set('pathauto_bulkupdate', FALSE);
+  variable_set('pathauto_node_bulkupdate', FALSE);
 
   if (module_exist('taxonomy')) {
-//    $vocabularies = taxonomy_get_vocabularies();
     if (sizeof($vocabularies) > 0) {
       $items .= form_checkbox(t('Bulk update category paths'), 'pathauto_cat_bulkupdate', 1, FALSE,
         t('Generate aliases for all existing categories which do not already have aliases.'));
       variable_set('pathauto_cat_bulkupdate', FALSE);
     }
   }
+
+  $items .= form_checkbox(t('Bulk update user paths'), 'pathauto_user_bulkupdate', 1, FALSE,
+    t('Generate aliases for all existing user account and blog pages which do not already have aliases.'));
+  variable_set('pathauto_user_bulkupdate', FALSE);
+
   $output .= form_group(t('Actions'), $items, t(''));
   
   return $output;
 }
 
-// Make sure there isn't already an alias pointing to a different node
+// Make sure there isn't already an alias pointing to a different item
 function _pathauto_alias_exists($alias, $src) {
   return db_result(db_query(
     "SELECT COUNT(dst) FROM {url_alias} WHERE dst = '%s' AND src != '%s'", 
     $alias, $src));
 }
 
+function _pathauto_cleanstring($string, $separator) {
+  // Drop apostrophes
+  $output = str_replace("'", "", $string);
+  // Convert accented characters to their ASCII counterparts...
+  $output = strtr(utf8_decode($output),
+       "\xA1\xAA\xBA\xBF".
+       "\xC0\xC1\xC2\xC3\xC5\xC7\xC8\xC9\xCA\xCB\xCC\xCD\xCE\xCF".
+       "\xD0\xD1\xD2\xD3\xD4\xD5\xD8\xD9\xDA\xDB\xDD".
+       "\xE0\xE1\xE2\xE3\xE5\xE7\xE8\xE9\xEA\xEB\xEC\xED\xEE\xEF".
+       "\xF0\xF1\xF2\xF3\xF4\xF5\xF8\xF9\xFA\xFB\xFD\xFF",
+       "!ao?AAAAACEEEEIIIIDNOOOOOUUUYaaaaaceeeeiiiidnooooouuuyy"); 
+  // ...and ligatures too
+  $output = utf8_encode(strtr($output, array("\xC4"=>"Ae", "\xC6"=>"AE", "\xD6"=>"Oe", 
+    "\xDC"=>"Ue", "\xDE"=>"TH", "\xDF"=>"ss", "\xE4"=>"ae", "\xE6"=>"ae", 
+    "\xF6"=>"oe", "\xFC"=>"ue", "\xFE"=>"th")));
+  // Any sequence of one or more non-alphanumerics
+  // should become a separator
+  $output = preg_replace('/[\W]+/ ', $separator, $output);
+  // Trim any leading or trailing separators (note the need to
+  // escape the separator if and only if it is not alphanumeric)
+  if (ctype_alnum($separator)) {
+    $seppattern = $separator;
+  } else {
+    $seppattern = '\\'.$separator;
+  }
+  $output = preg_replace("/^$seppattern+|$seppattern+$/", "", $output);
+  return $output;
+}
+
+// Apply patterns to create an alias
+function _pathauto_create_alias($placeholders, $pattern, $src, $bulk = FALSE) {
+  $alias = str_replace(array_keys($placeholders), $placeholders, $pattern);
+  $alias = strtolower($alias);
+  // Two or more slashes should be collapsed into one
+  $alias = preg_replace("/\/+/", "/", $alias);
+  // Trim any leading or trailing slashes
+  $alias = preg_replace("/^\/|\/+$/", "", $alias);
+
+  // If the alias already exists, generate a new variant
+  if (_pathauto_alias_exists($alias, $src)) {
+    for ($i=0; _pathauto_alias_exists($alias.$separator.$i, $src); $i++) {
+    }
+    $alias = $alias.$separator.$i;
+  }
+  path_set_alias($src, $alias);
+  if (!$bulk) {
+    drupal_set_message("pathauto: Alias <em>$alias</em> created for path <em>$src</em>");
+  }
+  if (variable_get('pathauto_applytofeed', FALSE) and strncasecmp($src, 'user', 4)) {
+    path_set_alias("$src/feed", "$alias/feed");
+    if (!$bulk) {
+      drupal_set_message("pathauto: Alias <em>$alias/feed</em> created for path <em>$src/feed</em>");
+    }
+  }
+}
+
+///////////////////////////////////////////////////////////////////
+// Node-specific functions
+
+/*
+ * Implementation of hook_nodeapi().
+ */
+function pathauto_nodeapi(&$node, $op, $teaser, $page) {
+  if (module_exist('path')) {
+    switch ($op) {
+      case 'insert':
+      case 'update':
+        /*
+        ** If there's no explicit alias and there is a title, use the
+        ** title to automatically create an alias
+        */
+        _pathauto_generate_node_alias($node);
+        break;
+      case 'form pre':
+        /*
+        ** A helpful hint to the user. Because hook_nodeapi() is
+        ** called in alphabetical order of module name, this will
+        ** almost certainly appear immediately after the path alias field 
+        */
+        if (user_access('create url aliases')) {
+          $output = t('If the <b>Path alias</b> is left blank, an alias '.
+            'will be automatically generated from the title.');
+          if (user_access('administer pathauto')) {
+            $output .= t(' To control the format of the generated alias, '.
+              'see the <a href="admin/settings/pathauto">pathauto settings</a>.');
+          }
+          return $output;
+        }
+        break;
+      default:
+        break;
+    }
+  }
+}
+
 // Generate an alias from a node's title
-function _pathauto_generate_alias($node, $bulk=FALSE) {
+function _pathauto_generate_node_alias($node, $bulk=FALSE) {
   if ($node->title && !$node->path) {
     $separator = variable_get('pathauto_separator', '_');
     
@@ -319,63 +419,45 @@ function _pathauto_generate_alias($node, $bulk=FALSE) {
     if (!trim($pattern)) {
       $pattern = strtolower(variable_get('pathauto_pattern', '[title]'));
     }
-    $alias = str_replace(array_keys($placeholders), $placeholders, $pattern);
-    $alias = strtolower($alias);
-    // Two or more slashes should be collapsed into one
-    $alias = preg_replace("/\/+/", "/", $alias);
-    // Trim any leading or trailing slashes
-    $alias = preg_replace("/^\/|\/+$/", "", $alias);
 
     $src = "node/$node->nid";
-    // If the alias already exists, generate a new variant
-    if (_pathauto_alias_exists($alias, $src)) {
-      for ($i=0; _pathauto_alias_exists($alias.$separator.$i, $src); $i++) {
-      }
-      $alias = $alias.$separator.$i;
-    }
-    path_set_alias($src, $alias);
-    if (!$bulk) {
-      drupal_set_message("pathauto: Alias <em>$alias</em> created for path <em>$src</em>");
-    }
-    if (variable_get('pathauto_applytofeed', FALSE)) {
-      path_set_alias("$src/feed", "$alias/feed");
-      if (!$bulk) {
-        drupal_set_message("pathauto: Alias <em>$alias/feed</em> created for path <em>$src/feed</em>");
-      }
-    }
+    _pathauto_create_alias($placeholders, $pattern, $src, $bulk);
+    
     return TRUE;
   }
   return FALSE;
 }
 
-function _pathauto_cleanstring($string, $separator) {
-  // Drop apostrophes
-  $output = str_replace("'", "", $string);
-  // Convert accented characters to their ASCII counterparts...
-  $output = strtr(utf8_decode($output),
-       "\xA1\xAA\xBA\xBF".
-       "\xC0\xC1\xC2\xC3\xC5\xC7\xC8\xC9\xCA\xCB\xCC\xCD\xCE\xCF".
-       "\xD0\xD1\xD2\xD3\xD4\xD5\xD8\xD9\xDA\xDB\xDD".
-       "\xE0\xE1\xE2\xE3\xE5\xE7\xE8\xE9\xEA\xEB\xEC\xED\xEE\xEF".
-       "\xF0\xF1\xF2\xF3\xF4\xF5\xF8\xF9\xFA\xFB\xFD\xFF",
-       "!ao?AAAAACEEEEIIIIDNOOOOOUUUYaaaaaceeeeiiiidnooooouuuyy"); 
-  // ...and ligatures too
-  $output = utf8_encode(strtr($output, array("\xC4"=>"Ae", "\xC6"=>"AE", "\xD6"=>"Oe", 
-    "\xDC"=>"Ue", "\xDE"=>"TH", "\xDF"=>"ss", "\xE4"=>"ae", "\xE6"=>"ae", 
-    "\xF6"=>"oe", "\xFC"=>"ue", "\xFE"=>"th")));
-  // Any sequence of one or more non-alphanumerics
-  // should become a separator
-  $output = preg_replace('/[\W]+/ ', $separator, $output);
-  // Trim any leading or trailing separators (note the need to
-  // escape the separator if and only if it is not alphanumeric)
-  if (ctype_alnum($separator)) {
-    $seppattern = $separator;
-  } else {
-    $seppattern = '\\'.$separator;
+// Generate aliases for all nodes without aliases
+function _pathauto_node_bulkupdate() {
+  $query = 'SELECT nid,type,title,uid,created,src,dst FROM {node} '.
+    "LEFT JOIN {url_alias} ON CONCAT('node/', nid) = src ".
+    'WHERE dst is null';
+  $result = db_query($query);
+  $node = db_fetch_object($result);
+  if (!$node) {
+    drupal_set_message('No unaliased nodes to update.');
+    return;
   }
-  $output = preg_replace("/^$seppattern+|$seppattern+$/", "", $output);
-  return $output;
+
+  $count = 0;
+  while ($node) {
+    if (module_exist('taxonomy')) {
+      // Must populate the terms for the node here for the 
+      // category placeholders to work
+      $node->taxonomy = array_keys(taxonomy_node_get_terms($node->nid));
+    }
+    if (_pathauto_generate_node_alias($node, TRUE)) {
+      $count++;
+    }
+    $node = db_fetch_object($result);
+  }
+  
+  drupal_set_message("Bulk update of nodes completed, $count aliases generated.");
 }
+
+///////////////////////////////////////////////////////////////////
+// Taxonomy-specific functions
 
 /**
  * Implementation of hook_taxonomy().
@@ -449,30 +531,8 @@ function _pathauto_generate_cat_alias($term, $bulk=FALSE) {
     if (!trim($pattern)) {
       $pattern = strtolower(variable_get('pathauto_cat_pattern', '[vocab]/[catpath]'));
     }
-    $alias = str_replace(array_keys($placeholders), $placeholders, $pattern);
-    $alias = strtolower($alias);
-    // Two or more slashes should be collapsed into one
-    $alias = preg_replace("/\/+/", "/", $alias);
-    // Trim any leading or trailing slashes
-    $alias = preg_replace("/^\/|\/+$/", "", $alias);
-
     $src = "taxonomy/term/".$category->tid;
-    // If the alias already exists, generate a new variant
-    if (_pathauto_alias_exists($alias, $src)) {
-      for ($i=0; _pathauto_alias_exists($alias.$separator.$i, $src); $i++) {
-      }
-      $alias = $alias.$separator.$i;
-    }
-    path_set_alias($src, $alias);
-    if (!$bulk) {
-      drupal_set_message("pathauto: Alias <em>$alias</em> created for path <em>$src</em>");
-    }
-    if (variable_get('pathauto_applytofeed', FALSE)) {
-      path_set_alias("$src/feed", "$alias/feed");
-      if (!$bulk) {
-        drupal_set_message("pathauto: Alias <em>$alias/feed</em> created for path <em>$src/feed</em>");
-      }
-    }
+    _pathauto_create_alias($placeholders, $pattern, $src, $bulk);
     return TRUE;
   }
   return FALSE;
@@ -486,34 +546,6 @@ function _pathauto_remove_cat_alias($term) {
   if (variable_get('pathauto_applytofeed', FALSE)) {
     db_query("DELETE FROM {url_alias} WHERE src =  CONCAT('taxonomy/term/', %d, '/feed')", $category->tid);
   }
-}
-
-// Generate aliases for all nodes without aliases
-function _pathauto_bulkupdate() {
-  $query = 'SELECT nid,type,title,uid,created,src,dst FROM {node} '.
-    "LEFT JOIN {url_alias} ON CONCAT('node/', nid) = src ".
-    'WHERE dst is null';
-  $result = db_query($query);
-  $node = db_fetch_object($result);
-  if (!$node) {
-    drupal_set_message('No unaliased nodes to update.');
-    return;
-  }
-
-  $count = 0;
-  while ($node) {
-    if (module_exist('taxonomy')) {
-      // Must populate the terms for the node here for the 
-      // category placeholders to work
-      $node->taxonomy = array_keys(taxonomy_node_get_terms($node->nid));
-    }
-    if (_pathauto_generate_alias($node, TRUE)) {
-      $count++;
-    }
-    $node = db_fetch_object($result);
-  }
-  
-  drupal_set_message("Bulk update of nodes completed, $count aliases generated.");
 }
 
 // Generate aliases for all categories without aliases
@@ -537,6 +569,104 @@ function _pathauto_cat_bulkupdate() {
   }
   
   drupal_set_message("Bulk update of terms completed, $count aliases generated.");
+}
+
+///////////////////////////////////////////////////////////////////
+// User-specific functions
+
+/**
+ * Implementation of hook_user().
+ */
+function pathauto_user($op, &$edit, &$user, $category=FALSE) {
+  switch ($op) {
+    case 'insert':
+      /*
+      ** Use the username to automatically create an alias
+      */
+      _pathauto_generate_user_alias($user);
+      break;
+    case 'delete':
+      /*
+      ** If the user is deleted, remove the path aliases
+      **
+      */
+      _pathauto_remove_user_alias($user);
+      break;
+    case 'update':
+      /*
+      ** Do not automatically update the alias on a user change
+      */
+      break;
+    default:
+      break;
+  }
+}
+
+// Generate an alias from a user's name
+function _pathauto_generate_user_alias($user, $bulk=FALSE) {
+  $user = array2object($user);
+  if ($user->name) {
+    $separator = variable_get('pathauto_separator', '_');
+
+    // First transform the title
+    $username = _pathauto_cleanstring($user->name, $separator);
+
+    // Now get all the placeholder data
+    $placeholders = array();
+    $placeholders['[user]'] = $username;
+    $placeholders['[uid]'] = $user->uid;
+
+    // Retrieve and apply the pattern for users page
+    $pattern = strtolower(variable_get('pathauto_user_pattern', 'user/[user]'));
+    $src = "user/".$user->uid;
+    _pathauto_create_alias($placeholders, $pattern, $src, $bulk);
+
+    if (module_exist('blog')) {
+      // Retrieve and apply the pattern for users blog
+      $pattern = strtolower(variable_get('pathauto_blog_pattern', 'blog/[user]'));
+      $src = "blog/".$user->uid;
+      _pathauto_create_alias($placeholders, $pattern, $src, $bulk);
+    }
+    return TRUE;
+  }
+  return FALSE;
+}
+ 
+// Remove aliases when a user is deleted
+function _pathauto_remove_user_alias($user) {
+  $user = array2object($user);
+
+  db_query("DELETE FROM {url_alias} WHERE src = CONCAT('user/', %d)", $user->uid);
+  db_query("DELETE FROM {url_alias} WHERE src = CONCAT('blog/', %d)", $user->uid);
+
+  if (variable_get('pathauto_applytofeed', FALSE)) {
+    db_query("DELETE FROM {url_alias} WHERE src = CONCAT('blog/', %d, '/feed')", $blog->uid);
+  }
+}
+
+// Generate aliases for all users without aliases
+function _pathauto_user_bulkupdate() {
+  $query = 'SELECT uid,name,src,dst FROM {users} '.
+    "LEFT JOIN {url_alias} ON CONCAT('user/', uid) = src ".
+    'WHERE dst is null';
+  $result = db_query($query);
+  $user = db_fetch_object($result);
+  if (!$user) {
+    drupal_set_message('No unaliased users to update.');
+    return;
+  }
+
+  $count = 0;
+  while ($user) {
+    if (_pathauto_generate_user_alias($user, TRUE)) {
+      $count++;
+    }
+    $user = db_fetch_object($result);
+  }
+  if (module_exist('blog')) {
+    $count = $count * 2;
+  }
+  drupal_set_message("Bulk update of user aliases completed, $count aliases generated.");
 }
 
 ?>
