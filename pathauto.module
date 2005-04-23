@@ -352,7 +352,7 @@ function _pathauto_cleanstring($string, $separator) {
   // Drop apostrophes
   $output = str_replace("'", "", $string);
   // Convert accented characters to their ASCII counterparts...
-  $output = strtr($output,
+  $output = strtr(utf8_decode($output),
        "\xA1\xAA\xBA\xBF".
        "\xC0\xC1\xC2\xC3\xC5\xC7\xC8\xC9\xCA\xCB\xCC\xCD\xCE\xCF".
        "\xD0\xD1\xD2\xD3\xD4\xD5\xD8\xD9\xDA\xDB\xDD".
@@ -360,9 +360,9 @@ function _pathauto_cleanstring($string, $separator) {
        "\xF0\xF1\xF2\xF3\xF4\xF5\xF8\xF9\xFA\xFB\xFD\xFF",
        "!ao?AAAAACEEEEIIIIDNOOOOOUUUYaaaaaceeeeiiiidnooooouuuyy"); 
   // ...and ligatures too
-  $output = strtr($output, array("\xC4"=>"Ae", "\xC6"=>"AE", "\xD6"=>"Oe", 
+  $output = utf8_encode(strtr($output, array("\xC4"=>"Ae", "\xC6"=>"AE", "\xD6"=>"Oe", 
     "\xDC"=>"Ue", "\xDE"=>"TH", "\xDF"=>"ss", "\xE4"=>"ae", "\xE6"=>"ae", 
-    "\xF6"=>"oe", "\xFC"=>"ue", "\xFE"=>"th"));
+    "\xF6"=>"oe", "\xFC"=>"ue", "\xFE"=>"th")));
   // Any sequence of one or more non-alphanumerics
   // should become a separator
   $output = preg_replace('/[\W]+/ ', $separator, $output);
