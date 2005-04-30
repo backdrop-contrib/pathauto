@@ -1,243 +1,118 @@
 <?php
 /* $Id$ */
 
+// Look for any extensions installed in the pathauto directory
+$path = drupal_get_path('module', 'pathauto');
+$files = file_scan_directory($path, '^pathauto_.*\.inc$');
+foreach ($files as $filename => $file) {
+  include_once($filename);
+}
+
 function pathauto_help($section = 'admin/modules#description') {
   switch ($section) {
     case 'admin/modules#description':
-      $output = t('Automatically creates aliases from node titles');
+      $output = t('Provides a mechanism for modules to automatically '.
+        'generate aliases for the content they manage.');
       break;
   }
 
   return $output;
 }
 
-///////////////////////////////////////////////////////////////////
-// General functions
-
 function pathauto_perm() {
   return array('administer pathauto'); 
 }
 
 function pathauto_settings() {
-  $output = '';
-  $items = '';
-  
   // Restrict administration of this module
   if (!user_access('administer pathauto')) {
     return message_access();
   }
   
+  $output = '';
+
+  // Insist that path.module be enabled
   if (!module_exist('path')) {
     $output .= t('<p>The pathauto module is an extension of the <b>path</b> '.
-      'module - you must enable <b>path</b> to use it.</p>');
+      'module - you must <a href-"admin/modules">enable <b>path</b></a> to use it.</p>');
     return $output;
   }
   
-  // Did they ask for a bulk update?
-  if (variable_get('pathauto_node_bulkupdate', FALSE)) {
-    _pathauto_node_bulkupdate();
-  }
-
-  if (variable_get('pathauto_cat_bulkupdate', FALSE)) {
-    _pathauto_cat_bulkupdate();
-  }
-
-  if (variable_get('pathauto_user_bulkupdate', FALSE)) {
-    _pathauto_user_bulkupdate();
-  }
-
-  // Generate the form
-  // %%% NOTE: should validate separator as legal URI character
+  // Generate the form - settings applying to all patterns first
+  $items = '';
   $items .= form_textfield(t('Separator'), 'pathauto_separator',  
     variable_get('pathauto_separator', '_'), 1, 1,
-    t('Character used to separate words in titles.'), '', FALSE);
+    t('Character used to separate words in titles. This will replace '.
+      'any spaces and punctuation characters.'), 
+    '', FALSE);
 
   $items .= form_checkbox(t('Create feed aliases'), 'pathauto_applytofeed', 1,
     variable_get('pathauto_applytofeed', FALSE), t('Also generate aliases for RSS feeds.'));
 
   $output .= form_group(t('General settings'), $items, t(''));
   
-  $items = '';
-  $items .= form_textfield('Default path pattern (applies to all types with blank patterns below)',
-                           'pathauto_pattern',
-                           variable_get('pathauto_pattern','[title]'),
-                           65,
-                           128,
-                           NULL,
-                           NULL,
-                           FALSE);
-
-  $nodetypes = node_list();
-  foreach ($nodetypes as $ntype) {
-    if (module_exist('flexinode') and !strncasecmp($ntype, 'flexinode-', 10)) {
-       $ntype = flexinode_node_name($ntype);
-    }     
-
-    $items .= form_textfield('Pattern for all '.$ntype.' paths',
-                             $ntype.'_pathauto_pattern',
-                             variable_get($ntype.'_pathauto_pattern',''),
+  // Call the hook on all modules - an array of 'settings' objects is returned
+  $all_settings = module_invoke_all('pathauto', 'settings');
+  
+  foreach ($all_settings as $settings) {
+    $items = '';
+    $module = $settings->module;
+    $patterndescr = $settings->patterndescr;
+    $patterndefault = $settings->patterndefault;
+    $groupheader = $settings->groupheader;
+    
+    // Prompt for the default pattern for this module
+    $variable = 'pathauto_'.$module.'_pattern';
+    $items .= form_textfield($patterndescr,
+                             $variable,
+                             variable_get($variable,$patterndefault),
                              65,
                              128,
-                             '',
+                             NULL,
                              NULL,
                              FALSE);
-  }
 
-  $description = 'Write the paths as you want them, using the placeholders listed below:';
-  $description .= '<dl>';
-  $description .= '<dt>'.'[title]'.'</dt>';
-  $description .= '<dd>'.t('The title of the page, with spaces and punctuation replaced by the chosen separator').'</dd>';
-  $description .= '<dt>'.'[nid]'.'</dt>';
-  $description .= '<dd>'.t('The id number of the node.</dd>');
-  $description .= '<dt>'.'[user]'.'</dt>';
-  $description .= '<dd>'.t('The name of the user who created the node.</dd>');
-  if (module_exist('taxonomy')) {
-    $vocabularies = taxonomy_get_vocabularies();
-    if (sizeof($vocabularies) > 0) {
-        $description .= '<dt>'.'[vocab]'.'</dt>';
-        $description .= '<dd>'.t("The vocabulary that the page's first category belongs to.");
-        $description .= '<dt>'.'[cat]'.'</dt>';
-        $description .= '<dd>'.t('The name of the first category that the page belongs to.');
-        $description .= '<dt>'.'[catalias]'.'</dt>';
-      	$description .= '<dd>'.t('The alias for the first category that the page belongs to. '.
-	        'This is useful for long category names.  You must set up the url alias for the '.
-          'category first.');
-        $description .= '<dt>'.'[catpath]'.'</dt>';
-        $description .= '<dd>'.t('As [cat], but including its supercategories.').'</dd>';
-    }
-  }
-  $description .= '<dt>'.'[type]'.'</dt>';
-  $description .= '<dd>'.t('The node type (e.g., "page", "story", etc.).</dd>');
-  if (module_exist('book')) {
-    $description .= '<dt>'.'[book]'.'</dt>';
-    $description .= '<dd>'.t('For book pages, the title of the top-level book.</dd>');
-  }
-  $description .= '<dt>'.'[yyyy]'.'</dt>';
-  $description .= '<dd>'.t('The year the node was created.</dd>');
-  $description .= '<dt>'.'[mm]'.'</dt>';
-  $description .= '<dd>'.t('The two-digit month (01-12) the node was created.').'</dd>';
-  $description .= '<dt>'.'[mon]'.'</dt>';
-  $description .= '<dd>'.t('The three-letter month (jan-dec) the node was created.').'</dd>';
-  $description .= '<dt>'.'[dd]'.'</dt>';
-  $description .= '<dd>'.t('The two-digit day of the month (00-31) that the node was created.').'</dd>';
-  $description .= '<dt>'.'[day]'.'</dt>';
-  $description .= '<dd>'.t('The three-letter day of the week (sun-sat) that the node was created.').'</dd>';
-  $description .= '<dt>'.'[hour]'.'</dt>';
-  $description .= '<dd>'.t('The two-digit hour (00-23) the node was created.').'</dd>';
-  $description .= '<dt>'.'[min]'.'</dt>';
-  $description .= '<dd>'.t('The two-digit minute (00-59) the node was created.').'</dd>';
-  $description .= '<dt>'.'[sec]'.'</dt>';
-  $description .= '<dd>'.t('The two-digit second (00-59) the node was created.').'</dd>';
-  $description .= '<dt>'.'[week]'.'</dt>';
-  $description .= '<dd>'.t('The week number (1-52) of the year the node was created.').'</dd>';                        
-  $description .= '</dl>';
-
-  $description .= t('<b>Examples:</b>'.
-        '<p>The following examples of aliases generated from various patterns are all based on a node titled '.
-        '"This is a (sample) node", created on February 6, 2005, '.
-        'with a category of Sports, which is a subcategory of News, in the '.
-        'vocabulary Topics.</p>'.
-        '<dl><dt>Separator=<b>_</b>, Pattern=<b>[title]</b></dt>'.
-        '   <dd>this_is_a_sample_node</dd>'.
-        '<dl><dt>Separator=<b>-</b>, Pattern=<b>content/[vocab]/[catpath]/[title]</b></dt>'.
-        '   <dd>content/topics/news/sports/this-is-a-sample-node</dd>'.
-        '<dl><dt>Separator=<b>/</b>, Pattern=<b>[cat]/[yyyy]/[mm]/[dd]/[title]</b></dt>'.
-        '   <dd>sports/2005/02/06/this/is/a/sample/node</dd>'.
-        '</dl>'
-      );
-
-  $output .= form_group(t('Node path settings'), $items, $description);
-
-  if (module_exist('taxonomy')) {
-    if (sizeof($vocabularies) > 0) {
-      $items  = '';
-      $items .= form_textfield('Default path pattern (applies to all vocabularies with blank patterns below)',
-                               'pathauto_cat_pattern',
-                               variable_get('pathauto_cat_pattern','[vocab]/[catpath]'),
-                               65,
-                               128,
-                               NULL,
-                               NULL,
-                               FALSE);
-
-      foreach ($vocabularies as $vocab) {
-        $vname = _pathauto_cleanstring($vocab->name, variable_get('pathauto_separator', '_'));
-        $items .= form_textfield('Pattern for all '.$vocab->name.' paths',
-                                 $vname.'_pathauto_cat_pattern',
-                                 variable_get($vname.'_pathauto_cat_pattern',''),
+    // If the module supports a set of specialized patterns, set
+    // them up here
+    if ($settings->patternitems) {
+      foreach ($settings->patternitems as $itemname => $itemlabel) {
+        $variable = 'pathauto_'.$module.'_'.$itemname.'_pattern';
+        $items .= form_textfield($itemlabel,
+                                 $variable,
+                                 variable_get($variable,''),
                                  65,
                                  128,
                                  '',
                                  NULL,
-                                 FALSE);
+                                 FALSE); 
       }
-
-      $description  = '';
-      $description .= '<dt>'.'[vocab]'.'</dt>';
-      $description .= '<dd>'.t("The vocabulary that the page's first category belongs to.");
-      $description .= '<dt>'.'[cat]'.'</dt>';
-      $description .= '<dd>'.t('The name of the category.');
-      $description .= '<dt>'.'[catpath]'.'</dt>';
-      $description .= '<dd>'.t('As [cat], but including its supercategories.').'</dd>';
-      $description .= '<dt>'.'[tid]'.'</dt>';
-      $description .= '<dd>'.t('The id number of the category.</dd>');
-     
-      $output .= form_group(t('Category path settings'), $items, $description);
     }
-  }
 
-
-  $items  = '';
-  $items .= form_textfield('Pattern for user account page paths',
-                           'pathauto_user_pattern',
-                           variable_get('pathauto_user_pattern','user/[user]'),
-                           65,
-                           128,
-                           NULL,
-                           NULL,
-                           FALSE);
-
-  if (module_exist('blog')) {
-    $items .= form_textfield('Pattern for all user blog page paths',
-                             'pathauto_blog_pattern',
-                             variable_get('pathauto_blog_pattern','blog/[user]'),
-                             65,
-                             128,
-                             '',
-                             NULL,
-                             FALSE);
-  }
-
-  $description  = '';
-  $description .= '<dt>'.'[user]'.'</dt>';
-  $description .= '<dd>'.t('The name of the user.');
-  $description .= '<dt>'.'[uid]'.'</dt>';
-  $description .= '<dd>'.t('The id number of the user.</dd>');
-
-  $output .= form_group(t('User path settings'), $items, $description);
-
-
-  $items = '';
-  $items .= form_checkbox(t('Bulk update node paths'), 'pathauto_node_bulkupdate', 1, FALSE, 
-    t('Generate aliases for all existing nodes which do not already have aliases.'));
-  variable_set('pathauto_node_bulkupdate', FALSE);
-
-  if (module_exist('taxonomy')) {
-    if (sizeof($vocabularies) > 0) {
-      $items .= form_checkbox(t('Bulk update category paths'), 'pathauto_cat_bulkupdate', 1, FALSE,
-        t('Generate aliases for all existing categories which do not already have aliases.'));
-      variable_set('pathauto_cat_bulkupdate', FALSE);
+    // Display the user documentation of placeholders supported by
+    // this module
+    foreach ($settings->placeholders as $name => $description) {
+      $items .= '<dt>'.$name.'</dt>';
+      $items .= '<dd>'.$description.'</dd>';
     }
-  }
-
-  $items .= form_checkbox(t('Bulk update user paths'), 'pathauto_user_bulkupdate', 1, FALSE,
-    t('Generate aliases for all existing user account and blog pages which do not already have aliases.'));
-  variable_set('pathauto_user_bulkupdate', FALSE);
-
-  $output .= form_group(t('Actions'), $items, t(''));
   
+    // If the module supports bulk updates, offer the update action here
+    if ($settings->bulkname) {
+      $variable = 'pathauto_'.$module.'_bulkupdate';
+      if (variable_get($variable, FALSE)) {
+        $function = $module.'_pathauto_bulkupdate';
+        call_user_func($function);
+      }
+      variable_set($variable, FALSE);
+      $items .= form_checkbox($settings->bulkname, $variable, 
+        1, FALSE, $settings->bulkdescr);
+    }
+    
+    $output .= form_group($groupheader, $items, '');
+  }
+
   return $output;
 }
+
 
 // Make sure there isn't already an alias pointing to a different item
 function _pathauto_alias_exists($alias, $src) {
@@ -246,6 +121,8 @@ function _pathauto_alias_exists($alias, $src) {
     $alias, $src));
 }
 
+// Clean up a string value provided by a module, resulting in a
+// string containing only alphanumerics and separators
 function _pathauto_cleanstring($string, $separator) {
   // Drop apostrophes
   $output = str_replace("'", "", $string);
@@ -261,9 +138,9 @@ function _pathauto_cleanstring($string, $separator) {
   $output = utf8_encode(strtr($output, array("\xC4"=>"Ae", "\xC6"=>"AE", "\xD6"=>"Oe", 
     "\xDC"=>"Ue", "\xDE"=>"TH", "\xDF"=>"ss", "\xE4"=>"ae", "\xE6"=>"ae", 
     "\xF6"=>"oe", "\xFC"=>"ue", "\xFE"=>"th")));
-  // Any sequence of one or more non-alphanumerics
-  // should become a separator
-  $output = preg_replace('/[\W]+/ ', $separator, $output);
+  // Preserve alphanumerics and slashes, everything else becomes
+  // a separator
+  $output = preg_replace('/[^a-zA-Z0-9_\/\-]+/ ', $separator, $output);
   // Trim any leading or trailing separators (note the need to
   // escape the separator if and only if it is not alphanumeric)
   if (ctype_alnum($separator)) {
@@ -275,10 +152,46 @@ function _pathauto_cleanstring($string, $separator) {
   return $output;
 }
 
-// Apply patterns to create an alias
-function _pathauto_create_alias($placeholders, $pattern, $src, $bulk = FALSE) {
+/**
+ * Apply patterns to create an alias
+ *
+ * @param $module
+ *   The name of your module (e.g., 'node')
+ * @param $placeholders
+ *   An array whose keys consist of the translated placeholders
+ *   which appear in patterns (e.g., t('[title]')) and values are the 
+ *   actual values to be substituted into the pattern (e.g., $node->title)
+ * @param $src
+ *   The "real" URI of the content to be aliased (e.g., "node/$node->nid")
+ * @param $type
+ *   For modules which provided patternitems in hook_autopath(),
+ *   the relevant identifier for the specific item to be aliased (e.g.,
+ *   $node->type)
+ * @return
+ *   The alias that was created
+ */
+function pathauto_create_alias($module, $placeholders, $src, $type=NULL) {
+  $separator = variable_get('pathauto_separator', '_');
+
+  // Clean all replacement strings
+  foreach ($placeholders as $key => $value) {
+    $placeholders[$key] = _pathauto_cleanstring($value, $separator);
+  }
+
+  // Retrieve and apply the pattern for this content type
+  $pattern = '';
+  if ($type) {
+    $pattern = strtolower(variable_get('pathauto_'.$module.'_'.$type.'_pattern', ''));
+  } 
+  if (!trim($pattern)) {
+    $pattern = strtolower(variable_get('pathauto_'.$module.'_pattern', ''));
+  }
+  
+  // Replace the placeholders with the values provided by the module,
+  // and lower-case the result
   $alias = str_replace(array_keys($placeholders), $placeholders, $pattern);
   $alias = strtolower($alias);
+  
   // Two or more slashes should be collapsed into one
   $alias = preg_replace("/\/+/", "/", $alias);
   // Trim any leading or trailing slashes
@@ -291,382 +204,10 @@ function _pathauto_create_alias($placeholders, $pattern, $src, $bulk = FALSE) {
     $alias = $alias.$separator.$i;
   }
   path_set_alias($src, $alias);
-  if (!$bulk) {
-    drupal_set_message("pathauto: Alias <em>$alias</em> created for path <em>$src</em>");
-  }
   if (variable_get('pathauto_applytofeed', FALSE) and strncasecmp($src, 'user', 4)) {
     path_set_alias("$src/feed", "$alias/feed");
-    if (!$bulk) {
-      drupal_set_message("pathauto: Alias <em>$alias/feed</em> created for path <em>$src/feed</em>");
-    }
   }
-}
-
-///////////////////////////////////////////////////////////////////
-// Node-specific functions
-
-/*
- * Implementation of hook_nodeapi().
- */
-function pathauto_nodeapi(&$node, $op, $teaser, $page) {
-  if (module_exist('path')) {
-    switch ($op) {
-      case 'insert':
-      case 'update':
-        /*
-        ** If there's no explicit alias and there is a title, use the
-        ** title to automatically create an alias
-        */
-        _pathauto_generate_node_alias($node);
-        break;
-      case 'form pre':
-        /*
-        ** A helpful hint to the user. Because hook_nodeapi() is
-        ** called in alphabetical order of module name, this will
-        ** almost certainly appear immediately after the path alias field 
-        */
-        if (user_access('create url aliases')) {
-          $output = t('If the <b>Path alias</b> is left blank, an alias '.
-            'will be automatically generated from the title.');
-          if (user_access('administer pathauto')) {
-            $output .= t(' To control the format of the generated alias, '.
-              'see the <a href="admin/settings/pathauto">pathauto settings</a>.');
-          }
-          return $output;
-        }
-        break;
-      default:
-        break;
-    }
-  }
-}
-
-// Generate an alias from a node's title
-function _pathauto_generate_node_alias($node, $bulk=FALSE) {
-  if ($node->title && !$node->path) {
-    $separator = variable_get('pathauto_separator', '_');
-    
-    // First transform the title
-    $title = _pathauto_cleanstring($node->title, $separator);
-    
-    // Now get all the placeholder data
-    $placeholders = array();
-    $placeholders['[title]'] = $title;
-
-    // Date & time info
-    $placeholders['[yyyy]'] = date('Y', $node->created);
-    $placeholders['[mm]'] = date('m', $node->created);
-    $placeholders['[mon]'] = strtolower(date('M', $node->created));
-    $placeholders['[dd]'] = date('d', $node->created);
-    $placeholders['[day]'] = strtolower(date('D', $node->created));
-    $placeholders['[hour]'] = date('H', $node->created);
-    $placeholders['[min]'] = date('i', $node->created);
-    $placeholders['[sec]']  = date('s', $node->created);
-    $placeholders['[week]'] = date('W', $node->created);
-
-    // Node Id info
-    $placeholders['[nid]'] = $node->nid;
-
-    // User name info
-    $result = db_query("SELECT name FROM {users} WHERE uid = '%u'", $node->uid);
-    $userinfo = db_fetch_object($result);
-    $placeholders['[user]'] = _pathauto_cleanstring($userinfo->name, $separator);  
-
-    // Category info
-    if (module_exist('taxonomy')) {
-      $firsttermid = $node->taxonomy[0];
-      $term = taxonomy_get_term($firsttermid);
-      $placeholders['[cat]'] = _pathauto_cleanstring($term->name, $separator);
-      
-      $catpath = '';
-      $parents = taxonomy_get_parents_all($firsttermid);
-      foreach ($parents as $parent) {
-        $catpath = _pathauto_cleanstring($parent->name, $separator) . '/' . $catpath;
-      }
-      $placeholders['[catpath]'] = $catpath;
-      
-      $vid = $term->vid;
-      $vocabulary = taxonomy_get_vocabulary($vid);
-      $placeholders['[vocab]'] = _pathauto_cleanstring($vocabulary->name, $separator);
-      $placeholders['[catalias]'] = drupal_get_path_alias('taxonomy/term/' . $node->taxonomy[0]);
-      if (!strncasecmp($placeholders['[catalias]'], 'taxonomy', 8)) {
-        $placeholders['[catalias]'] = $placeholders['[cat]'];
-      }
-    } else {
-      $placeholders['[cat]'] = '';
-      $placeholders['[catpath]'] = '';
-      $placeholders['[vocab]'] = '';
-    }
-    
-    // Node type info
-    if (module_exist('flexinode') and !strncasecmp($node->type, 'flexinode-', 10)) {
-      $placeholders['[type]'] = _pathauto_cleanstring(flexinode_node_name($node->type), $separator);
-    } else {
-      $placeholders['[type]'] = $node->type;    
-    }
-    
-    // Book title
-    if (module_exist('book') and $node->type == 'book') {
-      $nodebook = book_load($node);
-      $path = book_location($nodebook);
-      $placeholders['[book]'] = _pathauto_cleanstring($path[0]->title, $separator);
-    } else {
-      $placeholders['[book]'] = '';
-    }
-    
-    // Retrieve and apply the pattern
-    $pattern = strtolower(variable_get($placeholders['[type]'].'_pathauto_pattern', ''));
-    if (!trim($pattern)) {
-      $pattern = strtolower(variable_get('pathauto_pattern', '[title]'));
-    }
-
-    $src = "node/$node->nid";
-    _pathauto_create_alias($placeholders, $pattern, $src, $bulk);
-    
-    return TRUE;
-  }
-  return FALSE;
-}
-
-// Generate aliases for all nodes without aliases
-function _pathauto_node_bulkupdate() {
-  $query = 'SELECT nid,type,title,uid,created,src,dst FROM {node} '.
-    "LEFT JOIN {url_alias} ON CONCAT('node/', nid) = src ".
-    'WHERE dst is null';
-  $result = db_query($query);
-  $node = db_fetch_object($result);
-  if (!$node) {
-    drupal_set_message('No unaliased nodes to update.');
-    return;
-  }
-
-  $count = 0;
-  while ($node) {
-    if (module_exist('taxonomy')) {
-      // Must populate the terms for the node here for the 
-      // category placeholders to work
-      $node->taxonomy = array_keys(taxonomy_node_get_terms($node->nid));
-    }
-    if (_pathauto_generate_node_alias($node, TRUE)) {
-      $count++;
-    }
-    $node = db_fetch_object($result);
-  }
-  
-  drupal_set_message("Bulk update of nodes completed, $count aliases generated.");
-}
-
-///////////////////////////////////////////////////////////////////
-// Taxonomy-specific functions
-
-/**
- * Implementation of hook_taxonomy().
- */
-function pathauto_taxonomy($op, $type, $object) {
-  switch ($type) {
-    case 'term':
-      switch ($op) {
-        case 'insert':
-          /*
-          ** Use the category name to automatically create an alias
-          */
-          _pathauto_generate_cat_alias($object);
-           break;
-        case 'delete':
-          /*
-      	  ** If the category is deleted, remove the path aliases
-      	  **
-          */
-	        _pathauto_remove_cat_alias($object);
-          break;
-        case 'update':
-          /*
-          ** Do not automatically update the alias on a term change
-          */
-          break;
-        default:
-          break;
-      }
-      break;
-    default:
-      break;
-  }
-}
-
-// Generate an alias from a category's name
-function _pathauto_generate_cat_alias($term, $bulk=FALSE) {
-  $category = array2object($term); 
-
-  if ($category->name) {
-    $separator = variable_get('pathauto_separator', '_');
-
-    // First transform the title
-    $catname = _pathauto_cleanstring($category->name, $separator);
-
-    // Now get all the placeholder data
-    $placeholders = array();
-    $placeholders['[cat]'] = $catname;
-
-    if ($category->parent) {
-      $catpath = $catname;
-      $parents = taxonomy_get_parents_all($category->parent);
-    } else {
-      $catpath = '';
-      $parents = taxonomy_get_parents_all($category->tid);
-    }
-    
-    foreach ($parents as $parent) {
-      $catpath = _pathauto_cleanstring($parent->name, $separator) . '/' . $catpath;
-    }
-    $placeholders['[catpath]'] = $catpath;
-
-    $vid = $category->vid;
-    $vocabulary = taxonomy_get_vocabulary($vid);
-    $placeholders['[vocab]'] = _pathauto_cleanstring($vocabulary->name, $separator);
-
-    $placeholders['[tid]'] = $category->tid;
-
-    // Retrieve and apply the pattern
-    $pattern = strtolower(variable_get($placeholders['[vocab]'].'_pathauto_cat_pattern', ''));
-    if (!trim($pattern)) {
-      $pattern = strtolower(variable_get('pathauto_cat_pattern', '[vocab]/[catpath]'));
-    }
-    $src = "taxonomy/term/".$category->tid;
-    _pathauto_create_alias($placeholders, $pattern, $src, $bulk);
-    return TRUE;
-  }
-  return FALSE;
-}
-
-// Remove aliases when a category is deleted
-function _pathauto_remove_cat_alias($term) {
-  $category = array2object($term);
-
-  db_query("DELETE FROM {url_alias} WHERE src = CONCAT('taxonomy/term/', %d)", $category->tid);
-  if (variable_get('pathauto_applytofeed', FALSE)) {
-    db_query("DELETE FROM {url_alias} WHERE src =  CONCAT('taxonomy/term/', %d, '/feed')", $category->tid);
-  }
-}
-
-// Generate aliases for all categories without aliases
-function _pathauto_cat_bulkupdate() {
-  $query = 'SELECT tid,vid,name,src,dst FROM {term_data} '.
-    "LEFT JOIN {url_alias} ON CONCAT('taxonomy/term/', tid) = src ".
-    'WHERE dst is null';
-  $result = db_query($query);
-  $category = db_fetch_object($result);
-  if (!$category) {
-    drupal_set_message('No unaliased catagories to update.');
-    return;
-  }
-
-  $count = 0;
-  while ($category) {
-    if (_pathauto_generate_cat_alias($category, TRUE)) {
-      $count++;
-    }
-    $category = db_fetch_object($result);
-  }
-  
-  drupal_set_message("Bulk update of terms completed, $count aliases generated.");
-}
-
-///////////////////////////////////////////////////////////////////
-// User-specific functions
-
-/**
- * Implementation of hook_user().
- */
-function pathauto_user($op, &$edit, &$user, $category=FALSE) {
-  switch ($op) {
-    case 'insert':
-      /*
-      ** Use the username to automatically create an alias
-      */
-      _pathauto_generate_user_alias($user);
-      break;
-    case 'delete':
-      /*
-      ** If the user is deleted, remove the path aliases
-      **
-      */
-      _pathauto_remove_user_alias($user);
-      break;
-    case 'update':
-      /*
-      ** Do not automatically update the alias on a user change
-      */
-      break;
-    default:
-      break;
-  }
-}
-
-// Generate an alias from a user's name
-function _pathauto_generate_user_alias($user, $bulk=FALSE) {
-  $user = array2object($user);
-  if ($user->name) {
-    $separator = variable_get('pathauto_separator', '_');
-
-    // First transform the title
-    $username = _pathauto_cleanstring($user->name, $separator);
-
-    // Now get all the placeholder data
-    $placeholders = array();
-    $placeholders['[user]'] = $username;
-    $placeholders['[uid]'] = $user->uid;
-
-    // Retrieve and apply the pattern for users page
-    $pattern = strtolower(variable_get('pathauto_user_pattern', 'user/[user]'));
-    $src = "user/".$user->uid;
-    _pathauto_create_alias($placeholders, $pattern, $src, $bulk);
-
-    if (module_exist('blog')) {
-      // Retrieve and apply the pattern for users blog
-      $pattern = strtolower(variable_get('pathauto_blog_pattern', 'blog/[user]'));
-      $src = "blog/".$user->uid;
-      _pathauto_create_alias($placeholders, $pattern, $src, $bulk);
-    }
-    return TRUE;
-  }
-  return FALSE;
-}
- 
-// Remove aliases when a user is deleted
-function _pathauto_remove_user_alias($user) {
-  $user = array2object($user);
-
-  db_query("DELETE FROM {url_alias} WHERE src = CONCAT('user/', %d)", $user->uid);
-  db_query("DELETE FROM {url_alias} WHERE src = CONCAT('blog/', %d)", $user->uid);
-
-  if (variable_get('pathauto_applytofeed', FALSE)) {
-    db_query("DELETE FROM {url_alias} WHERE src = CONCAT('blog/', %d, '/feed')", $blog->uid);
-  }
-}
-
-// Generate aliases for all users without aliases
-function _pathauto_user_bulkupdate() {
-  $query = 'SELECT uid,name,src,dst FROM {users} '.
-    "LEFT JOIN {url_alias} ON CONCAT('user/', uid) = src ".
-    'WHERE dst is null';
-  $result = db_query($query);
-  $user = db_fetch_object($result);
-  if (!$user) {
-    drupal_set_message('No unaliased users to update.');
-    return;
-  }
-
-  $count = 0;
-  while ($user) {
-    if (_pathauto_generate_user_alias($user, TRUE)) {
-      $count++;
-    }
-    $user = db_fetch_object($result);
-  }
-  if (module_exist('blog')) {
-    $count = $count * 2;
-  }
-  drupal_set_message("Bulk update of user aliases completed, $count aliases generated.");
+  return $alias;
 }
 
 ?>
