@@ -12,6 +12,7 @@ function node_pathauto($op) {
       $settings['groupheader'] = t('Node path settings');
       $settings['patterndescr'] = t('Default path pattern (applies to all node types with blank patterns below)');
       $settings['patterndefault'] = t('[title]');
+      $settings['supportsfeeds'] = TRUE;
       $settings['bulkname'] = t('Bulk update node paths');
       $settings['bulkdescr'] = 
         t('Generate aliases for all existing nodes which do not already have aliases.');
@@ -78,7 +79,7 @@ function pathauto_nodeapi(&$node, $op, $teaser, $page) {
       case 'update':
         $placeholders = node_get_placeholders($node);        
         $src = "node/$node->nid";
-        $alias = pathauto_create_alias('node', $placeholders, $src, $node->type);
+        $alias = pathauto_create_alias('node', $op, $placeholders, $src, $node->type);
         break;
       case 'form pre':
         /*
@@ -192,7 +193,8 @@ function node_pathauto_bulkupdate() {
     }
     $placeholders = node_get_placeholders($node);
     $src = "node/$node->nid";
-    if ($alias = pathauto_create_alias('node', $placeholders, $src, $node->type)) {
+    if ($alias = pathauto_create_alias('node', 'bulkupdate', $placeholders, 
+                  $src, $node->type)) {
       $count++;
     }
     $node = db_fetch_object($result);

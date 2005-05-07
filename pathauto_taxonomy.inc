@@ -18,6 +18,7 @@ function taxonomy_pathauto($op) {
         t('[catpath]') => t('As [cat], but including its supercategories.'),
         t('[tid]') => t('The id number of the category.')
       );
+      $settings['supportsfeeds'] = TRUE;
       $settings['bulkname'] = t('Bulk update category paths');
       $settings['bulkdescr'] = 
         t('Generate aliases for all existing categories which do not already have aliases.');
@@ -45,6 +46,7 @@ function pathauto_taxonomy($op, $type, $object) {
     case 'term':
       switch ($op) {
         case 'insert':
+        case 'update':
           /*
           ** Use the category info to automatically create an alias
           */
@@ -72,9 +74,9 @@ function pathauto_taxonomy($op, $type, $object) {
             }
             $placeholders[t('[catpath]')] = $catpath;
 
-            $src = "taxonomy/term/".$category->tid;
-            $alias = pathauto_create_alias('taxonomy', $placeholders, $src, 
-              $vocabulary->name);
+            $src = 'taxonomy/term/'.$category->tid.'/0';
+            $alias = pathauto_create_alias('taxonomy', $op, $placeholders, 
+              $src, $vocabulary->name);
           }
           break;
         case 'delete':
@@ -84,11 +86,6 @@ function pathauto_taxonomy($op, $type, $object) {
           */
           $category = array2object($object);
           path_set_alias('taxonomy/term/'.$category->tid);
-          break;
-        case 'update':
-          /*
-          ** Do not automatically update the alias on a term change
-          */
           break;
         default:
           break;
@@ -133,9 +130,9 @@ function taxonomy_pathauto_bulkupdate() {
     }
     $placeholders['[catpath]'] = $catpath;
 
-    $src = "taxonomy/term/".$category->tid;
-    if ($alias = pathauto_create_alias('taxonomy', $placeholders, $src, 
-          $vocabulary->name)) {
+    $src = 'taxonomy/term/'.$category->tid.'/0';
+    if ($alias = pathauto_create_alias('taxonomy', 'bulkupdate',
+                  $placeholders, $src, $vocabulary->name)) {
       $count++;
     }
     $category = db_fetch_object($result);

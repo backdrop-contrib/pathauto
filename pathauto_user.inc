@@ -38,6 +38,7 @@ function blog_pathauto($op) {
         t('[user]') => t('The name of the user.'),
         t('[uid]') => t('The id number of the user.')
       );
+      $settings['supportsfeeds'] = TRUE;
       $settings['bulkname'] = t('Bulk update blog paths');
       $settings['bulkdescr'] = t('Generate aliases for all existing blog pages which do not already have aliases.');
       return array2object($settings);
@@ -52,6 +53,7 @@ function blog_pathauto($op) {
 function pathauto_user($op, &$edit, &$user, $category=FALSE) {
   switch ($op) {
     case 'insert':
+    case 'update':
       /*
       ** Use the username to automatically create an alias
       */
@@ -61,7 +63,7 @@ function pathauto_user($op, &$edit, &$user, $category=FALSE) {
         $placeholders[t('[user]')] = $user->name;
         $placeholders[t('[uid]')] = $user->uid;
         $src = 'user/'.$user->uid;
-        $alias = pathauto_create_alias('user', $placeholders, $src);
+        $alias = pathauto_create_alias('user', $op, $placeholders, $src);
         if (module_exist('blog')) {
           $src = 'blog/'.$user->uid;
           $alias = pathauto_create_alias('blog', $placeholders, $src);
@@ -78,11 +80,6 @@ function pathauto_user($op, &$edit, &$user, $category=FALSE) {
       if (module_exist('blog')) {
         path_set_alias('blog/'.$user->uid);
       }
-      break;
-    case 'update':
-      /*
-      ** Do not automatically update the alias on a user change
-      */
       break;
     default:
       break;
@@ -107,7 +104,7 @@ function user_pathauto_bulkupdate() {
     $placeholders[t('[user]')] = $user->name;
     $placeholders[t('[uid]')] = $user->uid;
     $src = 'user/'.$user->uid;
-    if ($alias = pathauto_create_alias('user', $placeholders, $src)) {
+    if ($alias = pathauto_create_alias('user', 'bulkupdate', $placeholders, $src)) {
       $count++;
     }
     $user = db_fetch_object($result);
@@ -136,7 +133,7 @@ function blog_pathauto_bulkupdate() {
     $placeholders[t('[user]')] = $user->name;
     $placeholders[t('[uid]')] = $user->uid;
     $src = 'blog/'.$user->uid;
-    if ($alias = pathauto_create_alias('blog', $placeholders, $src)) {
+    if ($alias = pathauto_create_alias('blog', 'bulkupdate', $placeholders, $src)) {
       $count++;
     }
     $user = db_fetch_object($result);

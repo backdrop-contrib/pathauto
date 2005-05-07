@@ -1,0 +1,40 @@
+***Current HEAD***
+
+2005-5-7
+  Added depth parameter of '0' to taxonomy URLs, so feed URLs are
+  generated correctly.
+  Added 'supportsfeeds' to the settings hook, enabling implementors
+  to indicate that feed aliases may be automatically generated for
+  that content type.
+  Restored automatic feed generation (had been disabled in the
+  refactoring).
+  Added option to control behavior when updating already-aliased
+  content.
+  Added version tracking (based on webform's version tracking). Will
+  automatically fix up variable names that changed after the 2005-4-23
+  release.
+
+2005-4-30
+  Refactoring of pathauto. Instead of building support for various
+  content types directly into pathauto.module, we now use a modular
+  design which allows support for different content types to be added
+  without touching pathauto itself.
+
+***DRUPAL-4-5, DRUPAL-4-6 releases***
+
+2005-4-23
+  Support for user and blog aliases.
+  Conversion of accents and ligatures to ASCII equivalents.
+2005-4-10
+  Support for node-specific patterns
+2005-4-8
+  Bulk update bugs fixed.
+2005-4-2
+  [type] and [book] placeholders added.
+2005-3-26
+  Support for feed aliases added.
+2005-2-21
+  Fixed bug when taxonomy module was not enabled.
+2005-2-15
+  Initial merger of Mike Ryan's autopath with Tommy Sundstrom's 
+  path_automatic.

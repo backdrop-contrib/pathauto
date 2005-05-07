@@ -38,6 +38,9 @@ function pathauto_settings() {
     return $output;
   }
   
+  // Check for any updates
+  _pathauto_update();
+  
   // Generate the form - settings applying to all patterns first
   $items = '';
   $items .= form_textfield(t('Separator'), 'pathauto_separator',  
@@ -48,6 +51,13 @@ function pathauto_settings() {
 
   $items .= form_checkbox(t('Create feed aliases'), 'pathauto_applytofeed', 1,
     variable_get('pathauto_applytofeed', FALSE), t('Also generate aliases for RSS feeds.'));
+  $items .= form_radios(t('Update action'), 'pathauto_update_action',
+    variable_get('pathauto_update_action', 0), 
+    array(t('Do nothing, leaving the old alias intact'), 
+          t('Create a new alias in addition to the old alias'), 
+          t('Create a new alias and remove the old one')), 
+    t('When updating an existing content item which already has an alias, '.
+      'what should pathauto do?'));
 
   $output .= form_group(t('General settings'), $items, t(''));
   
@@ -60,6 +70,8 @@ function pathauto_settings() {
     $patterndescr = $settings->patterndescr;
     $patterndefault = $settings->patterndefault;
     $groupheader = $settings->groupheader;
+    $supportsfeeds = $settings->supportsfeeds;
+    variable_set('pathauto_'.$module.'_supportsfeeds', $supportsfeeds);
     
     // Prompt for the default pattern for this module
     $variable = 'pathauto_'.$module.'_pattern';
@@ -157,6 +169,9 @@ function _pathauto_cleanstring($string, $separator) {
  *
  * @param $module
  *   The name of your module (e.g., 'node')
+ * @param $op
+ *   Operation being performed on the content being aliased ('insert',
+ *   'update', or 'bulkupdate')
  * @param $placeholders
  *   An array whose keys consist of the translated placeholders
  *   which appear in patterns (e.g., t('[title]')) and values are the 
@@ -170,7 +185,31 @@ function _pathauto_cleanstring($string, $separator) {
  * @return
  *   The alias that was created
  */
-function pathauto_create_alias($module, $placeholders, $src, $type=NULL) {
+function pathauto_create_alias($module, $op, $placeholders, $src, $type=NULL) {
+
+  // Special handling when updating an item which is already aliased
+  $pid = NULL;
+  if ($op == 'update' or $op == 'bulkupdate') {
+    $result = db_query("SELECT pid FROM {url_alias} WHERE src='%s'", $src);
+    if ($data = db_fetch_object($result)) {
+      // The item is already aliased, check what to do...
+      switch (variable_get('pathauto_update_action', 0)) {
+        // Do nothing
+        case 0:
+          return '';
+        // Add new alias in addition to old one - just fall through
+        case 1:
+          break;
+        // Replace old alias - remember the pid to update
+        case 2:
+          $pid = $data->pid;
+          break;
+        default:
+          break;
+      }
+    }
+  }
+  
   $separator = variable_get('pathauto_separator', '_');
 
   // Clean all replacement strings
@@ -203,11 +242,86 @@ function pathauto_create_alias($module, $placeholders, $src, $type=NULL) {
     }
     $alias = $alias.$separator.$i;
   }
-  path_set_alias($src, $alias);
-  if (variable_get('pathauto_applytofeed', FALSE) and strncasecmp($src, 'user', 4)) {
+  
+  // If $pid is NULL, a new alias is created - otherwise, the existing
+  // alias for the designated src is replaced
+  path_set_alias($src, $alias, $pid);
+
+  if (variable_get('pathauto_applytofeed', FALSE) && 
+      variable_get('pathauto_'.$module.'_supportsfeeds', FALSE)) {
     path_set_alias("$src/feed", "$alias/feed");
   }
   return $alias;
 }
+
+/**
+ * Returns the version of this release of the version module.
+ *
+ * @return array An array with keys 'text' and 'build' containing the
+ *         text version and build ID of this release, respectively.
+ */
+function _pathauto_version() {
+  return array("text" => "2005-5-7", "build" => 2);
+} // function _pathauto_version
+
+/**
+ * Makes updates to saved variables and the database structure.
+ **/
+function _pathauto_update() {
+  $installed_version  = variable_get('pathauto_version', array('text'=> 'Unknown', 'build' => 1));
+  $current_version =  _pathauto_version();
+
+  if ( $installed_version['build'] < $current_version['build']) {  
+    // Upgrading from original version - variable names were changed 
+    if ( $installed_version['build'] <= 1 ) {
+      // Remove obsolete bulkupdate variables
+      variable_del('pathauto_bulkupdate');
+      variable_del('pathauto_cat_bulkupdate');
+
+      // The original global node and taxonomy patterns got renamed
+      $old_pattern = variable_get('pathauto_pattern', 0);
+      if ($old_pattern != 0) {
+        variable_set('pathauto_node_pattern', $old_pattern);
+        variable_del('pathauto_pattern');
+      }
+      $old_pattern = variable_get('pathauto_cat_pattern', 0);
+      if ($old_pattern != 0) {
+        variable_set('pathauto_taxonomy_pattern', $old_pattern);
+        variable_del('pathauto_cat_pattern');
+      }
+      // And the form of the type-specific patterns was changed
+      $query = 'SELECT name,value FROM {variable} '.
+        "WHERE name LIKE '%_pathauto_pattern'";
+      $result = db_query($query);
+      $var = db_fetch_object($result);
+      while ($var) {
+        $type = substr($var->name, 0, strlen($var->name)-strlen('_pathauto_pattern'));
+        $old_pattern = variable_get($var->name, '');
+        $new_name = 'pathauto_node_'.$type.'_pattern';
+        variable_set($new_name, $old_pattern);
+        variable_del($var->name);
+        $var = db_fetch_object($result);
+      }
+      $query = 'SELECT name,value FROM {variable} '.
+        "WHERE name LIKE '%_pathauto_cat_pattern'";
+      $result = db_query($query);
+      $var = db_fetch_object($result);
+      while ($var) {
+        $type = substr($var->name, 0, strlen($var->name)-strlen('_pathauto_cat_pattern'));
+        $old_pattern = variable_get($var->name, '');
+        $new_name = 'pathauto_taxonomy_'.$type.'_pattern';
+        variable_set($new_name, $old_pattern);
+        variable_del($var->name);
+        $var = db_fetch_object($result);
+      }
+    }
+
+    // Set the $current_version
+    variable_set('pathauto_version', $current_version);
+
+    drupal_set_message('Upgraded pathauto from '.$installed_version['build'] .
+      ' to '. $current_version['build']);
+  } 
+} // end function _pathauto_update 
 
 ?>

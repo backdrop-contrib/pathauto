@@ -62,6 +62,10 @@ patternitems - For modules which need to express multiple patterns
   node type), an array whose keys consist of identifiers for each
   pattern (e.g., the node type name) and values consist of the
   translated label for the pattern
+supportsfeeds - Modules which support RSS feeds by appending
+  '/feed' to the URI should set this to TRUE, so when administrators
+  enable "Create feed aliases" an alias for this content type's feed
+  will be generated in addition to the base alias.
 bulkname - For modules which support a bulk update operation, the
   translated label for the action (e.g., t('Bulk update node paths'))
 bulkdescr - For modules which support a bulk update operation, a 
