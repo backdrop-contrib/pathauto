@@ -174,14 +174,9 @@ function node_get_placeholders($node) {
 // Generate aliases for all nodes without aliases
 function node_pathauto_bulkupdate() {
   $query = 'SELECT nid,type,title,uid,created,src,dst FROM {node} '.
-    "LEFT JOIN {url_alias} ON CONCAT('node/', nid) = src ".
-    'WHERE dst is null';
+    "LEFT JOIN {url_alias} ON CONCAT('node/', nid) = src";
   $result = db_query($query);
   $node = db_fetch_object($result);
-  if (!$node) {
-    drupal_set_message('No unaliased nodes to update.');
-    return;
-  }
 
   $count = 0;
   $placeholders = array();

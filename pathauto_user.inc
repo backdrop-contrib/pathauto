@@ -89,14 +89,9 @@ function pathauto_user($op, &$edit, &$user, $category=FALSE) {
 // Generate aliases for all users without aliases
 function user_pathauto_bulkupdate() {
   $query = 'SELECT uid,name,src,dst FROM {users} '.
-    "LEFT JOIN {url_alias} ON CONCAT('user/', uid) = src ".
-    'WHERE dst is null';
+    "LEFT JOIN {url_alias} ON CONCAT('user/', uid) = src";
   $result = db_query($query);
   $user = db_fetch_object($result);
-  if (!$user) {
-    drupal_set_message('No unaliased users to update.');
-    return;
-  }
 
   $count = 0;
   $placeholders = array();
@@ -118,14 +113,9 @@ function user_pathauto_bulkupdate() {
 // Generate aliases for all blogs without aliases
 function blog_pathauto_bulkupdate() {
   $query = 'SELECT uid,name,src,dst FROM {users} '.
-    "LEFT JOIN {url_alias} ON CONCAT('user/', uid) = src ".
-    'WHERE dst is null';
+    "LEFT JOIN {url_alias} ON CONCAT('user/', uid) = src";
   $result = db_query($query);
   $user = db_fetch_object($result);
-  if (!$user) {
-    drupal_set_message('No unaliased blogs to update.');
-    return;
-  }
 
   $count = 0;
   $placeholders = array();

@@ -99,14 +99,9 @@ function pathauto_taxonomy($op, $type, $object) {
 // Generate aliases for all categories without aliases
 function taxonomy_pathauto_bulkupdate() {
   $query = 'SELECT tid,vid,name,src,dst FROM {term_data} '.
-    "LEFT JOIN {url_alias} ON CONCAT('taxonomy/term/', tid) = src ".
-    'WHERE dst is null';
+    "LEFT JOIN {url_alias} ON CONCAT('taxonomy/term/', tid) = src";
   $result = db_query($query);
   $category = db_fetch_object($result);
-  if (!$category) {
-    drupal_set_message('No unaliased catagories to update.');
-    return;
-  }
 
   $count = 0;
   $placeholders = array();

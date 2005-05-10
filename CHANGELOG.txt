@@ -1,4 +1,7 @@
 ***Current HEAD***
+2005-5-9
+  Fixed bug in updating already-aliased content - "replace" option
+  didn't work correctly.
 
 2005-5-7
   Added depth parameter of '0' to taxonomy URLs, so feed URLs are
