@@ -1,4 +1,11 @@
 ***Current HEAD***
+...
+
+***DRUPAL-4-5, DRUPAL-4-6 releases***
+2005-5-14
+  Fixed bug when creating users if blog module is enabled - missing 
+  argument.
+
 2005-5-9
   Fixed bug in updating already-aliased content - "replace" option
   didn't work correctly.
@@ -22,8 +29,6 @@
   content types directly into pathauto.module, we now use a modular
   design which allows support for different content types to be added
   without touching pathauto itself.
-
-***DRUPAL-4-5, DRUPAL-4-6 releases***
 
 2005-4-23
   Support for user and blog aliases.

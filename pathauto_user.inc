@@ -66,7 +66,7 @@ function pathauto_user($op, &$edit, &$user, $category=FALSE) {
         $alias = pathauto_create_alias('user', $op, $placeholders, $src);
         if (module_exist('blog')) {
           $src = 'blog/'.$user->uid;
-          $alias = pathauto_create_alias('blog', $placeholders, $src);
+          $alias = pathauto_create_alias('blog', $op, $placeholders, $src);
         }
       }
       break;
