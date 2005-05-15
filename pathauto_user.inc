@@ -89,7 +89,8 @@ function pathauto_user($op, &$edit, &$user, $category=FALSE) {
 // Generate aliases for all users without aliases
 function user_pathauto_bulkupdate() {
   $query = 'SELECT uid,name,src,dst FROM {users} '.
-    "LEFT JOIN {url_alias} ON CONCAT('user/', uid) = src";
+    "LEFT JOIN {url_alias} ON CONCAT('user/', uid) = src ".
+    'WHERE uid > 0';
   $result = db_query($query);
   $user = db_fetch_object($result);
 
@@ -113,7 +114,8 @@ function user_pathauto_bulkupdate() {
 // Generate aliases for all blogs without aliases
 function blog_pathauto_bulkupdate() {
   $query = 'SELECT uid,name,src,dst FROM {users} '.
-    "LEFT JOIN {url_alias} ON CONCAT('user/', uid) = src";
+    "LEFT JOIN {url_alias} ON CONCAT('user/', uid) = src ".
+    'WHERE uid > 0';
   $result = db_query($query);
   $user = db_fetch_object($result);
 

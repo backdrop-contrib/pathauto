@@ -2,6 +2,9 @@
 ...
 
 ***DRUPAL-4-5, DRUPAL-4-6 releases***
+2005-5-15
+  Fixed bug in user/blog bulk updates - need to ignore user 0.
+  
 2005-5-14
   Fixed bug when creating users if blog module is enabled - missing 
   argument.
