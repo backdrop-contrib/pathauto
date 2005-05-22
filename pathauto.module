@@ -2,7 +2,7 @@
 /* $Id$ */
 
 // Look for any extensions installed in the pathauto directory
-$path = drupal_get_path('module', 'pathauto');
+$path = module_get_path('pathauto');
 $files = file_scan_directory($path, '^pathauto_.*\.inc$');
 foreach ($files as $filename => $file) {
   include_once($filename);
