@@ -1,10 +1,15 @@
 ***Current HEAD***
 ...
 
+***DRUPAL-4-6 only***
+2005-6-6
+  Fix bug with empty separator
+
+***DRUPAL-4-5 only***
+2005-5-23
+  drupal_get_path replaced with module_get_path
+
 ***DRUPAL-4-5, DRUPAL-4-6 releases***
-2005-5-22
-  Fixed bug in 4.5 (use of drupal_get_path())
-  
 2005-5-15
   Fixed bug in user/blog bulk updates - need to ignore user 0.
   

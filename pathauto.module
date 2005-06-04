@@ -2,7 +2,7 @@
 /* $Id$ */
 
 // Look for any extensions installed in the pathauto directory
-$path = module_get_path('pathauto');
+$path = drupal_get_path('module', 'pathauto');
 $files = file_scan_directory($path, '^pathauto_.*\.inc$');
 foreach ($files as $filename => $file) {
   include_once($filename);
@@ -155,12 +155,14 @@ function _pathauto_cleanstring($string, $separator) {
   $output = preg_replace('/[^a-zA-Z0-9_\/\-]+/ ', $separator, $output);
   // Trim any leading or trailing separators (note the need to
   // escape the separator if and only if it is not alphanumeric)
-  if (ctype_alnum($separator)) {
-    $seppattern = $separator;
-  } else {
-    $seppattern = '\\'.$separator;
+  if ($separator) {
+    if (ctype_alnum($separator)) {
+      $seppattern = $separator;
+    } else {
+      $seppattern = '\\'.$separator;
+    }
+    $output = preg_replace("/^$seppattern+|$seppattern+$/", "", $output);
   }
-  $output = preg_replace("/^$seppattern+|$seppattern+$/", "", $output);
   return $output;
 }
 
