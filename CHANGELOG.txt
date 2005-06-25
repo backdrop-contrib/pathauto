@@ -1,5 +1,9 @@
 ***Current HEAD***
-...
+2005-6-25
+  Implemented generation of index aliases.
+  [bookpath] placeholder added.
+  Fix issue with taxonomy aliases using depth parameters not being
+  used in the outgoing direction.
 
 ***DRUPAL-4-6 only***
 2005-6-6
