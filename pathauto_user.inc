@@ -38,7 +38,7 @@ function blog_pathauto($op) {
         t('[user]') => t('The name of the user.'),
         t('[uid]') => t('The id number of the user.')
       );
-      $settings['supportsfeeds'] = TRUE;
+      $settings['supportsfeeds'] = 'feed';
       $settings['bulkname'] = t('Bulk update blog paths');
       $settings['bulkdescr'] = t('Generate aliases for all existing blog pages which do not already have aliases.');
       return array2object($settings);

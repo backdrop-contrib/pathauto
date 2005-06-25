@@ -11,6 +11,7 @@ foreach ($files as $filename => $file) {
 function pathauto_help($section = 'admin/modules#description') {
   switch ($section) {
     case 'admin/modules#description':
+    case 'admin/help#pathauto':
       $output = t('Provides a mechanism for modules to automatically '.
         'generate aliases for the content they manage.');
       break;
@@ -51,11 +52,29 @@ function pathauto_settings() {
 
   $items .= form_checkbox(t('Create feed aliases'), 'pathauto_applytofeed', 1,
     variable_get('pathauto_applytofeed', FALSE), t('Also generate aliases for RSS feeds.'));
+  
+  $items .= form_checkbox(t('Create index aliases'), 'pathauto_indexaliases', 1,
+    variable_get('pathauto_indexaliases', FALSE),
+    t('When a pattern generates a hierarchical alias (i.e., any alias '.
+      'containing a slash), generate aliases for each step of the '.
+      'hierarchy which can be used to list content within that hierarchy. '.
+      'For example, if a node alias "music/concert/beethoven" is created, '.
+      'also create an alias "music/concert" which will list all concert nodes, '.
+      'and an alias "music" which will list all music nodes.'));
+  // If requested, do a bulk generation of index aliases
+  if (variable_get('pathauto_indexaliases_bulkupdate', FALSE)) {
+    _pathauto_bulkupdate_index_aliases();
+  }
+  variable_set('pathauto_indexaliases_bulkupdate', FALSE);
+  $items .= form_checkbox(t('Bulk generate index aliases'), 
+    'pathauto_indexaliases_bulkupdate', 1, FALSE, 
+    t('Generate index aliases based on all pre-existing aliases.'));
+
   $items .= form_radios(t('Update action'), 'pathauto_update_action',
     variable_get('pathauto_update_action', 0), 
     array(t('Do nothing, leaving the old alias intact'), 
           t('Create a new alias in addition to the old alias'), 
-          t('Create a new alias and remove the old one')), 
+          t('Create a new alias, replacing the old one')), 
     t('When updating an existing content item which already has an alias, '.
       'what should pathauto do?'));
 
@@ -63,10 +82,11 @@ function pathauto_settings() {
   
   // Call the hook on all modules - an array of 'settings' objects is returned
   $all_settings = module_invoke_all('pathauto', 'settings');
-  
+  $modulelist = '';
   foreach ($all_settings as $settings) {
     $items = '';
     $module = $settings->module;
+    $modulelist[] = $module;
     $patterndescr = $settings->patterndescr;
     $patterndefault = $settings->patterndefault;
     $groupheader = $settings->groupheader;
@@ -121,10 +141,12 @@ function pathauto_settings() {
     
     $output .= form_group($groupheader, $items, '');
   }
-
+  
+  // Keep track of which modules currently support pathauto
+  variable_set('pathauto_modulelist', $modulelist);
+  
   return $output;
 }
-
 
 // Make sure there isn't already an alias pointing to a different item
 function _pathauto_alias_exists($alias, $src) {
@@ -249,21 +271,83 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $type=NULL) {
   // alias for the designated src is replaced
   path_set_alias($src, $alias, $pid);
 
-  if (variable_get('pathauto_applytofeed', FALSE) && 
-      variable_get('pathauto_'.$module.'_supportsfeeds', FALSE)) {
-    path_set_alias("$src/feed", "$alias/feed");
+  // Also create a related feed alias if requested, and if supported
+  // by the module
+  if (variable_get('pathauto_applytofeed', FALSE)) { 
+    $feedappend = variable_get('pathauto_'.$module.'_supportsfeeds', '');
+    if ($feedappend != '') {
+      path_set_alias("$src/$feedappend", "$alias/feed");
+    }
   }
+  
+  // Create any relevant index aliases if requested
+  if (variable_get('pathauto_indexaliases', FALSE)) {
+    _pathauto_create_index_alias($alias, $module);
+  }
+  
   return $alias;
 }
 
+function _pathauto_create_index_alias($alias, $module='node') {
+  $count = 0;
+  $components = explode('/', $alias);
+  // Not interested in the trailing component
+  array_pop($components);
+  $alias = '';
+  foreach ($components as $component) {
+    if ($alias) {
+      $alias .= '/'.$component;
+    } else {
+      $alias .= $component;
+    }
+    $alias_count = db_result(db_query("SELECT COUNT(dst) FROM {url_alias} WHERE dst = '%s'", $alias));
+    if (!$alias_count) {
+      $src = "pathauto/$module/$alias";
+      path_set_alias($src, $alias);
+      $count++;
+    }
+  }
+  return $count;
+}
+
+function _pathauto_bulkupdate_index_aliases() {
+  $query = "SELECT dst FROM {url_alias} WHERE src NOT LIKE 'pathauto/%'";
+  $result = db_query($query);
+  $alias = db_fetch_object($result);
+
+  $count = 0;
+  while ($alias) {
+    // Note we have no idea here who created the alias, so we have
+    // to default to node
+    $count += _pathauto_create_index_alias($alias->dst);
+    $alias = db_fetch_object($result);
+  }
+  drupal_set_message(format_plural($count,
+    "Created one index alias.",
+    "Created %count aliases."));
+}
+
+function pathauto_menu($may_cache) {
+  $items = array();
+  $modulelist = variable_get('pathauto_modulelist', array());
+  foreach ($modulelist as $module) {
+    $items[] = array('path' => 'pathauto/'.$module,
+      'title' => t('Pathauto'),
+      'callback' => $module.'_pathauto_page', 
+      'access' => 1,
+      'type' => MENU_HIDE);
+  }
+  return $items;
+}
+
 /**
- * Returns the version of this release of the version module.
+ * Returns the version of this release of the pathauto module.
  *
  * @return array An array with keys 'text' and 'build' containing the
  *         text version and build ID of this release, respectively.
  */
 function _pathauto_version() {
-  return array("text" => "2005-5-7", "build" => 2);
+  return array("text" => "2005-6/25", "build" => 3);
 } // function _pathauto_version
 
 /**
@@ -315,6 +399,41 @@ function _pathauto_update() {
         variable_set($new_name, $old_pattern);
         variable_del($var->name);
         $var = db_fetch_object($result);
+      }
+    }
+    if ( $installed_version['build'] <= 2 ) {
+      // Change feed support variables from booleans to appended strings
+      $query = 'SELECT name,value FROM {variable} '.
+        "WHERE name LIKE 'pathauto_%_supportsfeeds'";
+      $result = db_query($query);
+      $var = db_fetch_object($result);
+      while ($var) {
+        $type = substr($var->name, 9, strlen($var->name)-23);
+        $old_value = variable_get($var->name, FALSE);
+        if ($old_value) {
+          switch ($type) {
+            case 'blog':
+            case 'node':
+              variable_set($var->name, 'feed');
+              break;
+            case 'taxonomy':
+              variable_set($var->name, '0/feed');
+              break;
+          }
+        } else {
+          variable_set($var->name, '');
+        }
+        $var = db_fetch_object($result);
+      }
+      // Update previously-generated taxonomy aliases to remove the "/0"
+      $query = 'SELECT * FROM {url_alias} '.
+        "WHERE src LIKE 'taxonomy/term/%/0'";
+      $result = db_query($query);
+      $aliasrow = db_fetch_object($result);
+      while ($aliasrow) {
+        $src = substr($aliasrow->src, 0, -2);
+        path_set_alias($src, $aliasrow->dst, $aliasrow->pid);
+        $aliasrow = db_fetch_object($result);
       }
     }
 

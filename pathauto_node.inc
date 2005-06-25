@@ -12,7 +12,7 @@ function node_pathauto($op) {
       $settings['groupheader'] = t('Node path settings');
       $settings['patterndescr'] = t('Default path pattern (applies to all node types with blank patterns below)');
       $settings['patterndefault'] = t('[title]');
-      $settings['supportsfeeds'] = TRUE;
+      $settings['supportsfeeds'] = 'feed';
       $settings['bulkname'] = t('Bulk update node paths');
       $settings['bulkdescr'] = 
         t('Generate aliases for all existing nodes which do not already have aliases.');
@@ -51,6 +51,8 @@ function node_pathauto($op) {
       if (module_exist('book')) {
         $settings['placeholders'][t('[book]')] = 
           t('For book pages, the title of the top-level book.');
+        $settings['placeholders'][t('[bookpath]')] = 
+          t('For book pages, the full hierarchy from the top-level book.');
       }
       
       $nodetypes = node_list();
@@ -136,8 +138,19 @@ function node_get_placeholders($node) {
     $nodebook = book_load($node);
     $path = book_location($nodebook);
     $placeholders[t('[book]')] = $path[0]->title;
+    $bookhierarchy = book_location($node);
+    $bookpath = '';
+    foreach ($bookhierarchy as $bookelement) {
+      if ($bookpath == '') {
+        $bookpath = $bookelement->title;
+      } else {
+        $bookpath = $bookpath . '/' . $bookelement->title;
+      }
+    }
+    $placeholders[t('[bookpath]')] = $bookpath;
   } else {
     $placeholders[t('[book]')] = '';
+    $placeholders[t('[bookpath]')] = '';
   }
 
   // And now taxonomy, which is a bit more work
@@ -198,6 +211,43 @@ function node_pathauto_bulkupdate() {
   drupal_set_message(format_plural($count,
     "Bulk update of nodes completed, one alias generated.",
     "Bulk update of nodes completed, %count aliases generated."));
+}
+
+/**
+ * Menu callback; presents a listing of all nodes matching an alias prefix
+ */
+function node_pathauto_page() {
+  $prefix = '';
+  $lastalpha = '';
+  // Skip first two components, which will always be "pathauto/node"
+  for ($i=2; arg($i); $i++) {
+    $prefix .= arg($i) . '/';
+    if (preg_match('/[a-z]/i', arg($i))) {
+      $lastalpha = arg($i);
+    }
+  }
+  
+  if ($lastalpha) {
+    $pagetitle = ucfirst($lastalpha);
+  } else {
+    $pagetitle = 'Listing';
+  }
+
+  $query = 'SELECT n.nid FROM {url_alias} a '.
+    "INNER JOIN {node} n ON a.src = CONCAT('node/', n.nid)  ".
+    "WHERE n.status = 1 AND a.dst LIKE '$prefix%' ".
+    'ORDER BY n.sticky DESC, n.created DESC';
+  $result = pager_query(db_rewrite_sql($query, variable_get('default_nodes_main', 10)));
+
+  $output = '';
+  while ($node = db_fetch_object($result)) {
+    $output .= node_view(node_load(array('nid' => $node->nid)), 1);
+  }
+  
+  $output .= theme('pager', NULL, variable_get('default_nodes_main', 10));
+
+  drupal_set_title(t($pagetitle));
+  print theme('page', $output);
 }
 
 ?>

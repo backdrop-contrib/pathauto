@@ -26,8 +26,10 @@ your Drupal installation.
 2. Enable the pathauto module in the administration tools.
 3. If you're not using Drupal's default administrative account, make
 sure "administer pathauto" is enabled through access control administration.
-4. Visit the pathauto settings page to define the desired alias
-patterns.
+4. Visit the pathauto settings page:
+  When first installing pathauto, to define the desired alias patterns.
+  When installing a new version of pathauto, to have any necessary
+    database and variable upgrades applied.
 
 
 Implementing automatic aliases for a module
@@ -62,10 +64,10 @@ patternitems - For modules which need to express multiple patterns
   node type), an array whose keys consist of identifiers for each
   pattern (e.g., the node type name) and values consist of the
   translated label for the pattern
-supportsfeeds - Modules which support RSS feeds by appending
-  '/feed' to the URI should set this to TRUE, so when administrators
-  enable "Create feed aliases" an alias for this content type's feed
-  will be generated in addition to the base alias.
+supportsfeeds - Modules which support RSS feeds should set this to the
+  string that's appended to a path for its feed (usually 'feed') , so 
+  when administrators enable "Create feed aliases" an alias for this 
+  content type's feed will be generated in addition to the base alias.
 bulkname - For modules which support a bulk update operation, the
   translated label for the action (e.g., t('Bulk update node paths'))
 bulkdescr - For modules which support a bulk update operation, a 
@@ -108,6 +110,6 @@ Credits
 The original module combined the functionality of Mike Ryan's autopath with
 Tommy Sundstrom's path_automatic.
 
-Significant enhancements have been contributed by jdmquin@www.bcdems.net.
+Significant enhancements were contributed by jdmquin@www.bcdems.net.
 
 Current maintainer: Mike Ryan (drupal@virtuoso-performance.com)
