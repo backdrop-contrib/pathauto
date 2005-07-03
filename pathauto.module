@@ -11,6 +11,9 @@ foreach ($files as $filename => $file) {
 function pathauto_help($section = 'admin/modules#description') {
   switch ($section) {
     case 'admin/modules#description':
+      $output = t('Provides a mechanism for modules to automatically '.
+        'generate aliases for the content they manage.');
+      break;
     case 'admin/help#pathauto':
       $output = t('Provides a mechanism for modules to automatically '.
         'generate aliases for the content they manage.');
@@ -44,6 +47,10 @@ function pathauto_settings() {
   
   // Generate the form - settings applying to all patterns first
   $items = '';
+  $items .= form_checkbox(t('Verbose'), 'pathauto_verbose', 1,
+    variable_get('pathauto_verbose', FALSE), 
+    t('Display alias changes (except during bulk updates).'));
+  
   $items .= form_textfield(t('Separator'), 'pathauto_separator',  
     variable_get('pathauto_separator', '_'), 1, 1,
     t('Character used to separate words in titles. This will replace '.
@@ -62,9 +69,7 @@ function pathauto_settings() {
       'also create an alias "music/concert" which will list all concert nodes, '.
       'and an alias "music" which will list all music nodes.'));
   // If requested, do a bulk generation of index aliases
-  if (variable_get('pathauto_indexaliases_bulkupdate', FALSE)) {
-    _pathauto_bulkupdate_index_aliases();
-  }
+  $do_index_bulkupdate = variable_get('pathauto_indexaliases_bulkupdate', FALSE);
   variable_set('pathauto_indexaliases_bulkupdate', FALSE);
   $items .= form_checkbox(t('Bulk generate index aliases'), 
     'pathauto_indexaliases_bulkupdate', 1, FALSE, 
@@ -131,15 +136,29 @@ function pathauto_settings() {
     if ($settings->bulkname) {
       $variable = 'pathauto_'.$module.'_bulkupdate';
       if (variable_get($variable, FALSE)) {
+        variable_set($variable, FALSE);
         $function = $module.'_pathauto_bulkupdate';
         call_user_func($function);
       }
-      variable_set($variable, FALSE);
       $items .= form_checkbox($settings->bulkname, $variable, 
         1, FALSE, $settings->bulkdescr);
     }
     
+    // Perform bulk updates of indexes for this module, if asked
+    if ($do_index_bulkupdate) {
+      $function = $module.'_pathauto_bulkupdate_indexes';
+      if (is_callable($function)) {
+        $indexcount += call_user_func($function);
+      }
+    }
+    
     $output .= form_group($groupheader, $items, '');
+  }
+  
+  if ($do_index_bulkupdate) {
+    drupal_set_message(format_plural($indexcount,
+      "Bulk update of index aliases completed, one alias generated.",
+      "Bulk update of index aliases completed, %count aliases generated."));
   }
   
   // Keep track of which modules currently support pathauto
@@ -160,6 +179,7 @@ function _pathauto_alias_exists($alias, $src) {
 function _pathauto_cleanstring($string, $separator) {
   // Drop apostrophes
   $output = str_replace("'", "", $string);
+
   // Convert accented characters to their ASCII counterparts...
   $output = strtr(utf8_decode($output),
        "\xA1\xAA\xBA\xBF".
@@ -172,9 +192,11 @@ function _pathauto_cleanstring($string, $separator) {
   $output = utf8_encode(strtr($output, array("\xC4"=>"Ae", "\xC6"=>"AE", "\xD6"=>"Oe", 
     "\xDC"=>"Ue", "\xDE"=>"TH", "\xDF"=>"ss", "\xE4"=>"ae", "\xE6"=>"ae", 
     "\xF6"=>"oe", "\xFC"=>"ue", "\xFE"=>"th")));
-  // Preserve alphanumerics and slashes, everything else becomes
-  // a separator
-  $output = preg_replace('/[^a-zA-Z0-9_\/\-]+/ ', $separator, $output);
+
+  // Preserve alphanumerics and slashes, everything else becomes a separator
+  $pattern = '/[^a-zA-Z0-9_\/\-]+/ ';
+  $output = preg_replace($pattern, $separator, $output);
+
   // Trim any leading or trailing separators (note the need to
   // escape the separator if and only if it is not alphanumeric)
   if ($separator) {
@@ -210,23 +232,30 @@ function _pathauto_cleanstring($string, $separator) {
  *   The alias that was created
  */
 function pathauto_create_alias($module, $op, $placeholders, $src, $type=NULL) {
-
+  if (($op != 'bulkupdate') and variable_get('pathauto_verbose', FALSE)) {
+    $verbose = TRUE;
+  } else {
+    $verbose = FALSE;
+  }
+  
   // Special handling when updating an item which is already aliased
   $pid = NULL;
   if ($op == 'update' or $op == 'bulkupdate') {
-    $result = db_query("SELECT pid FROM {url_alias} WHERE src='%s'", $src);
+    $result = db_query("SELECT pid,dst FROM {url_alias} WHERE src='%s'", $src);
     if ($data = db_fetch_object($result)) {
       // The item is already aliased, check what to do...
       switch (variable_get('pathauto_update_action', 0)) {
         // Do nothing
         case 0:
           return '';
-        // Add new alias in addition to old one - just fall through
+        // Add new alias in addition to old one
         case 1:
+          $oldalias = $data->dst;
           break;
         // Replace old alias - remember the pid to update
         case 2:
           $pid = $data->pid;
+          $oldalias = $data->dst;
           break;
         default:
           break;
@@ -269,26 +298,41 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $type=NULL) {
   
   // If $pid is NULL, a new alias is created - otherwise, the existing
   // alias for the designated src is replaced
-  path_set_alias($src, $alias, $pid);
+  _pathauto_set_alias($src, $alias, $pid, $verbose, $oldalias);
 
   // Also create a related feed alias if requested, and if supported
   // by the module
   if (variable_get('pathauto_applytofeed', FALSE)) { 
     $feedappend = variable_get('pathauto_'.$module.'_supportsfeeds', '');
     if ($feedappend != '') {
-      path_set_alias("$src/$feedappend", "$alias/feed");
+      // Handle replace case (get existing pid)
+      _pathauto_set_alias("$src/$feedappend", "$alias/feed", NULL, $verbose);
     }
   }
   
   // Create any relevant index aliases if requested
   if (variable_get('pathauto_indexaliases', FALSE)) {
-    _pathauto_create_index_alias($alias, $module);
+    pathauto_create_index_alias($alias, $module, $verbose);
   }
   
   return $alias;
 }
 
-function _pathauto_create_index_alias($alias, $module='node') {
+function _pathauto_set_alias($src, $dst, $pid = NULL, $verbose = FALSE, $oldalias = NULL) {
+  // Skip replacing the current alias with an identical alias
+  if ($oldalias != $dst) {
+    path_set_alias($src, $dst, $pid);
+    if ($verbose) {
+      if ($pid) {
+        drupal_set_message("Created new alias $dst for $src, replacing $oldalias");
+      } else {
+        drupal_set_message("Created new alias $dst for $src");
+      }
+    }
+  }
+}
+
+function pathauto_create_index_alias($alias, $module, $verbose = FALSE) {
   $count = 0;
   $components = explode('/', $alias);
   // Not interested in the trailing component
@@ -303,28 +347,11 @@ function _pathauto_create_index_alias($alias, $module='node') {
     $alias_count = db_result(db_query("SELECT COUNT(dst) FROM {url_alias} WHERE dst = '%s'", $alias));
     if (!$alias_count) {
       $src = "pathauto/$module/$alias";
-      path_set_alias($src, $alias);
+      _pathauto_set_alias($src, $alias, NULL, $verbose);
       $count++;
     }
   }
   return $count;
-}
-
-function _pathauto_bulkupdate_index_aliases() {
-  $query = "SELECT dst FROM {url_alias} WHERE src NOT LIKE 'pathauto/%'";
-  $result = db_query($query);
-  $alias = db_fetch_object($result);
-
-  $count = 0;
-  while ($alias) {
-    // Note we have no idea here who created the alias, so we have
-    // to default to node
-    $count += _pathauto_create_index_alias($alias->dst);
-    $alias = db_fetch_object($result);
-  }
-  drupal_set_message(format_plural($count,
-    "Created one index alias.",
-    "Created %count aliases."));
 }
 
 function pathauto_menu($may_cache) {
@@ -347,7 +374,7 @@ function pathauto_menu($may_cache) {
  *         text version and build ID of this release, respectively.
  */
 function _pathauto_version() {
-  return array("text" => "2005-6/25", "build" => 3);
+  return array("text" => "2005-7-4", "build" => 3);
 } // function _pathauto_version
 
 /**
@@ -426,18 +453,33 @@ function _pathauto_update() {
         $var = db_fetch_object($result);
       }
       // Update previously-generated taxonomy aliases to remove the "/0"
-      $query = 'SELECT * FROM {url_alias} '.
-        "WHERE src LIKE 'taxonomy/term/%/0'";
+      $query = "SELECT * FROM {url_alias} WHERE src LIKE 'taxonomy/term/%/0'";
       $result = db_query($query);
       $aliasrow = db_fetch_object($result);
       while ($aliasrow) {
         $src = substr($aliasrow->src, 0, -2);
-        path_set_alias($src, $aliasrow->dst, $aliasrow->pid);
+        _pathauto_set_alias($src, $aliasrow->dst, $aliasrow->pid, FALSE);
         $aliasrow = db_fetch_object($result);
       }
     }
+    if ($installed_version['build'] <= 3) {
+      // Change taxonomy pattern variables to use IDs instead
+      // of names
+      $query = 'SELECT name,value FROM {variable} '.
+        "WHERE name LIKE 'pathauto_taxonomy_%_pattern'";
+      $result = db_query($query);
+      $var = db_fetch_object($result);
+      while ($var) {
+        $vocabname = substr($var->name, 18, strlen($var->name)-26);
+        $query = "SELECT vid FROM {vocabulary} WHERE name='$vocabname'";
+        $vid = db_result(db_query($query));
+        variable_set("pathauto_taxonomy_$vid_pattern", $var->value);
+        variable_del($var->name);
+        $var = db_fetch_object($result);
+      }
+    }
 
-    // Set the $current_version
+    // Set the current version
     variable_set('pathauto_version', $current_version);
 
     drupal_set_message('Upgraded pathauto from '.$installed_version['build'] .

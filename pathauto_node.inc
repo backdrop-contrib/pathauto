@@ -57,11 +57,7 @@ function node_pathauto($op) {
       
       $nodetypes = node_list();
       foreach ($nodetypes as $ntype) {
-        if (module_exist('flexinode') and !strncasecmp($ntype, 'flexinode-', 10)) {
-          $displaytype = flexinode_node_name($ntype);
-        } else {
-          $displaytype = $ntype;
-        }
+        $displaytype = node_invoke($ntype,'node_name');
         $fieldlabel = t('Pattern for all '.$displaytype.' paths');
         $settings['patternitems'][$ntype] = $fieldlabel;
       }
@@ -121,17 +117,13 @@ function node_get_placeholders($node) {
   $placeholders[t('[sec]')] = date('s', $node->created);
   $placeholders[t('[week]')] = date('W', $node->created);
   $placeholders[t('[nid]')] = $node->nid;
+  $placeholders[t('[type]')] = node_invoke($node->type,'node_name');
   
   // Then the slightly less simple stuff
   $result = db_query("SELECT name FROM {users} WHERE uid='%u'", $node->uid);
   $userinfo = db_fetch_object($result);
   $placeholders[t('[user]')] = $userinfo->name;
   
-  if (module_exist('flexinode') and !strncasecmp($node->type, 'flexinode-', 10)) {
-    $placeholders[t('[type]')] = flexinode_node_name($node->type);
-  } else {
-    $placeholders[t('[type]')] = $node->type;
-  }
 
   // Book title
   if (module_exist('book') and $node->type == 'book') {
@@ -211,6 +203,19 @@ function node_pathauto_bulkupdate() {
   drupal_set_message(format_plural($count,
     "Bulk update of nodes completed, one alias generated.",
     "Bulk update of nodes completed, %count aliases generated."));
+}
+
+function node_pathauto_bulkupdate_indexes() {
+  $query = "SELECT src,dst FROM {url_alias} WHERE src LIKE 'node/%'";
+  $result = db_query($query);
+  $alias = db_fetch_object($result);
+
+  $count = 0;
+  while ($alias) {
+    $count += pathauto_create_index_alias($alias->dst, 'node');
+    $alias = db_fetch_object($result);
+  }
+  return $count;
 }
 
 /**

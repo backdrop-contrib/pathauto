@@ -29,7 +29,7 @@ function taxonomy_pathauto($op) {
         foreach ($vocabularies as $vocab) {
           $vocabname = $vocab->name;
           $fieldlabel = t('Pattern for all '.$vocabname.' paths');
-          $settings['patternitems'][$vocabname] = $fieldlabel;
+          $settings['patternitems'][$vocab->vid] = $fieldlabel;
         }
       }
       return array2object($settings);
@@ -74,9 +74,15 @@ function pathauto_taxonomy($op, $type, $object) {
             }
             $placeholders[t('[catpath]')] = $catpath;
 
+            $forumvid = variable_get('forum_nav_vocabulary', '');
+            if ($forumvid == $vid) {
+              $src = 'forum/'.$category->tid;
+              $forumalias = pathauto_create_alias('taxonomy', $op, $placeholders, 
+                $src, $forumvid);
+            }
             $src = 'taxonomy/term/'.$category->tid;
             $alias = pathauto_create_alias('taxonomy', $op, $placeholders, 
-              $src, $vocabulary->name);
+              $src, $vid);
           }
           break;
         case 'delete':
@@ -86,6 +92,7 @@ function pathauto_taxonomy($op, $type, $object) {
           */
           $category = array2object($object);
           path_set_alias('taxonomy/term/'.$category->tid);
+          path_set_alias('forum/'.$category->tid);
           break;
         default:
           break;
@@ -99,7 +106,8 @@ function pathauto_taxonomy($op, $type, $object) {
 // Generate aliases for all categories without aliases
 function taxonomy_pathauto_bulkupdate() {
   $query = 'SELECT tid,vid,name,src,dst FROM {term_data} '.
-    "LEFT JOIN {url_alias} ON CONCAT('taxonomy/term/', tid) = src";
+    "LEFT JOIN {url_alias} ON CONCAT('taxonomy/term/', tid) = src ".
+                          "OR CONCAT('forum/', tid) = src";
   $result = db_query($query);
   $category = db_fetch_object($result);
 
@@ -125,9 +133,17 @@ function taxonomy_pathauto_bulkupdate() {
     }
     $placeholders['[catpath]'] = $catpath;
 
+    $forumvid = variable_get('forum_nav_vocabulary', '');
+    if ($forumvid == $vid) {
+      $src = 'forum/'.$category->tid;
+      if ($forumalias = pathauto_create_alias('taxonomy', 'bulkupdate', 
+                      $placeholders, $src, $forumvid)) {
+        $count++;
+      }
+    }
     $src = 'taxonomy/term/'.$category->tid;
     if ($alias = pathauto_create_alias('taxonomy', 'bulkupdate',
-                  $placeholders, $src, $vocabulary->name)) {
+                  $placeholders, $src, $vid)) {
       $count++;
     }
     $category = db_fetch_object($result);
