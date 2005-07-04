@@ -39,6 +39,8 @@ Tommy Sundstrom's path_automatic.
 
 Significant enhancements were contributed by jdmquin@www.bcdems.net.
 
+Matt England added the tracker support.
+
 Other suggestions and patches contributed by the Drupal community.
 
 Current maintainer: Mike Ryan (drupal@virtuoso-performance.com)

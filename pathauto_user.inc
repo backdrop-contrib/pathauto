@@ -48,7 +48,31 @@ function blog_pathauto($op) {
 }
 
 /**
- * Implementation of hook_user() for both blog and user
+ * Implementation of hook_pathauto() for user-tracker aliases
+ */
+function tracker_pathauto($op) {
+  switch ($op) {
+    case 'settings':
+      $settings = array();
+      $settings['module'] = 'tracker';
+      $settings['groupheader'] = t('User-tracker path settings');
+      $settings['patterndescr'] = t('Pattern for user-tracker page paths');
+      $settings['patterndefault'] = t('user/[user]/track');
+      $settings['placeholders'] = array(
+        t('[user]') => t('The name of the user.'),
+        t('[uid]') => t('The id number of the user.')
+      );
+      $settings['supportsfeeds'] = 'feed';
+      $settings['bulkname'] = t('Bulk update user-tracker paths');
+      $settings['bulkdescr'] = t('Generate aliases for all existing user-tracker pages which do not already have aliases.');
+      return array2object($settings);
+    default:
+      break;
+  }
+}
+
+/**
+ * Implementation of hook_user() for users, trackers, and blogs
  */
 function pathauto_user($op, &$edit, &$user, $category=FALSE) {
   switch ($op) {
@@ -67,6 +91,10 @@ function pathauto_user($op, &$edit, &$user, $category=FALSE) {
         if (module_exist('blog')) {
           $src = 'blog/'.$user->uid;
           $alias = pathauto_create_alias('blog', $op, $placeholders, $src);
+        }
+        if (module_exist('tracker')) {
+          $src = 'user/'.$user->uid.'/track';
+          $alias = pathauto_create_alias('tracker', $op, $placeholders, $src);
         }
       }
       break;
@@ -134,6 +162,31 @@ function blog_pathauto_bulkupdate() {
   drupal_set_message(format_plural($count,
     "Bulk update of user blogs completed, one alias generated.",
     "Bulk update of user blogs completed, %count aliases generated."));
+}
+
+// Generate aliases for all tracker pages without aliases
+function tracker_pathauto_bulkupdate() {
+  $query = 'SELECT uid,name,src,dst FROM {users} '.
+    "LEFT JOIN {url_alias} ON CONCAT('user/', uid) = src ".
+    'WHERE uid > 0';
+  $result = db_query($query);
+  $user = db_fetch_object($result);
+
+  $count = 0;
+  $placeholders = array();
+  while ($user) {
+    $placeholders[t('[user]')] = $user->name;
+    $placeholders[t('[uid]')] = $user->uid;
+    $src = 'user/'.$user->uid.'/track';
+    if ($alias = pathauto_create_alias('tracker', 'bulkupdate', $placeholders, $src)) {
+      $count++;
+    }
+    $user = db_fetch_object($result);
+  }
+
+  drupal_set_message(format_plural($count,
+    "Bulk update of user tracker pages completed, one alias generated.",
+    "Bulk update of user tracker pages completed, %count aliases generated."));
 }
 
 ?>

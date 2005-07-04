@@ -238,6 +238,20 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $type=NULL) {
     $verbose = FALSE;
   }
   
+  // Retrieve and apply the pattern for this content type
+  $pattern = '';
+  if ($type) {
+    $pattern = strtolower(variable_get('pathauto_'.$module.'_'.$type.'_pattern', ''));
+  } 
+  if (!trim($pattern)) {
+    $pattern = strtolower(variable_get('pathauto_'.$module.'_pattern', ''));
+  }
+  
+  // No pattern? Do nothing (otherwise we may blow away existing aliases...)
+  if (!trim($pattern)) {
+    return '';
+  }
+  
   // Special handling when updating an item which is already aliased
   $pid = NULL;
   if ($op == 'update' or $op == 'bulkupdate') {
@@ -270,15 +284,6 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $type=NULL) {
     $placeholders[$key] = _pathauto_cleanstring($value, $separator);
   }
 
-  // Retrieve and apply the pattern for this content type
-  $pattern = '';
-  if ($type) {
-    $pattern = strtolower(variable_get('pathauto_'.$module.'_'.$type.'_pattern', ''));
-  } 
-  if (!trim($pattern)) {
-    $pattern = strtolower(variable_get('pathauto_'.$module.'_pattern', ''));
-  }
-  
   // Replace the placeholders with the values provided by the module,
   // and lower-case the result
   $alias = str_replace(array_keys($placeholders), $placeholders, $pattern);
@@ -312,7 +317,7 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $type=NULL) {
   
   // Create any relevant index aliases if requested
   if (variable_get('pathauto_indexaliases', FALSE)) {
-    pathauto_create_index_alias($alias, $module, $verbose);
+    pathauto_create_index_alias($alias, $module);
   }
   
   return $alias;
@@ -322,17 +327,17 @@ function _pathauto_set_alias($src, $dst, $pid = NULL, $verbose = FALSE, $oldalia
   // Skip replacing the current alias with an identical alias
   if ($oldalias != $dst) {
     path_set_alias($src, $dst, $pid);
-    if ($verbose) {
+    if ($verbose and user_access('create url aliases')) {
       if ($pid) {
-        drupal_set_message("Created new alias $dst for $src, replacing $oldalias");
+        drupal_set_message("Created new alias <b>$dst</b> for <b>$src</b>, replacing <b>$oldalias</b>");
       } else {
-        drupal_set_message("Created new alias $dst for $src");
+        drupal_set_message("Created new alias <b>$dst</b> for <b>$src</b>");
       }
     }
   }
 }
 
-function pathauto_create_index_alias($alias, $module, $verbose = FALSE) {
+function pathauto_create_index_alias($alias, $module) {
   $count = 0;
   $components = explode('/', $alias);
   // Not interested in the trailing component
@@ -347,7 +352,7 @@ function pathauto_create_index_alias($alias, $module, $verbose = FALSE) {
     $alias_count = db_result(db_query("SELECT COUNT(dst) FROM {url_alias} WHERE dst = '%s'", $alias));
     if (!$alias_count) {
       $src = "pathauto/$module/$alias";
-      _pathauto_set_alias($src, $alias, NULL, $verbose);
+      _pathauto_set_alias($src, $alias);
       $count++;
     }
   }

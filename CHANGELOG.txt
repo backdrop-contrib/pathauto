@@ -1,12 +1,16 @@
 ***HEAD***
-2005-7-3
+2005-7-4
   Added verbose option, to display alias change/create actions.
   Fixed problem with timed-out bulk updates "sticking" and trying to
     execute on all subsequent visits to the settings page.
   Switched to using vocabulary IDs instead of names in pattern vars.
   Added support for forum aliasing to pathauto_taxonomy.inc.
   Put API documentation into separate file.
-
+  Added support for tracker URLs (user/[uid]/track), code contributed
+    by Matt England.
+  Fixed problem with existing aliases being deleted when there's no
+    pattern.
+    
 ***DRUPAL-4-6 only***
 2005-6-26
   Index aliases now only generated for nodes - bulk update creation
