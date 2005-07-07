@@ -130,7 +130,7 @@ function node_get_placeholders($node) {
     $nodebook = book_load($node);
     $path = book_location($nodebook);
     $placeholders[t('[book]')] = $path[0]->title;
-    $bookhierarchy = book_location($node);
+    $bookhierarchy = book_location($nodebook);
     $bookpath = '';
     foreach ($bookhierarchy as $bookelement) {
       if ($bookpath == '') {

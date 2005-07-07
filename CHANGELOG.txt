@@ -1,4 +1,7 @@
-***HEAD***
+***DRUPAL-4-6 only***
+2005-7-6
+  Fixed bug - [bookpath] having no effect during bulk update.
+  
 2005-7-4
   Added verbose option, to display alias change/create actions.
   Fixed problem with timed-out bulk updates "sticking" and trying to
@@ -10,8 +13,6 @@
     by Matt England.
   Fixed problem with existing aliases being deleted when there's no
     pattern.
-    
-***DRUPAL-4-6 only***
 2005-6-26
   Index aliases now only generated for nodes - bulk update creation
   for other content types was broken.
