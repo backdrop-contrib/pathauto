@@ -1,4 +1,10 @@
 ***DRUPAL-4-6 only***
+2005-7-24
+  Implemented blog_pathauto_page().
+  No longer treat hyphens as alphanumerics (i.e., replace them with
+    separators).
+  Don't allow "user" as an alias.
+  
 2005-7-6
   Fixed bug - [bookpath] having no effect during bulk update.
   

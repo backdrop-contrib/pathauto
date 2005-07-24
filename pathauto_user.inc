@@ -189,4 +189,36 @@ function tracker_pathauto_bulkupdate() {
     "Bulk update of user tracker pages completed, %count aliases generated."));
 }
 
+/**
+ * Menu callback; presents a listing of all blogs matching an alias prefix
+ */
+function blog_pathauto_page() {
+  $prefix = '';
+  $lastalpha = '';
+  // Skip first two components, which will always be "pathauto/blog"
+  for ($i=2; arg($i); $i++) {
+    $prefix .= arg($i) . '/';
+    if (preg_match('/[a-z]/i', arg($i))) {
+      $lastalpha = arg($i);
+    }
+  }
+  
+  $query = 'SELECT DISTINCT u.uid,u.name FROM {url_alias} a '.
+    "INNER JOIN {users} u ON a.src = CONCAT('blog/', u.uid)  ".
+    "INNER JOIN {node} n ON u.uid = n.uid ".
+    "WHERE a.dst LIKE '$prefix%' AND n.type='blog'".
+    'ORDER BY u.name';
+  $result = pager_query(db_rewrite_sql($query, variable_get('default_nodes_main', 10)));
+
+  $output = '';
+  while ($user = db_fetch_object($result)) {
+    $output .= '<div>'.l($user->name,'blog/'.$user->uid).'</p>';
+  }
+  
+  $output .= theme('pager', NULL, variable_get('default_nodes_main', 10));
+
+  drupal_set_title(t('User blogs'));
+  print theme('page', $output);
+}
+
 ?>

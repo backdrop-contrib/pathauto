@@ -194,7 +194,7 @@ function _pathauto_cleanstring($string, $separator) {
     "\xF6"=>"oe", "\xFC"=>"ue", "\xFE"=>"th")));
 
   // Preserve alphanumerics and slashes, everything else becomes a separator
-  $pattern = '/[^a-zA-Z0-9_\/\-]+/ ';
+  $pattern = '/[^a-zA-Z0-9\/]+/ ';
   $output = preg_replace($pattern, $separator, $output);
 
   // Trim any leading or trailing separators (note the need to
@@ -324,6 +324,10 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $type=NULL) {
 }
 
 function _pathauto_set_alias($src, $dst, $pid = NULL, $verbose = FALSE, $oldalias = NULL) {
+  // Special case - don't let them screw themselves by creating
+  // an alias named 'user'
+  if ($dst == 'user') return;
+  
   // Skip replacing the current alias with an identical alias
   if ($oldalias != $dst) {
     path_set_alias($src, $dst, $pid);
@@ -363,11 +367,14 @@ function pathauto_menu($may_cache) {
   $items = array();
   $modulelist = variable_get('pathauto_modulelist', array());
   foreach ($modulelist as $module) {
-    $items[] = array('path' => 'pathauto/'.$module,
-      'title' => t('Pathauto'),
-      'callback' => $module.'_pathauto_page', 
-      'access' => 1,
-      'type' => MENU_HIDE);
+    $indexfunc = $module.'_pathauto_page';
+    if (function_exists($indexfunc)) {
+      $items[] = array('path' => 'pathauto/'.$module,
+        'title' => t('Pathauto'),
+        'callback' => $indexfunc, 
+        'access' => 1,
+        'type' => MENU_HIDE);
+    }
   }
   return $items;
 }
