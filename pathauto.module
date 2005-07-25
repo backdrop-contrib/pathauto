@@ -325,8 +325,16 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $type=NULL) {
 
 function _pathauto_set_alias($src, $dst, $pid = NULL, $verbose = FALSE, $oldalias = NULL) {
   // Special case - don't let them screw themselves by creating
-  // an alias named 'user'
-  if ($dst == 'user') return;
+  // certain aliases
+  switch ($dst) {
+    case 'user':
+    case 'blog':
+    case 'admin':
+      drupal_set_message("Ignoring alias $dst");
+      return;
+    default:
+      break;
+  }
   
   // Skip replacing the current alias with an identical alias
   if ($oldalias != $dst) {

@@ -1,6 +1,12 @@
 ***DRUPAL-4-6 only***
+2005-7-25
+  Also exlude "blog" and "admin" as alises.
+  Un-implement blog_pathauto_page() - leave the default blog behavior.
+
 2005-7-24
   Implemented blog_pathauto_page().
+  Don't create menu items for unimplemented foo_pathauto_page()
+    callbacks.
   No longer treat hyphens as alphanumerics (i.e., replace them with
     separators).
   Don't allow "user" as an alias.
