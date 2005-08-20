@@ -124,7 +124,6 @@ function node_get_placeholders($node) {
   $userinfo = db_fetch_object($result);
   $placeholders[t('[user]')] = $userinfo->name;
   
-
   // Book title
   if (module_exist('book') and $node->type == 'book') {
     $nodebook = book_load($node);
@@ -242,7 +241,7 @@ function node_pathauto_page() {
     "INNER JOIN {node} n ON a.src = CONCAT('node/', n.nid)  ".
     "WHERE n.status = 1 AND a.dst LIKE '$prefix%' ".
     'ORDER BY n.sticky DESC, n.created DESC';
-  $result = pager_query(db_rewrite_sql($query, variable_get('default_nodes_main', 10)));
+  $result = pager_query(db_rewrite_sql($query), variable_get('default_nodes_main', 10));
 
   $output = '';
   while ($node = db_fetch_object($result)) {
