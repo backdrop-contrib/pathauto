@@ -38,11 +38,11 @@ function node_pathauto($op) {
           $settings['placeholders'][t('[vocab]')] =
             t("The vocabulary that the page's first category belongs to.");
           $settings['placeholders'][t('[cat]')] =
-            t('The name of the first category that the page belongs to.');
+            t('The name of the lowest-weight category that the page belongs to.');
           $settings['placeholders'][t('[catpath]')] =
             t('As [cat], but including its supercategories.');
           $settings['placeholders'][t('[catalias]')] =
-            t('The alias for the first category that the page belongs to. '.
+            t('The alias for the lowest-weight category that the page belongs to. '.
               'This is useful for long category names. You must first set up '.
               'aliases for your categories.');
         }
@@ -54,7 +54,11 @@ function node_pathauto($op) {
         $settings['placeholders'][t('[bookpath]')] = 
           t('For book pages, the full hierarchy from the top-level book.');
       }
-      
+
+      // Look for extensions from other modules
+      $placeholders = module_invoke_all('pathauto_node', 'placeholders');
+      $settings['placeholders'] = array_merge($settings['placeholders'], $placeholders);
+
       $nodetypes = node_list();
       foreach ($nodetypes as $ntype) {
         $displaytype = node_invoke($ntype,'node_name');
@@ -88,11 +92,11 @@ function pathauto_nodeapi(&$node, $op, $teaser, $page) {
         */
         $output = '';
         if (user_access('create url aliases')) {
-          $output .= t('If the <b>Path alias</b> is left blank, an alias '.
-            'will be automatically generated from the title and other '.
-            'node attributes.');
+          $output .= t('An alias will be automatically generated from the title '.
+            'and other node attributes, in addition to any alias manually '.
+            'provided above.');
           if (user_access('administer pathauto')) {
-            $output .= t('To control the format of the generated aliases, '.
+            $output .= t(' To control the format of the generated aliases, '.
               'see the <a href="admin/settings/pathauto">pathauto settings</a>.');
           }
         }
@@ -106,36 +110,36 @@ function pathauto_nodeapi(&$node, $op, $teaser, $page) {
 // Use the title and other node attributes to create an alias
 function node_get_placeholders($node) {
   // Do the simple stuff first
-  $placeholders[t('[title]')] = $node->title;
+  $placeholders[t('[title]')] = pathauto_cleanstring($node->title);
   $placeholders[t('[yyyy]')] = date('Y', $node->created);
   $placeholders[t('[mm]')] = date('m', $node->created);
-  $placeholders[t('[mon]')] = date('M', $node->created);
+  $placeholders[t('[mon]')] = pathauto_cleanstring(date('M', $node->created));
   $placeholders[t('[dd]')] = date('d', $node->created);
-  $placeholders[t('[day]')] = date('D', $node->created);
+  $placeholders[t('[day]')] = pathauto_cleanstring(date('D', $node->created));
   $placeholders[t('[hour]')] = date('H', $node->created);
   $placeholders[t('[min]')] = date('i', $node->created);
   $placeholders[t('[sec]')] = date('s', $node->created);
   $placeholders[t('[week]')] = date('W', $node->created);
   $placeholders[t('[nid]')] = $node->nid;
-  $placeholders[t('[type]')] = node_invoke($node->type,'node_name');
+  $placeholders[t('[type]')] = pathauto_cleanstring(node_invoke($node->type,'node_name'));
   
   // Then the slightly less simple stuff
   $result = db_query("SELECT name FROM {users} WHERE uid='%u'", $node->uid);
   $userinfo = db_fetch_object($result);
-  $placeholders[t('[user]')] = $userinfo->name;
+  $placeholders[t('[user]')] = pathauto_cleanstring($userinfo->name);
   
   // Book title
   if (module_exist('book') and $node->type == 'book') {
     $nodebook = book_load($node);
     $path = book_location($nodebook);
-    $placeholders[t('[book]')] = $path[0]->title;
+    $placeholders[t('[book]')] = pathauto_cleanstring($path[0]->title);
     $bookhierarchy = book_location($nodebook);
     $bookpath = '';
     foreach ($bookhierarchy as $bookelement) {
       if ($bookpath == '') {
         $bookpath = $bookelement->title;
       } else {
-        $bookpath = $bookpath . '/' . $bookelement->title;
+        $bookpath = $bookpath . '/' . pathauto_cleanstring($bookelement->title);
       }
     }
     $placeholders[t('[bookpath]')] = $bookpath;
@@ -148,11 +152,11 @@ function node_get_placeholders($node) {
   if (module_exist('taxonomy')) {
     $firsttermid = $node->taxonomy[0];
     $term = taxonomy_get_term($firsttermid);
-    $placeholders[t('[cat]')] = $term->name;
+    $placeholders[t('[cat]')] = pathauto_cleanstring($term->name);
     
     $vid = $term->vid;
     $vocabulary = taxonomy_get_vocabulary($vid);
-    $placeholders[t('[vocab]')] = $vocabulary->name;
+    $placeholders[t('[vocab]')] = pathauto_cleanstring($vocabulary->name);
     
     $placeholders[t('[catalias]')] = drupal_get_path_alias('taxonomy/term/'.
       $node->taxonomy[0]);
@@ -163,7 +167,7 @@ function node_get_placeholders($node) {
     $catpath = '';
     $parents = taxonomy_get_parents_all($firsttermid);
     foreach ($parents as $parent) {
-      $catpath = $parent->name.'/'.$catpath;
+      $catpath = pathauto_cleanstring($parent->name).'/'.$catpath;
     }
     $placeholders[t('[catpath]')] = $catpath;
   } else {
@@ -172,6 +176,12 @@ function node_get_placeholders($node) {
     $placeholders[t('[vocab]')] = '';
     $placeholders[t('[catalias]')] = '';
   }
+  
+  // Append any additional extensions
+  $extplaceholders = module_invoke_all('pathauto_node', 'values', $node);
+
+  $placeholders = array_merge($placeholders, $extplaceholders);
+  
   return $placeholders;
 }
 

@@ -57,6 +57,11 @@ function pathauto_settings() {
       'any spaces and punctuation characters.'), 
     '', FALSE);
 
+  $items .= form_textfield(t('Maximum alias length'), 'pathauto_max_length',  
+    variable_get('pathauto_max_length', 128), 3, 3,
+    t('Maximum text length of aliases to generate.'), 
+    '', FALSE);
+
   $items .= form_checkbox(t('Create feed aliases'), 'pathauto_applytofeed', 1,
     variable_get('pathauto_applytofeed', FALSE), t('Also generate aliases for RSS feeds.'));
   
@@ -127,10 +132,12 @@ function pathauto_settings() {
 
     // Display the user documentation of placeholders supported by
     // this module
+    $items .= "<dl>\n";
     foreach ($settings->placeholders as $name => $description) {
       $items .= '<dt>'.$name.'</dt>';
       $items .= '<dd>'.$description.'</dd>';
     }
+    $items .= "</dl>\n";
   
     // If the module supports bulk updates, offer the update action here
     if ($settings->bulkname) {
@@ -176,12 +183,58 @@ function _pathauto_alias_exists($alias, $src) {
 
 // Clean up a string value provided by a module, resulting in a
 // string containing only alphanumerics and separators
-function _pathauto_cleanstring($string, $separator) {
+function pathauto_cleanstring($string) {
+  static $translations = array(
+    'À'=>'A','Á'=>'A','Â'=>'A','Ã'=>'A','Ä'=>'A','Å'=>'A','Ā'=>'A','Ą'=>'A','Ă'=>'A',
+    'à'=>'a','á'=>'a','â'=>'a','ã'=>'a','ä'=>'a','å'=>'a','ā'=>'a','ą'=>'a','ă'=>'a',
+    'Æ'=>'Ae',
+    'æ'=>'ae',
+    'Ç'=>'C','Ć'=>'C','Č'=>'C','Ĉ'=>'C','Ċ'=>'C',
+    'ç'=>'c','ć'=>'c','č'=>'c','ĉ'=>'c','ċ'=>'c',
+    'Ď'=>'D','Đ'=>'D','Ð'=>'D',
+    'ď'=>'d','đ'=>'d','ð'=>'d',
+    'È'=>'E','É'=>'E','Ê'=>'E','Ë'=>'E','Ē'=>'E','Ę'=>'E','Ě'=>'E','Ĕ'=>'E','Ė'=>'E',
+    'è'=>'e','é'=>'e','ê'=>'e','ë'=>'e','ē'=>'e','ę'=>'e','ě'=>'e','ĕ'=>'e','ė'=>'e',
+    'ƒ'=>'f',
+    'Ĝ'=>'G','Ğ'=>'G','Ġ'=>'G','Ģ'=>'G',
+    'ĝ'=>'g','ğ'=>'g','ġ'=>'g','ģ'=>'g',
+    'Ĥ'=>'H','Ħ'=>'H',
+    'ĥ'=>'h','ħ'=>'h',
+    'Ì'=>'I','Í'=>'I','Î'=>'I','Ï'=>'I','Ī'=>'I','Ĩ'=>'I','Ĭ'=>'I','Į'=>'I','İ'=>'I',
+    'ì'=>'i','í'=>'i','î'=>'i','ï'=>'i','ī'=>'i','ĩ'=>'i','ĭ'=>'i','į'=>'i','ı'=>'i',
+    'Ĳ'=>'Ij',
+    'ĳ'=>'ij',
+    'Ĵ'=>'J',
+    'ĵ'=>'j',
+    'Ķ'=>'K',
+    'ķ'=>'k','ĸ'=>'k',
+    'Ł'=>'L','Ľ'=>'L','Ĺ'=>'L','Ļ'=>'L','Ŀ'=>'L',
+    'ł'=>'l','ľ'=>'l','ĺ'=>'l','ļ'=>'l','ŀ'=>'l',
+    'Ñ'=>'N','Ń'=>'N','Ň'=>'N','Ņ'=>'N','Ŋ'=>'N',
+    'ñ'=>'n','ń'=>'n','ň'=>'n','ņ'=>'n','ŉ'=>'n','ŋ'=>'n',
+    'Ò'=>'O','Ó'=>'O','Ô'=>'O','Õ'=>'O','Ö'=>'O','Ø'=>'O','Ō'=>'O','Ő'=>'O','Ŏ'=>'O',
+    'ò'=>'o','ó'=>'o','ô'=>'o','õ'=>'o','ö'=>'o','ø'=>'o','ō'=>'o','ő'=>'o','ŏ'=>'o',
+    'Œ'=>'Oe',
+    'œ'=>'oe',
+    'Ŕ'=>'R','Ř'=>'R','Ŗ'=>'R',
+    'ŕ'=>'r','ř'=>'r','ŗ'=>'r',
+    'Ś'=>'S','Š'=>'S','Ş'=>'S','Ŝ'=>'S','Ș'=>'S',
+    'Ť'=>'T','Ţ'=>'T','Ŧ'=>'T','Ț'=>'T','Þ'=>'T',
+    'þ'=>'t',
+    'Ù'=>'U','Ú'=>'U','Û'=>'U','Ü'=>'U','Ū'=>'U','Ů'=>'U','Ű'=>'U','Ŭ'=>'U','Ũ'=>'U','Ų'=>'U',
+    'ú'=>'u','û'=>'u','ü'=>'u','ū'=>'u','ů'=>'u','ű'=>'u','ŭ'=>'u','ũ'=>'u','ų'=>'u',
+    'Ŵ'=>'W',
+    'ŵ'=>'w',
+    'Ý'=>'Y','Ŷ'=>'Y','Ÿ'=>'Y','Y'=>'Y',
+    'ý'=>'y','ÿ'=>'y','ŷ'=>'y',
+    'Ź'=>'Z','Ž'=>'Z','Ż'=>'Z',
+    'ž'=>'z','ż'=>'z','ź'=>'z',
+    'ß'=>'ss','ſ'=>'ss');
+
   // Drop apostrophes
   $output = str_replace("'", "", $string);
-
   // Convert accented characters to their ASCII counterparts...
-  $output = strtr(utf8_decode($output),
+/*  $output = strtr(utf8_decode($output),
        "\xA1\xAA\xBA\xBF".
        "\xC0\xC1\xC2\xC3\xC5\xC7\xC8\xC9\xCA\xCB\xCC\xCD\xCE\xCF".
        "\xD0\xD1\xD2\xD3\xD4\xD5\xD8\xD9\xDA\xDB\xDD".
@@ -191,10 +244,12 @@ function _pathauto_cleanstring($string, $separator) {
   // ...and ligatures too
   $output = utf8_encode(strtr($output, array("\xC4"=>"Ae", "\xC6"=>"AE", "\xD6"=>"Oe", 
     "\xDC"=>"Ue", "\xDE"=>"TH", "\xDF"=>"ss", "\xE4"=>"ae", "\xE6"=>"ae", 
-    "\xF6"=>"oe", "\xFC"=>"ue", "\xFE"=>"th")));
+    "\xF6"=>"oe", "\xFC"=>"ue", "\xFE"=>"th")));*/
+  $output = strtr($output, $translations);
 
-  // Preserve alphanumerics and slashes, everything else becomes a separator
-  $pattern = '/[^a-zA-Z0-9\/]+/ ';
+  // Preserve alphanumerics, everything else becomes a separator
+  $pattern = '/[^a-zA-Z0-9]+/ ';
+  $separator = variable_get('pathauto_separator', '_');
   $output = preg_replace($pattern, $separator, $output);
 
   // Trim any leading or trailing separators (note the need to
@@ -277,13 +332,6 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $type=NULL) {
     }
   }
   
-  $separator = variable_get('pathauto_separator', '_');
-
-  // Clean all replacement strings
-  foreach ($placeholders as $key => $value) {
-    $placeholders[$key] = _pathauto_cleanstring($value, $separator);
-  }
-
   // Replace the placeholders with the values provided by the module,
   // and lower-case the result
   $alias = str_replace(array_keys($placeholders), $placeholders, $pattern);
@@ -294,10 +342,16 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $type=NULL) {
   // Trim any leading or trailing slashes
   $alias = preg_replace("/^\/|\/+$/", "", $alias);
 
+  $maxlength = variable_get('pathauto_max_length', 128);
+  $alias = substr($alias, 0, $maxlength);
+  
   // If the alias already exists, generate a new variant
+  $separator = variable_get('pathauto_separator', '_');
   if (_pathauto_alias_exists($alias, $src)) {
     for ($i=0; _pathauto_alias_exists($alias.$separator.$i, $src); $i++) {
     }
+    // Make room for the sequence number
+    $alias = substr($alias, 0, $maxlength-1-($i/10+1));
     $alias = $alias.$separator.$i;
   }
   

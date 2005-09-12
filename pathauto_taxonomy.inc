@@ -18,6 +18,10 @@ function taxonomy_pathauto($op) {
         t('[catpath]') => t('As [cat], but including its supercategories.'),
         t('[tid]') => t('The id number of the category.')
       );
+      // Look for extensions from other modules
+      $placeholders = module_invoke_all('pathauto_taxonomy', 'placeholders');
+      $settings['placeholders'] = array_merge($settings['placeholders'], $placeholders);
+
       $settings['supportsfeeds'] = '0/feed';
       $settings['bulkname'] = t('Bulk update category paths');
       $settings['bulkdescr'] = 
@@ -56,13 +60,13 @@ function pathauto_taxonomy($op, $type, $object) {
 
             $vid = $category->vid;
             $vocabulary = taxonomy_get_vocabulary($vid);
-            $placeholders[t('[vocab]')] = $vocabulary->name;
+            $placeholders[t('[vocab]')] = pathauto_cleanstring($vocabulary->name);
 
-            $placeholders[t('[cat]')] = $category->name;
+            $placeholders[t('[cat]')] = pathauto_cleanstring($category->name);
             $placeholders[t('[tid]')] = $category->tid;
 
             if ($category->parent) {
-              $catpath = $category->name;
+              $catpath = pathauto_cleanstring($category->name);
               $parents = taxonomy_get_parents_all($category->parent);
             } else {
               $catpath = '';
@@ -70,15 +74,21 @@ function pathauto_taxonomy($op, $type, $object) {
             }
             
             foreach ($parents as $parent) {
-              $catpath = $parent->name.'/'.$catpath;
+              $catpath = pathauto_cleanstring($parent->name).'/'.$catpath;
             }
             $placeholders[t('[catpath]')] = $catpath;
-
-            $forumvid = variable_get('forum_nav_vocabulary', '');
-            if ($forumvid == $vid) {
-              $src = 'forum/'.$category->tid;
-              $forumalias = pathauto_create_alias('taxonomy', $op, $placeholders, 
-                $src, $forumvid);
+            
+            // Append any additional extensions
+            $extplaceholders = module_invoke_all('pathauto_taxonomy', 'values', $category);
+            $placeholders = array_merge($placeholders, $extplaceholders);
+            
+            if (module_exist('forum')) {
+              $forumvid = variable_get('forum_nav_vocabulary', '');
+              if ($forumvid == $vid) {
+                $src = 'forum/'.$category->tid;
+                $forumalias = pathauto_create_alias('taxonomy', $op, $placeholders, 
+                  $src, $forumvid);
+              }
             }
             $src = 'taxonomy/term/'.$category->tid;
             $alias = pathauto_create_alias('taxonomy', $op, $placeholders, 

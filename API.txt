@@ -1,11 +1,11 @@
 Implementing automatic aliases for a module
 
-There are three pieces a module must provide to support automatic 
-aliasing (see pathauto_node.inc, pathauto_taxonomy.inc, and
-pathauto_user.inc for examples). Ideally this code will be integrated
-into a module, but a developer may extend a module they don't maintain
-by implementing these functions in a file of the form
-pathauto_<module>.inc in the pathauto directory.
+There are three pieces a module which implements its own content type
+must provide to support automatic aliasing (see pathauto_node.inc, 
+pathauto_taxonomy.inc, and pathauto_user.inc for examples). Ideally 
+this code will be integrated into a module, but a developer may extend 
+a module they don't maintain by implementing these functions in a file 
+of the form pathauto_<module>.inc in the pathauto directory.
 
 1 - Settings hook
 
@@ -50,8 +50,14 @@ $module - The name of your module (e.g., 'node')
 $op - Operation being performed on the item ('insert', 'update', or
   'bulkupdate')
 $placeholders - An array whose keys consist of the translated placeholders
-  which appear in patterns (e.g., t('[title]')) and values are the 
-  actual values to be substituted into the pattern (e.g., $node->title)
+  which appear in patterns and values are the "clean" values to be 
+  substituted into the pattern. Call pathauto_cleanstring() on any
+  values which you do not know to be purely alphanumeric, to substitute
+  any non-alphanumerics with the user's designated separator. Note that
+  if the pattern has multiple slash-separated components (e.g., [catpath]),
+  pathauto_cleanstring() should be called for each component, not the
+  complete string.
+  Example: $placeholders[t('[title]')] = pathauto_cleanstring($node->title);
 $src - The "real" URI of the content to be aliased (e.g., "node/$node->nid")
 $type - For modules which provided patternitems in hook_autopath(),
   the relevant identifier for the specific item to be aliased (e.g.,
@@ -71,3 +77,25 @@ The function should iterate over the content items controlled by the
 module, calling pathauto_create_alias() for each one. It is
 recommended that the function report on its success (e.g., with a 
 count of created aliases) via drupal_set_message().
+
+
+
+Modules that extend node and/or taxonomy
+
+Many contributed Drupal modules extend the core node and taxonomy
+modules. To extend pathauto patterns to support their extensions, they
+may implement the pathauto_node and pathauto_taxonomy hooks.
+
+To do so, implement the function <modulename>_pathauto_node (or _taxonomy),
+accepting the arguments $op and $node (or $term). Two operations are
+supported:
+
+$op = 'placeholders' - return an array keyed on placeholder strings
+(e.g., t('[eventyyyy]')) valued with descriptions (e.g. t('The year the 
+event starts.')).
+$op = 'values' - return an array keyed on placeholder strings, valued
+with the "clean" actual value for the passed node or category (e.g., 
+pathauto_cleanstring(date('M', $eventstart)));
+
+See contrib/pathauto_node_event.inc for an example of extending node
+patterns.

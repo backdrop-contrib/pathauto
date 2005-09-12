@@ -84,7 +84,7 @@ function pathauto_user($op, &$edit, &$user, $category=FALSE) {
       $user = array2object($user);
       if ($user->name) {
         $placeholders = array();
-        $placeholders[t('[user]')] = $user->name;
+        $placeholders[t('[user]')] = pathauto_cleanstring($user->name);
         $placeholders[t('[uid]')] = $user->uid;
         $src = 'user/'.$user->uid;
         $alias = pathauto_create_alias('user', $op, $placeholders, $src);
@@ -125,7 +125,7 @@ function user_pathauto_bulkupdate() {
   $count = 0;
   $placeholders = array();
   while ($user) {
-    $placeholders[t('[user]')] = $user->name;
+    $placeholders[t('[user]')] = pathauto_cleanstring($user->name);
     $placeholders[t('[uid]')] = $user->uid;
     $src = 'user/'.$user->uid;
     if ($alias = pathauto_create_alias('user', 'bulkupdate', $placeholders, $src)) {
@@ -150,7 +150,7 @@ function blog_pathauto_bulkupdate() {
   $count = 0;
   $placeholders = array();
   while ($user) {
-    $placeholders[t('[user]')] = $user->name;
+    $placeholders[t('[user]')] = pathauto_cleanstring($user->name);
     $placeholders[t('[uid]')] = $user->uid;
     $src = 'blog/'.$user->uid;
     if ($alias = pathauto_create_alias('blog', 'bulkupdate', $placeholders, $src)) {

@@ -1,4 +1,13 @@
 ***DRUPAL-4-6 only***
+2005-9-12
+  Support for extensions from modules which extend node/taxonomy.
+  Support stripping slashes in individual components.
+  Support for incorporating menu paths into node patterns.
+  Added a maximum alias length setting.
+  Some improvement in transliteration of unicode characters.
+  Corrected HTML for placeholder documentation.
+  Corrected description in node form.
+  
 2005-8-20
   Fixed bug in paging of index pages.
   
