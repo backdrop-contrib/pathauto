@@ -1,4 +1,8 @@
 ***DRUPAL-4-6 only***
+2005-9-18
+  Added a maximum alias component length setting.
+  Make enabling of feed aliases specific to the content type.
+
 2005-9-12
   Support for extensions from modules which extend node/taxonomy.
   Support stripping slashes in individual components.

@@ -43,4 +43,4 @@ Matt England added the tracker support.
 
 Other suggestions and patches contributed by the Drupal community.
 
-Current maintainer: Mike Ryan (drupal@virtuoso-performance.com)
+Current maintainer: Mike Ryan (drupal at virtuoso hyphen performance.com)
