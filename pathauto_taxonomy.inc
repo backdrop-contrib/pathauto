@@ -126,12 +126,12 @@ function taxonomy_pathauto_bulkupdate() {
   while ($category) {
     $vid = $category->vid;
     $vocabulary = taxonomy_get_vocabulary($vid);
-    $placeholders[t('[vocab]')] = $vocabulary->name;
-    $placeholders[t('[cat]')] = $category->name;
+    $placeholders[t('[vocab]')] = pathauto_cleanstring($vocabulary->name);
+    $placeholders[t('[cat]')] = pathauto_cleanstring($category->name);
     $placeholders[t('[tid]')] = $category->tid;
 
     if ($category->parent) {
-      $catpath = $category->name;
+      $catpath = pathauto_cleanstring($category->name);
       $parents = taxonomy_get_parents_all($category->parent);
     } else {
       $catpath = '';
@@ -139,7 +139,7 @@ function taxonomy_pathauto_bulkupdate() {
     }
     
     foreach ($parents as $parent) {
-      $catpath = $parent->name.'/'.$catpath;
+      $catpath = pathauto_cleanstring($parent->name).'/'.$catpath;
     }
     $placeholders['[catpath]'] = $catpath;
 
