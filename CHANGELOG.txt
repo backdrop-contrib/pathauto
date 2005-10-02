@@ -1,4 +1,7 @@
 ***DRUPAL-4-6 only***
+2005-10-2
+  Fix bug with book paths not translating spaces to separators.
+  
 2005-9-26
   Fix bug with taxonomy bulk update, introduced with "support stripping
   slashes in individual components".

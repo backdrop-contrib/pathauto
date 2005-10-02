@@ -137,7 +137,7 @@ function node_get_placeholders($node) {
     $bookpath = '';
     foreach ($bookhierarchy as $bookelement) {
       if ($bookpath == '') {
-        $bookpath = $bookelement->title;
+        $bookpath = pathauto_cleanstring($bookelement->title);
       } else {
         $bookpath = $bookpath . '/' . pathauto_cleanstring($bookelement->title);
       }
