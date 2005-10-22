@@ -150,6 +150,10 @@ function node_get_placeholders($node) {
 
   // And now taxonomy, which is a bit more work
   if (module_exist('taxonomy')) {
+    // When editing a node, the taxonomy array might have a zero
+    // term ID. So, make sure we're getting the real terms from the
+    // database.
+    $node->taxonomy = array_keys(taxonomy_node_get_terms($node->nid));
     $firsttermid = $node->taxonomy[0];
     $term = taxonomy_get_term($firsttermid);
     $placeholders[t('[cat]')] = pathauto_cleanstring($term->name);

@@ -1,4 +1,7 @@
 ***DRUPAL-4-6 only***
+2005-10-22
+  Fixed bug where taxonomy info is sometimes ignored.
+
 2005-10-2
   Fix bug with book paths not translating spaces to separators.
   
