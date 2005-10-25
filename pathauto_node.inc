@@ -150,11 +150,12 @@ function node_get_placeholders($node) {
 
   // And now taxonomy, which is a bit more work
   if (module_exist('taxonomy')) {
-    // When editing a node, the taxonomy array might have a zero
-    // term ID. Ignore it...
-    $firsttermid = $node->taxonomy[0];
-    if (!$firsttermid) {
-      $firsttermid = $node->taxonomy[1];
+    // When editing a node, the taxonomy array might have one or more zero
+    // term IDs. Ignore them...
+    foreach ($node->taxonomy as $firsttermid) {
+      if ($firsttermid) {
+        break;
+      }
     }
     $term = taxonomy_get_term($firsttermid);
     $placeholders[t('[cat]')] = pathauto_cleanstring($term->name);
