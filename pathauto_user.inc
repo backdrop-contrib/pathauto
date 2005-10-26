@@ -175,7 +175,7 @@ function tracker_pathauto_bulkupdate() {
   $count = 0;
   $placeholders = array();
   while ($user) {
-    $placeholders[t('[user]')] = $user->name;
+    $placeholders[t('[user]')] = pathauto_cleanstring($user->name);
     $placeholders[t('[uid]')] = $user->uid;
     $src = 'user/'.$user->uid.'/track';
     if ($alias = pathauto_create_alias('tracker', 'bulkupdate', $placeholders, $src)) {

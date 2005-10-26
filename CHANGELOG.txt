@@ -1,4 +1,8 @@
 ***DRUPAL-4-6 only***
+2005-10-26
+  Fix bug with tracker bulk update, introduced with "support stripping
+  slashes in individual components".
+ 
 2005-10-22
   Fixed bug where taxonomy info is sometimes ignored.
 
