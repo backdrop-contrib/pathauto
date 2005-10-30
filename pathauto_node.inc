@@ -17,7 +17,7 @@ function node_pathauto($op) {
       $settings['bulkdescr'] = 
         t('Generate aliases for all existing nodes which do not already have aliases.');
       $settings['placeholders'] = array(
-        t('[title]') => t('The title of the node, with spaces and punctuation.'),
+        t('[title]') => t('The title of the node, with spaces and punctuation replaced by the separator.'),
         t('[nid]') => t('The id number of the node.'),
         t('[user]') => t('The name of the user who created the node.'),
         t('[type]') => t('The node type (e.g., "page", "story", etc.).'),
@@ -59,9 +59,8 @@ function node_pathauto($op) {
       $placeholders = module_invoke_all('pathauto_node', 'placeholders');
       $settings['placeholders'] = array_merge($settings['placeholders'], $placeholders);
 
-      $nodetypes = node_list();
-      foreach ($nodetypes as $ntype) {
-        $displaytype = node_invoke($ntype,'node_name');
+      $nodetypes = node_get_types();
+      foreach ($nodetypes as $ntype => $displaytype) {
         $fieldlabel = t('Pattern for all '.$displaytype.' paths');
         $settings['patternitems'][$ntype] = $fieldlabel;
       }
@@ -83,26 +82,34 @@ function pathauto_nodeapi(&$node, $op, $teaser, $page) {
         $src = "node/$node->nid";
         $alias = pathauto_create_alias('node', $op, $placeholders, $src, $node->type);
         break;
-      case 'form pre':
-        /*
-        ** A helpful hint to the users with access to alias creation (pathauto
-        ** will be invisible to other users). Because hook_nodeapi() is called
-        ** in alphabetical order of module name, this will likely appear
-        ** immediately after the path alias field.
-        */
-        $output = '';
-        if (user_access('create url aliases')) {
-          $output .= t('An alias will be automatically generated from the title '.
-            'and other node attributes, in addition to any alias manually '.
-            'provided above.');
-          if (user_access('administer pathauto')) {
-            $output .= t(' To control the format of the generated aliases, '.
-              'see the <a href="admin/settings/pathauto">pathauto settings</a>.');
-          }
-        }
-        return $output;
       default:
         break;
+    }
+  }
+}
+
+/**
+ * Implementation of hook_form_alter().
+ */
+function pathauto_form_alter(&$form) {
+  /*
+  ** A helpful hint to the users with access to alias creation (pathauto
+  ** will be invisible to other users). Inserted into the path module's
+  ** fieldset in the node form
+  */
+  if ($form['#attributes']['id'] == 'node-form') {
+    if (user_access('create url aliases')) {
+      $output .= t('An alias will be automatically generated from the title '.
+        'and other node attributes, in addition to any alias manually '.
+        'provided above.');
+      if (user_access('administer pathauto')) {
+        $output .= t(' To control the format of the generated aliases, '.
+          'see the <a href="admin/settings/pathauto">pathauto settings</a>.');
+      }
+    }
+    if ($output) {
+      $form['path']['pathauto'] = array('#type' => 'item', 
+        '#description' => $output);
     }
   }
 }
@@ -121,7 +128,7 @@ function node_get_placeholders($node) {
   $placeholders[t('[sec]')] = date('s', $node->created);
   $placeholders[t('[week]')] = date('W', $node->created);
   $placeholders[t('[nid]')] = $node->nid;
-  $placeholders[t('[type]')] = pathauto_cleanstring(node_invoke($node->type,'node_name'));
+  $placeholders[t('[type]')] = pathauto_cleanstring(node_get_name($node));
   
   // Then the slightly less simple stuff
   $result = db_query("SELECT name FROM {users} WHERE uid='%u'", $node->uid);
@@ -152,9 +159,11 @@ function node_get_placeholders($node) {
   if (module_exist('taxonomy')) {
     // When editing a node, the taxonomy array might have one or more zero
     // term IDs. Ignore them...
-    foreach ($node->taxonomy as $firsttermid) {
-      if ($firsttermid) {
-        break;
+    if ($node->taxonomy) {
+      foreach ($node->taxonomy as $firsttermid) {
+        if ($firsttermid) {
+          break;
+        }
       }
     }
     $term = taxonomy_get_term($firsttermid);
@@ -261,13 +270,13 @@ function node_pathauto_page() {
 
   $output = '';
   while ($node = db_fetch_object($result)) {
-    $output .= node_view(node_load(array('nid' => $node->nid)), 1);
+    $output .= node_view(node_load($node->nid), 1);
   }
   
   $output .= theme('pager', NULL, variable_get('default_nodes_main', 10));
 
   drupal_set_title(t($pagetitle));
-  print theme('page', $output);
+  return $output;
 }
 
 ?>
