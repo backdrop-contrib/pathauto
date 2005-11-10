@@ -45,7 +45,7 @@ function taxonomy_pathauto($op) {
 /**
  * Implementation of hook_taxonomy().
  */
-function pathauto_taxonomy($op, $type, $object) {
+function pathauto_taxonomy($op, $type, $object = NULL) {
   switch ($type) {
     case 'term':
       switch ($op) {

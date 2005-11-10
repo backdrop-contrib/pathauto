@@ -1,7 +1,11 @@
+***DRUPAL-4-7 only***
+2005-10-30
+  Initial port for Drupal 4.7:
+    Replaced node_list() with node_get_types().
+    Removed theme('page'...) call.
+    Implemented new forms API.
+  
 ***DRUPAL-4-6 only***
-2005-10-03
-  Last fix (?!) to the 10/26 fix
-
 2005-10-26
   Fix bug with tracker bulk update, introduced with "support stripping
   slashes in individual components".
