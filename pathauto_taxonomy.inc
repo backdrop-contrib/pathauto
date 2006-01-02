@@ -36,7 +36,7 @@ function taxonomy_pathauto($op) {
           $settings['patternitems'][$vocab->vid] = $fieldlabel;
         }
       }
-      return array2object($settings);
+      return (object) $settings;
     default:
       break;
   }
@@ -54,7 +54,7 @@ function pathauto_taxonomy($op, $type, $object = NULL) {
           /*
           ** Use the category info to automatically create an alias
           */
-          $category = array2object($object);
+          $category = (object) $object;
           if ($category->name) {
             $placeholders = array();
 
@@ -100,7 +100,7 @@ function pathauto_taxonomy($op, $type, $object = NULL) {
       	  ** If the category is deleted, remove the path aliases
       	  **
           */
-          $category = array2object($object);
+          $category = (object) $object;
           path_set_alias('taxonomy/term/'.$category->tid);
           path_set_alias('forum/'.$category->tid);
           break;

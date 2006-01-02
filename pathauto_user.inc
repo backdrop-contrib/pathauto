@@ -17,7 +17,7 @@ function user_pathauto($op) {
       );
       $settings['bulkname'] = t('Bulk update user paths');
       $settings['bulkdescr'] = t('Generate aliases for all existing user account pages which do not already have aliases.');
-      return array2object($settings);
+      return (object) $settings;
     default:
       break;
   }
@@ -41,7 +41,7 @@ function blog_pathauto($op) {
       $settings['supportsfeeds'] = 'feed';
       $settings['bulkname'] = t('Bulk update blog paths');
       $settings['bulkdescr'] = t('Generate aliases for all existing blog pages which do not already have aliases.');
-      return array2object($settings);
+      return (object) $settings;
     default:
       break;
   }
@@ -65,7 +65,7 @@ function tracker_pathauto($op) {
       $settings['supportsfeeds'] = 'feed';
       $settings['bulkname'] = t('Bulk update user-tracker paths');
       $settings['bulkdescr'] = t('Generate aliases for all existing user-tracker pages which do not already have aliases.');
-      return array2object($settings);
+      return (object) $settings;
     default:
       break;
   }
@@ -81,7 +81,7 @@ function pathauto_user($op, &$edit, &$user, $category=FALSE) {
       /*
       ** Use the username to automatically create an alias
       */
-      $user = array2object($user);
+      $user = (object) $user;
       if ($user->name) {
         $placeholders = array();
         $placeholders[t('[user]')] = pathauto_cleanstring($user->name);
@@ -103,7 +103,7 @@ function pathauto_user($op, &$edit, &$user, $category=FALSE) {
       ** If the user is deleted, remove the path aliases
       **
       */
-      $user = array2object($user);
+      $user = (object) $user;
       path_set_alias('user/'.$user->uid);
       if (module_exist('blog')) {
         path_set_alias('blog/'.$user->uid);

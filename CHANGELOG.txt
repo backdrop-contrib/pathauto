@@ -1,4 +1,10 @@
 ***DRUPAL-4-7 only***
+2006-01-02
+  More changes to support 4.7:
+    Removed array2object() calls, replaced with (object) casts.
+    Support for Drupal string API.
+    Remove %u for uids.
+
 2005-10-30
   Initial port for Drupal 4.7:
     Replaced node_list() with node_get_types().

@@ -287,7 +287,7 @@ function pathauto_cleanstring($string) {
   
   // Enforce the maximum component length
   $maxlength = min(variable_get('pathauto_max_component_length', 128), 128);
-  $output = substr($output, 0, $maxlength);
+  $output = drupal_substr($output, 0, $maxlength);
   
   return $output;
 }
@@ -323,10 +323,10 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $type=NULL) {
   // Retrieve and apply the pattern for this content type
   $pattern = '';
   if ($type) {
-    $pattern = strtolower(variable_get('pathauto_'.$module.'_'.$type.'_pattern', ''));
+    $pattern = drupal_strtolower(variable_get('pathauto_'.$module.'_'.$type.'_pattern', ''));
   } 
   if (!trim($pattern)) {
-    $pattern = strtolower(variable_get('pathauto_'.$module.'_pattern', ''));
+    $pattern = drupal_strtolower(variable_get('pathauto_'.$module.'_pattern', ''));
   }
   
   // No pattern? Do nothing (otherwise we may blow away existing aliases...)
@@ -362,7 +362,7 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $type=NULL) {
   // Replace the placeholders with the values provided by the module,
   // and lower-case the result
   $alias = str_replace(array_keys($placeholders), $placeholders, $pattern);
-  $alias = strtolower($alias);
+  $alias = drupal_strtolower($alias);
   
   // Two or more slashes should be collapsed into one
   $alias = preg_replace("/\/+/", "/", $alias);
@@ -370,7 +370,7 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $type=NULL) {
   $alias = preg_replace("/^\/|\/+$/", "", $alias);
 
   $maxlength = min(variable_get('pathauto_max_length', 128), 128);
-  $alias = substr($alias, 0, $maxlength);
+  $alias = drupal_substr($alias, 0, $maxlength);
   
   // If the alias already exists, generate a new variant
   $separator = variable_get('pathauto_separator', '_');
@@ -378,7 +378,7 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $type=NULL) {
     for ($i=0; _pathauto_alias_exists($alias.$separator.$i, $src); $i++) {
     }
     // Make room for the sequence number
-    $alias = substr($alias, 0, $maxlength-1-($i/10+1));
+    $alias = drupal_substr($alias, 0, $maxlength-1-($i/10+1));
     $alias = $alias.$separator.$i;
   }
   
@@ -453,14 +453,16 @@ function pathauto_create_index_alias($alias, $module) {
 function pathauto_menu($may_cache) {
   $items = array();
   $modulelist = variable_get('pathauto_modulelist', array());
-  foreach ($modulelist as $module) {
-    $indexfunc = $module.'_pathauto_page';
-    if (function_exists($indexfunc)) {
-      $items[] = array('path' => 'pathauto/'.$module,
-        'title' => t('Pathauto'),
-        'callback' => $indexfunc, 
-        'access' => 1,
-        'type' => MENU_HIDE);
+  if (is_array($modulelist)) {
+    foreach ($modulelist as $module) {
+      $indexfunc = $module.'_pathauto_page';
+      if (function_exists($indexfunc)) {
+        $items[] = array('path' => 'pathauto/'.$module,
+          'title' => t('Pathauto'),
+          'callback' => $indexfunc, 
+          'access' => 1,
+          'type' => MENU_HIDE);
+      }
     }
   }
   return $items;
@@ -507,7 +509,7 @@ function _pathauto_update() {
       $result = db_query($query);
       $var = db_fetch_object($result);
       while ($var) {
-        $type = substr($var->name, 0, strlen($var->name)-strlen('_pathauto_pattern'));
+        $type = drupal_substr($var->name, 0, drupal_strlen($var->name)-drupal_strlen('_pathauto_pattern'));
         $old_pattern = variable_get($var->name, '');
         $new_name = 'pathauto_node_'.$type.'_pattern';
         variable_set($new_name, $old_pattern);
@@ -519,7 +521,7 @@ function _pathauto_update() {
       $result = db_query($query);
       $var = db_fetch_object($result);
       while ($var) {
-        $type = substr($var->name, 0, strlen($var->name)-strlen('_pathauto_cat_pattern'));
+        $type = drupal_substr($var->name, 0, drupal_strlen($var->name)-drupal_strlen('_pathauto_cat_pattern'));
         $old_pattern = variable_get($var->name, '');
         $new_name = 'pathauto_taxonomy_'.$type.'_pattern';
         variable_set($new_name, $old_pattern);
@@ -534,7 +536,7 @@ function _pathauto_update() {
       $result = db_query($query);
       $var = db_fetch_object($result);
       while ($var) {
-        $type = substr($var->name, 9, strlen($var->name)-23);
+        $type = drupal_substr($var->name, 9, drupal_strlen($var->name)-23);
         $old_value = variable_get($var->name, FALSE);
         if ($old_value) {
           switch ($type) {
@@ -556,7 +558,7 @@ function _pathauto_update() {
       $result = db_query($query);
       $aliasrow = db_fetch_object($result);
       while ($aliasrow) {
-        $src = substr($aliasrow->src, 0, -2);
+        $src = drupal_substr($aliasrow->src, 0, -2);
         _pathauto_set_alias($src, $aliasrow->dst, $aliasrow->pid, FALSE);
         $aliasrow = db_fetch_object($result);
       }
@@ -569,7 +571,7 @@ function _pathauto_update() {
       $result = db_query($query);
       $var = db_fetch_object($result);
       while ($var) {
-        $vocabname = substr($var->name, 18, strlen($var->name)-26);
+        $vocabname = drupal_substr($var->name, 18, drupal_strlen($var->name)-26);
         $query = "SELECT vid FROM {vocabulary} WHERE name='$vocabname'";
         $vid = db_result(db_query($query));
         variable_set("pathauto_taxonomy_$vid_pattern", $var->value);

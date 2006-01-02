@@ -64,7 +64,7 @@ function node_pathauto($op) {
         $fieldlabel = t('Pattern for all '.$displaytype.' paths');
         $settings['patternitems'][$ntype] = $fieldlabel;
       }
-      return array2object($settings);
+      return (object) $settings;
     default:
       break;
   }
@@ -131,7 +131,7 @@ function node_get_placeholders($node) {
   $placeholders[t('[type]')] = pathauto_cleanstring(node_get_name($node));
   
   // Then the slightly less simple stuff
-  $result = db_query("SELECT name FROM {users} WHERE uid='%u'", $node->uid);
+  $result = db_query("SELECT name FROM {users} WHERE uid='%d'", $node->uid);
   $userinfo = db_fetch_object($result);
   $placeholders[t('[user]')] = pathauto_cleanstring($userinfo->name);
   
@@ -255,16 +255,17 @@ function node_pathauto_page() {
   }
   
   if ($lastalpha) {
-    $pagetitle = ucfirst($lastalpha);
+    $pagetitle = drupal_ucfirst($lastalpha);
   } else {
     $pagetitle = 'Listing';
   }
 
   $query = 'SELECT n.nid FROM {url_alias} a '.
     "INNER JOIN {node} n ON a.src = CONCAT('node/', n.nid)  ".
-    "WHERE n.status = 1 AND a.dst LIKE '$prefix%' ".
+    "WHERE n.status = 1 AND a.dst LIKE '%s%%' ".
     'ORDER BY n.sticky DESC, n.created DESC';
-  $result = pager_query(db_rewrite_sql($query), variable_get('default_nodes_main', 10));
+  $result = pager_query(db_rewrite_sql($query, $prefix), 
+    variable_get('default_nodes_main', 10));
 
   $output = '';
   while ($node = db_fetch_object($result)) {
