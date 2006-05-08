@@ -461,7 +461,7 @@ function pathauto_menu($may_cache) {
           'title' => t('Pathauto'),
           'callback' => $indexfunc, 
           'access' => 1,
-          'type' => MENU_HIDE);
+          'type' => MENU_CALLBACK);
       }
     }
   }
