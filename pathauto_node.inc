@@ -200,8 +200,7 @@ function node_get_placeholders($node) {
 
 // Generate aliases for all nodes without aliases
 function node_pathauto_bulkupdate() {
-  $query = 'SELECT nid,type,title,uid,created,src,dst FROM {node} '.
-    "LEFT JOIN {url_alias} ON CONCAT('node/', nid) = src";
+  $query = 'SELECT nid, type, title, uid, created, src, dst, vid FROM {node} '. "LEFT JOIN {url_alias} ON CONCAT('node/', nid) = src";
   $result = db_query($query);
   $node = db_fetch_object($result);
 
