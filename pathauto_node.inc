@@ -97,7 +97,7 @@ function pathauto_form_alter($formid, &$form) {
   ** will be invisible to other users). Inserted into the path module's
   ** fieldset in the node form
   */
-  if ($form['#attributes']['id'] == 'node-form') {
+  if (isset($form['#attributes']['id']) && ($form['#attributes']['id'] == 'node-form')) {
     if (user_access('create url aliases')) {
       $output .= t('An alias will be automatically generated from the title '.
         'and other node attributes, in addition to any alias manually '.
