@@ -604,5 +604,3 @@ function _pathauto_update() {
       ' to '. $current_version['build']);
   } 
 } // end function _pathauto_update 
-
-?>
