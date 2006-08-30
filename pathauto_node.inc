@@ -1,5 +1,5 @@
 <?php
-// $id: $
+// $id$
 
 /*
  * Implementation of hook_pathauto()
@@ -15,7 +15,7 @@ function node_pathauto($op) {
       $settings['patterndefault'] = t('[title]');
       $settings['supportsfeeds'] = 'feed';
       $settings['bulkname'] = t('Bulk update node paths');
-      $settings['bulkdescr'] = 
+      $settings['bulkdescr'] =
         t('Generate aliases for all existing nodes which do not already have aliases.');
       $settings['placeholders'] = array(
         t('[title]') => t('The title of the node, with spaces and punctuation replaced by the separator.'),
@@ -33,7 +33,7 @@ function node_pathauto($op) {
         t('[week]') => t('The week number (1-52) of the year the node was created.')
       );
 
-      if (module_exist('taxonomy')) {
+      if (module_exists('taxonomy')) {
         $vocabularies = taxonomy_get_vocabularies();
         if (sizeof($vocabularies) > 0) {
           $settings['placeholders'][t('[vocab]')] =
@@ -48,11 +48,11 @@ function node_pathauto($op) {
               'aliases for your categories.');
         }
       }
-      
-      if (module_exist('book')) {
-        $settings['placeholders'][t('[book]')] = 
+
+      if (module_exists('book')) {
+        $settings['placeholders'][t('[book]')] =
           t('For book pages, the title of the top-level book.');
-        $settings['placeholders'][t('[bookpath]')] = 
+        $settings['placeholders'][t('[bookpath]')] =
           t('For book pages, the full hierarchy from the top-level book.');
       }
 
@@ -61,8 +61,8 @@ function node_pathauto($op) {
       $settings['placeholders'] = array_merge($settings['placeholders'], $placeholders);
 
       $nodetypes = node_get_types();
-      foreach ($nodetypes as $ntype => $displaytype) {
-        $fieldlabel = t('Pattern for all '.$displaytype.' paths');
+      foreach ($nodetypes as $ntype => $nodetype) {
+        $fieldlabel = t('Pattern for all '. $nodetype->name .' paths');
         $settings['patternitems'][$ntype] = $fieldlabel;
       }
       return (object) $settings;
@@ -75,11 +75,11 @@ function node_pathauto($op) {
  * Implementation of hook_nodeapi().
  */
 function pathauto_nodeapi(&$node, $op, $teaser, $page) {
-  if (module_exist('path')) {
+  if (module_exists('path')) {
     switch ($op) {
       case 'insert':
       case 'update':
-        $placeholders = node_get_placeholders($node);        
+        $placeholders = node_get_placeholders($node);
         $src = "node/$node->nid";
         $alias = pathauto_create_alias('node', $op, $placeholders, $src, $node->type);
         break;
@@ -109,7 +109,7 @@ function pathauto_form_alter($formid, &$form) {
       }
     }
     if ($output) {
-      $form['path']['pathauto'] = array('#type' => 'item', 
+      $form['path']['pathauto'] = array('#type' => 'item',
         '#description' => $output);
     }
   }
@@ -129,15 +129,15 @@ function node_get_placeholders($node) {
   $placeholders[t('[sec]')] = date('s', $node->created);
   $placeholders[t('[week]')] = date('W', $node->created);
   $placeholders[t('[nid]')] = $node->nid;
-  $placeholders[t('[type]')] = pathauto_cleanstring(node_get_name($node));
-  
+  $placeholders[t('[type]')] = pathauto_cleanstring(node_get_types('name', $node));
+
   // Then the slightly less simple stuff
   $result = db_query("SELECT name FROM {users} WHERE uid='%d'", $node->uid);
   $userinfo = db_fetch_object($result);
   $placeholders[t('[user]')] = pathauto_cleanstring($userinfo->name);
-  
+
   // Book title
-  if (module_exist('book') and $node->type == 'book') {
+  if (module_exists('book') and $node->type == 'book') {
     $nodebook = book_load($node);
     $path = book_location($nodebook);
     $placeholders[t('[book]')] = pathauto_cleanstring($path[0]->title);
@@ -157,7 +157,7 @@ function node_get_placeholders($node) {
   }
 
   // And now taxonomy, which is a bit more work
-  if (module_exist('taxonomy') && is_array($node->taxonomy)) {
+  if (module_exists('taxonomy') && is_array($node->taxonomy)) {
     // When editing a node, the taxonomy array might have one or more zero
     // term IDs. Ignore them...
     foreach ($node->taxonomy as $firsttermid) {
@@ -167,17 +167,17 @@ function node_get_placeholders($node) {
     }
     $term = taxonomy_get_term($firsttermid);
     $placeholders[t('[cat]')] = pathauto_cleanstring($term->name);
-    
+
     $vid = $term->vid;
     $vocabulary = taxonomy_get_vocabulary($vid);
     $placeholders[t('[vocab]')] = pathauto_cleanstring($vocabulary->name);
-    
+
     $placeholders[t('[catalias]')] = drupal_get_path_alias('taxonomy/term/'.
       $node->taxonomy[0]);
     if (!strncasecmp($placeholders['[catalias]'], 'taxonomy', 8)) {
       $placeholders[t('[catalias]')] = $placeholders['[cat]'];
     }
-    
+
     $catpath = '';
     $parents = taxonomy_get_parents_all($firsttermid);
     foreach ($parents as $parent) {
@@ -190,12 +190,12 @@ function node_get_placeholders($node) {
     $placeholders[t('[vocab]')] = '';
     $placeholders[t('[catalias]')] = '';
   }
-  
+
   // Append any additional extensions
   $extplaceholders = module_invoke_all('pathauto_node', 'values', $node);
 
   $placeholders = array_merge($placeholders, $extplaceholders);
-  
+
   return $placeholders;
 }
 
@@ -208,20 +208,20 @@ function node_pathauto_bulkupdate() {
   $count = 0;
   $placeholders = array();
   while ($node) {
-    if (module_exist('taxonomy')) {
+    if (module_exists('taxonomy')) {
       // Must populate the terms for the node here for the category
       // placeholders to work
       $node->taxonomy = array_keys(taxonomy_node_get_terms($node->nid));
     }
     $placeholders = node_get_placeholders($node);
     $src = "node/$node->nid";
-    if ($alias = pathauto_create_alias('node', 'bulkupdate', $placeholders, 
+    if ($alias = pathauto_create_alias('node', 'bulkupdate', $placeholders,
                   $src, $node->type)) {
       $count++;
     }
     $node = db_fetch_object($result);
   }
-  
+
   drupal_set_message(format_plural($count,
     "Bulk update of nodes completed, one alias generated.",
     "Bulk update of nodes completed, %count aliases generated."));
@@ -253,25 +253,24 @@ function node_pathauto_page() {
       $lastalpha = arg($i);
     }
   }
-  
+
   if ($lastalpha) {
-    $pagetitle = drupal_ucfirst($lastalpha);
+    $pagetitle = check_plain(drupal_ucfirst($lastalpha));
   } else {
     $pagetitle = 'Listing';
   }
 
-  $query = 'SELECT n.nid FROM {url_alias} a '.
+  $result = pager_query(db_rewrite_sql(  'SELECT n.nid FROM {url_alias} a '.
     "INNER JOIN {node} n ON a.src = CONCAT('node/', n.nid)  ".
-    "WHERE n.status = 1 AND a.dst LIKE '$prefix%' ".
-    'ORDER BY n.sticky DESC, n.created DESC';
-  $result = pager_query(db_rewrite_sql($query, $prefix), 
-    variable_get('default_nodes_main', 10));
+    "WHERE n.status = 1 AND a.dst LIKE '%s%%' ".
+    'ORDER BY n.sticky DESC, n.created DESC'),
+    variable_get('default_nodes_main', 10), 0, NULL, $prefix);
 
   $output = '';
   while ($node = db_fetch_object($result)) {
     $output .= node_view(node_load($node->nid), 1);
   }
-  
+
   $output .= theme('pager', NULL, variable_get('default_nodes_main', 10));
 
   drupal_set_title(t($pagetitle));

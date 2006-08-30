@@ -1,5 +1,5 @@
 <?php
-// $id: $
+// $id$
 
 /**
  * Implementation of hook_pathauto() for user aliases
@@ -89,11 +89,11 @@ function pathauto_user($op, &$edit, &$user, $category=FALSE) {
         $placeholders[t('[uid]')] = $user->uid;
         $src = 'user/'.$user->uid;
         $alias = pathauto_create_alias('user', $op, $placeholders, $src);
-        if (module_exist('blog')) {
+        if (module_exists('blog')) {
           $src = 'blog/'.$user->uid;
           $alias = pathauto_create_alias('blog', $op, $placeholders, $src);
         }
-        if (module_exist('tracker')) {
+        if (module_exists('tracker')) {
           $src = 'user/'.$user->uid.'/track';
           $alias = pathauto_create_alias('tracker', $op, $placeholders, $src);
         }
@@ -106,8 +106,11 @@ function pathauto_user($op, &$edit, &$user, $category=FALSE) {
       */
       $user = (object) $user;
       path_set_alias('user/'.$user->uid);
-      if (module_exist('blog')) {
+      if (module_exists('blog')) {
         path_set_alias('blog/'.$user->uid);
+      }
+      if (module_exists('tracker')) {
+        path_set_alias('user/'.$user->uid.'/track');
       }
       break;
     default:
@@ -134,7 +137,7 @@ function user_pathauto_bulkupdate() {
     }
     $user = db_fetch_object($result);
   }
-  
+
   drupal_set_message(format_plural($count,
     "Bulk update of users completed, one alias generated.",
     "Bulk update of users completed, %count aliases generated."));
