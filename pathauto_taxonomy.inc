@@ -1,5 +1,5 @@
 <?php
-// $id$
+// $Id$
 
 /*
  * Implementation of hook_pathauto()
@@ -83,15 +83,7 @@ function pathauto_taxonomy($op, $type, $object = NULL) {
             $extplaceholders = module_invoke_all('pathauto_taxonomy', 'values', $category);
             $placeholders = array_merge($placeholders, $extplaceholders);
 
-            if (module_exists('forum')) {
-              $forumvid = variable_get('forum_nav_vocabulary', '');
-              if ($forumvid == $vid) {
-                $src = 'forum/'.$category->tid;
-                $forumalias = pathauto_create_alias('taxonomy', $op, $placeholders,
-                  $src, $forumvid);
-              }
-            }
-            $src = 'taxonomy/term/'.$category->tid;
+            $src = taxonomy_term_path($category);
             $alias = pathauto_create_alias('taxonomy', $op, $placeholders,
               $src, $vid);
           }
