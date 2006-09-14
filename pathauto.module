@@ -409,7 +409,9 @@ function _pathauto_set_alias($src, $dst, $pid = NULL, $verbose = FALSE, $oldalia
     case 'user':
     case 'blog':
     case 'admin':
-      drupal_set_message("Ignoring alias $dst");
+      if ($verbose) {
+        drupal_set_message("Ignoring alias $dst");
+      }
       return;
     default:
       break;
