@@ -44,9 +44,9 @@ function pathauto_menu_get_placeholders($in) {
 
   $mid = pathauto_menu_get_mid($in);
 
-  while ($mid && $_menu['items'][$mid]) {
-    array_unshift($trail, pathauto_cleanstring($_menu['items'][$mid]['title']));
-    $mid = $_menu['items'][$mid]['pid'];
+  while ($mid && $_menu['visible'][$mid]) {
+    array_unshift($trail, pathauto_cleanstring($_menu['visible'][$mid]['title']));
+    $mid = $_menu['visible'][$mid]['pid'];
   }
 
   if ( !empty($trail) ) {
@@ -85,7 +85,7 @@ function pathauto_menu_get_mid($in) {
       $mid = 0;
     }
   }
-  else if ( !isset($_menu['items'][$in]) ) {
+  else if ( !isset($_menu['visible'][$in]) ) {
     $mid = 0;
   }
 
