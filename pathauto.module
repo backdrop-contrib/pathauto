@@ -394,20 +394,34 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $type=NULL) {
 
   return $alias;
 }
+/**
+ * Verifies if the given path is a valid menu callback.
+ * Taken from menu_execute_active_handler().
+ *
+ * @param $path
+ *   A string containing a relative path.
+ *
+ * @return
+ *   TRUE if the path is already 
+ */
+function _pathauto_path_is_callback($path) {
+  static $menu = NULL;
+  if (is_null($menu)) {
+    $menu = menu_get_menu();
+  }
+  
+  // Determine the menu item containing the callback.
+  return isset($menu['callbacks'][$path]);
+}
 
 function _pathauto_set_alias($src, $dst, $pid = NULL, $verbose = FALSE, $oldalias = NULL) {
-  // Special case - don't let them screw themselves by creating
-  // certain aliases
-  switch ($dst) {
-    case 'user':
-    case 'blog':
-    case 'admin':
-      if ($verbose) {
-        drupal_set_message("Ignoring alias $dst");
-      }
-      return;
-    default:
-      break;
+  // Alert users that an existing callback cannot be overridden automatically
+  //  
+  if (_pathauto_path_is_callback($dst)) {
+    if ($verbose and user_access('create url aliases')) {
+      drupal_set_message(t('Ignoring alias '). $dst .t(' due to existing path conflict'));
+    }
+    return;
   }
 
   // Skip replacing the current alias with an identical alias
