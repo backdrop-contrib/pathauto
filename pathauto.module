@@ -26,14 +26,6 @@ function pathauto_admin_settings() {
 
   $output = '';
 
-  // Insist that path.module be enabled
-  if (!module_exists('path')) {
-    $form['error'] = array('#type' => 'item',
-      '#title' => t('<p>The pathauto module is an extension of the <b>path</b> '.
-      'module - you must <a href="admin/modules">enable <b>path</b></a> to use it.</p>'));
-    return system_settings_form($form);
-  }
-
   // Check for any updates
   _pathauto_update();
 
