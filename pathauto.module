@@ -417,9 +417,9 @@ function _pathauto_set_alias($src, $dst, $pid = NULL, $verbose = FALSE, $oldalia
     path_set_alias($src, $dst, $pid, 1, 10);
     if ($verbose and user_access('create url aliases')) {
       if ($pid) {
-        drupal_set_message("Created new alias <b>$dst</b> for <b>$src</b>, replacing <b>$oldalias</b>");
+        drupal_set_message(t('Created new alias %dst for %src, replacing %oldalias', array('%dst' => $dst, '%src' => $src, '%oldalias' => $oldalias)));
       } else {
-        drupal_set_message("Created new alias <b>$dst</b> for <b>$src</b>");
+        drupal_set_message(t('Created new alias %dst for %src', array('%dst' => $dst, '%src' => $src)));
       }
     }
   }
