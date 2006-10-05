@@ -3,10 +3,6 @@
 
 function pathauto_help($section) {
   switch ($section) {
-    case 'admin/settings/modules#description':
-      $output = t('Provides a mechanism for modules to automatically '.
-        'generate aliases for the content they manage.');
-      break;
     case 'admin/help#pathauto':
       $output = t('Provides a mechanism for modules to automatically '.
         'generate aliases for the content they manage.');
