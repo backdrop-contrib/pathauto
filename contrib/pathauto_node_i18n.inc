@@ -1,4 +1,5 @@
 <?php
+// $Id$
 
 /*
  * Implementation of hook_pathauto_node()
@@ -19,4 +20,3 @@ function i18n_pathauto_node($op, $node=NULL) {
   }
 }
 
-?>

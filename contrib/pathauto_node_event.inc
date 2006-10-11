@@ -1,4 +1,5 @@
 <?php
+// $Id$
 
 /*
  * Implementation of hook_pathauto_node()
@@ -30,4 +31,3 @@ function event_pathauto_node($op, $node=NULL) {
   }
 }
 
-?>

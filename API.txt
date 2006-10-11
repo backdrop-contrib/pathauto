@@ -1,3 +1,5 @@
+$Id$
+
 Implementing automatic aliases for a module
 
 There are three pieces a module which implements its own content type
@@ -99,3 +101,4 @@ pathauto_cleanstring(date('M', $eventstart)));
 
 See contrib/pathauto_node_event.inc for an example of extending node
 patterns.
+

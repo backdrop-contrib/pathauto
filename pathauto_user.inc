@@ -1,5 +1,5 @@
 <?php
-// $id$
+// $Id$
 
 /**
  * Implementation of hook_pathauto() for user aliases
@@ -192,3 +192,4 @@ function tracker_pathauto_bulkupdate() {
     "Bulk update of user tracker pages completed, one alias generated.",
     "Bulk update of user tracker pages completed, %count aliases generated."));
 }
+

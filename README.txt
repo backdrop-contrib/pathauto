@@ -1,12 +1,14 @@
+$Id$
+
+**Description:
 The pathauto module provides support functions for other modules to 
 automatically generate aliases based on appropriate criteria, with a 
 central settings path for site administrators.
 
 Implementations are provided for core content types: nodes, taxonomy 
-terms, users, and blogs.
+terms, users, blogs, and events.
 
-
-Benefits
+**Benefits:
 
 Besides making the page address more reflective of its content than
 "node/138", it's important to know that modern search engines give 
@@ -16,7 +18,7 @@ relevant search engine hits for your page can be significantly
 enhanced.
 
 
-Installation
+**Installation:
 
 Note that pathauto is an extension to the path module, which must
 be enabled.
@@ -32,15 +34,16 @@ sure "administer pathauto" is enabled through access control administration.
     database and variable upgrades applied.
 
 
-Credits
+Credits:
 
 The original module combined the functionality of Mike Ryan's autopath with
 Tommy Sundstrom's path_automatic.
 
-Significant enhancements were contributed by jdmquin@www.bcdems.net.
+Significant enhancements were contributed by jdmquin @ www.bcdems.net.
 
 Matt England added the tracker support.
 
 Other suggestions and patches contributed by the Drupal community.
 
-Current maintainer: Mike Ryan (drupal at virtuoso hyphen performance.com)
+Current maintainer: Greg Knaddison (greg AT knaddison DOT com)
+

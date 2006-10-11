@@ -1,5 +1,5 @@
 <?php
-// $id$
+// $Id$
 
 /*
  * Implementation of hook_pathauto()
@@ -276,3 +276,4 @@ function node_pathauto_page() {
   drupal_set_title(t($pagetitle));
   return $output;
 }
+
