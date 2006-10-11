@@ -47,6 +47,12 @@ function pathauto_admin_settings() {
     '#description' => t('Character used to separate words in titles. This will replace '.
       'any spaces and punctuation characters.'));
 
+  $form['general']['pathauto_quotes'] = array('#type' => 'radios',
+    '#title' => t('Quotation marks'),
+    '#default_value' => variable_get('pathauto_quotes', 0),
+    '#options' => array(t('Remove'), t('Replace by separator')),
+    );
+    
   $form['general']['pathauto_max_length'] = array('#type' => 'textfield',
     '#title' => t('Maximum alias length'), '#size' => 3, '#maxlength' => 3,
     '#default_value' => variable_get('pathauto_max_length', 128),
@@ -234,8 +240,11 @@ function pathauto_cleanstring($string) {
     'ž'=>'z','ż'=>'z','ź'=>'z',
     'ß'=>'ss','ſ'=>'ss');
 
-  // Drop apostrophes
-  $output = str_replace("'", "", $string);
+  // Replace or drop apostrophes based on user settings
+  $separator = variable_get('pathauto_separator', '_');
+  $quotes = variable_get('pathauto_quotes', 0);
+  $output = str_replace("'", ($quotes ? $separator : ''), $string);
+  
   // Convert accented characters to their ASCII counterparts...
 /*  $output = strtr(utf8_decode($output),
        "\xA1\xAA\xBA\xBF".
@@ -252,7 +261,6 @@ function pathauto_cleanstring($string) {
 
   // Preserve alphanumerics, everything else becomes a separator
   $pattern = '/[^a-zA-Z0-9]+/ ';
-  $separator = variable_get('pathauto_separator', '_');
   $output = preg_replace($pattern, $separator, $output);
 
   // Trim any leading or trailing separators (note the need to
