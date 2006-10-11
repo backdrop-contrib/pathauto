@@ -79,7 +79,7 @@ function pathauto_admin_settings() {
     '#options' => array(t('Do nothing, leaving the old alias intact'),
           t('Create a new alias in addition to the old alias'),
           t('Create a new alias, replacing the old one')),
-    '#description' => t('When updating an existing content item which already has an alias, what should pathauto do?'));
+    '#description' => t('What should pathauto do when updating an existing content item which already has an alias?'));
 
   // Call the hook on all modules - an array of 'settings' objects is returned
   $all_settings = module_invoke_all('pathauto', 'settings');
