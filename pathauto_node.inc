@@ -43,9 +43,7 @@ function node_pathauto($op) {
           $settings['placeholders'][t('[catpath]')] =
             t('As [cat], but including its supercategories.');
           $settings['placeholders'][t('[catalias]')] =
-            t('The alias for the lowest-weight category that the page belongs to. '.
-              'This is useful for long category names. You must first set up '.
-              'aliases for your categories.');
+            t('The alias for the lowest-weight category that the page belongs to. This is useful for long category names. You must first set up aliases for your categories.');
         }
       }
 
@@ -100,12 +98,9 @@ function pathauto_form_alter($formid, &$form) {
   */
   if (isset($form['#attributes']['id']) && ($form['#attributes']['id'] == 'node-form')) {
     if (user_access('create url aliases')) {
-      $output .= t('An alias will be automatically generated from the title '.
-        'and other node attributes, in addition to any alias manually '.
-        'provided above.');
+      $output .= t('An alias will be automatically generated from the title and other node attributes, in addition to any alias manually provided above.');
       if (user_access('administer pathauto')) {
-        $output .= t(' To control the format of the generated aliases, '.
-          'see the <a href="admin/settings/pathauto">pathauto settings</a>.');
+        $output .= t(' To control the format of the generated aliases, see the <a href="admin/settings/pathauto">pathauto settings</a>.');
       }
     }
     if ($output) {

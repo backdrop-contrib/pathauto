@@ -4,8 +4,7 @@
 function pathauto_help($section) {
   switch ($section) {
     case 'admin/help#pathauto':
-      $output = t('Provides a mechanism for modules to automatically '.
-        'generate aliases for the content they manage.');
+      $output = t('Provides a mechanism for modules to automatically generate aliases for the content they manage.');
       break;
   }
 
@@ -44,8 +43,7 @@ function pathauto_admin_settings() {
   $form['general']['pathauto_separator'] = array('#type' => 'textfield',
     '#title' => t('Separator'), '#size' => 1, '#maxlength' => 1,
     '#default_value' => variable_get('pathauto_separator', '_'),
-    '#description' => t('Character used to separate words in titles. This will replace '.
-      'any spaces and punctuation characters.'));
+    '#description' => t('Character used to separate words in titles. This will replace any spaces and punctuation characters.'));
 
   $form['general']['pathauto_quotes'] = array('#type' => 'radios',
     '#title' => t('Quotation marks'),
@@ -56,24 +54,17 @@ function pathauto_admin_settings() {
   $form['general']['pathauto_max_length'] = array('#type' => 'textfield',
     '#title' => t('Maximum alias length'), '#size' => 3, '#maxlength' => 3,
     '#default_value' => variable_get('pathauto_max_length', 128),
-    '#description' => t('Maximum text length of aliases to generate. '.
-      '128 is the maximum permissible.'));
+    '#description' => t('Maximum text length of aliases to generate. 128 is the maximum permissible.'));
 
   $form['general']['pathauto_max_component_length'] = array('#type' => 'textfield',
     '#title' => t('Maximum component length'), '#size' => 3, '#maxlength' => 3,
     '#default_value' => variable_get('pathauto_max_component_length', 128),
-    '#description' => t('Maximum text length of any single component in the alias (e.g., [title]). '.
-      '128 is the maximum permissible.'));
+    '#description' => t('Maximum text length of any single component in the alias (e.g., [title]). 128 is the maximum permissible.'));
 
   $form['general']['pathauto_indexaliases'] = array('#type' => 'checkbox',
     '#title' => t('Create index aliases'),
     '#default_value' => variable_get('pathauto_indexaliases', FALSE),
-    '#description' => t('When a pattern generates a hierarchical alias (i.e., any alias '.
-      'containing a slash), generate aliases for each step of the '.
-      'hierarchy which can be used to list content within that hierarchy. '.
-      'For example, if a node alias "music/concert/beethoven" is created, '.
-      'also create an alias "music/concert" which will list all concert nodes, '.
-      'and an alias "music" which will list all music nodes.'));
+    '#description' => t('When a pattern generates a hierarchical alias (i.e., any alias containing a slash), generate aliases for each step of the hierarchy which can be used to list content within that hierarchy. For example, if a node alias "music/concert/beethoven" is created, also create an alias "music/concert" which will list all concert nodes, and an alias "music" which will list all music nodes.'));
 
   // If requested, do a bulk generation of index aliases
   $do_index_bulkupdate = variable_get('pathauto_indexaliases_bulkupdate', FALSE);
@@ -88,8 +79,7 @@ function pathauto_admin_settings() {
     '#options' => array(t('Do nothing, leaving the old alias intact'),
           t('Create a new alias in addition to the old alias'),
           t('Create a new alias, replacing the old one')),
-    '#description' => t('When updating an existing content item which already has an alias, '.
-      'what should pathauto do?'));
+    '#description' => t('When updating an existing content item which already has an alias, what should pathauto do?'));
 
   // Call the hook on all modules - an array of 'settings' objects is returned
   $all_settings = module_invoke_all('pathauto', 'settings');
