@@ -195,13 +195,16 @@ function node_get_placeholders($node) {
 
 // Generate aliases for all nodes without aliases
 function node_pathauto_bulkupdate() {
-  $query = 'SELECT nid, type, title, uid, created, src, dst, vid FROM {node} '. "LEFT JOIN {url_alias} ON CONCAT('node/', nid) = src";
+  $query = "SELECT nid, type, title, uid, created, src, dst, vid FROM {node} LEFT JOIN {url_alias} ON CONCAT('node/', nid) = src";
   $result = db_query($query);
-  $node = db_fetch_object($result);
+  $node_ref = db_fetch_object($result);
 
   $count = 0;
   $placeholders = array();
-  while ($node) {
+  while ($node_ref) {
+  $node = node_load($node_ref->nid);
+  $node->src = $node_ref->src;
+  $node->dst = $node_ref->dst;
     if (module_exists('taxonomy')) {
       // Must populate the terms for the node here for the category
       // placeholders to work
@@ -213,7 +216,7 @@ function node_pathauto_bulkupdate() {
                   $src, $node->type)) {
       $count++;
     }
-    $node = db_fetch_object($result);
+    $node_ref = db_fetch_object($result);
   }
 
   drupal_set_message(format_plural($count,
