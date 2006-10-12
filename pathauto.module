@@ -28,6 +28,14 @@ function pathauto_admin_settings() {
   // Check for any updates
   _pathauto_update();
 
+   // Default words to ignore
+   $ignore_words = array(
+     "a", "an", "as", "at", "before", "but", "by", "for", "from",
+     "is", "in", "into", "like", "of", "off", "on", "onto", "per",
+     "since", "than", "the", "this", "that", "to", "up", "via",
+     "with"
+   );
+
   // Generate the form - settings applying to all patterns first
   $group_weight = -20;
   $form['general'] = array('#type' => 'fieldset', '#weight' => $group_weight,
@@ -80,6 +88,12 @@ function pathauto_admin_settings() {
           t('Create a new alias in addition to the old alias'),
           t('Create a new alias, replacing the old one')),
     '#description' => t('What should pathauto do when updating an existing content item which already has an alias?'));
+
+  $form['general']['pathauto_ignore_words'] = array('#type' => 'textarea',
+    '#title' => t('Strings to Remove'), '#default_value' => variable_get('pathauto_ignore_words', implode(",", $ignore_words)),
+    '#description' => t('Words to strip out of the URL alias, separated by commas')
+  );
+
 
   // Call the hook on all modules - an array of 'settings' objects is returned
   $all_settings = module_invoke_all('pathauto', 'settings');
@@ -183,6 +197,14 @@ function _pathauto_alias_exists($alias, $src) {
 // Clean up a string value provided by a module, resulting in a
 // string containing only alphanumerics and separators
 function pathauto_cleanstring($string) {
+  // Default words to ignore
+  $ignore_words = array(
+    "a", "an", "as", "at", "before", "but", "by", "for", "from",
+    "is", "in", "into", "like", "of", "off", "on", "onto", "per",
+    "since", "than", "the", "this", "that", "to", "up", "via",
+    "with"
+  );
+
   static $translations = array(
     'À'=>'A','Á'=>'A','Â'=>'A','Ã'=>'A','Ä'=>'A','Å'=>'A','Ā'=>'A','Ą'=>'A','Ă'=>'A',
     'à'=>'a','á'=>'a','â'=>'a','ã'=>'a','ä'=>'a','å'=>'a','ā'=>'a','ą'=>'a','ă'=>'a',
@@ -248,6 +270,10 @@ function pathauto_cleanstring($string) {
     "\xDC"=>"Ue", "\xDE"=>"TH", "\xDF"=>"ss", "\xE4"=>"ae", "\xE6"=>"ae",
     "\xF6"=>"oe", "\xFC"=>"ue", "\xFE"=>"th")));*/
   $output = strtr($output, $translations);
+
+  // Get rid of words that are on the ignore list
+  $ignore_re = "\b" . preg_replace("/,/", "\b|\b", variable_get('pathauto_ignore_words', $ignore_words)) . "\b";
+  $output = preg_replace("/$ignore_re/ie", "", $output);
 
   // Preserve alphanumerics, everything else becomes a separator
   $pattern = '/[^a-zA-Z0-9]+/ ';
