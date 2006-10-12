@@ -167,8 +167,7 @@ function node_get_placeholders($node) {
     $vocabulary = taxonomy_get_vocabulary($vid);
     $placeholders[t('[vocab]')] = pathauto_cleanstring($vocabulary->name);
 
-    $placeholders[t('[catalias]')] = drupal_get_path_alias('taxonomy/term/'.
-      $node->taxonomy[0]);
+    $placeholders[t('[catalias]')] = drupal_get_path_alias('taxonomy/term/'.$firsttermid);
     if (!strncasecmp($placeholders['[catalias]'], 'taxonomy', 8)) {
       $placeholders[t('[catalias]')] = $placeholders['[cat]'];
     }
