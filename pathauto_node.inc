@@ -141,12 +141,14 @@ function node_get_placeholders($node) {
     foreach ($bookhierarchy as $bookelement) {
       if ($bookpath == '') {
         $bookpath = pathauto_cleanstring($bookelement->title);
-      } else {
+      } 
+      else {
         $bookpath = $bookpath . '/' . pathauto_cleanstring($bookelement->title);
       }
     }
     $placeholders[t('[bookpath]')] = $bookpath;
-  } else {
+  } 
+  else {
     $placeholders[t('[book]')] = '';
     $placeholders[t('[bookpath]')] = '';
   }
@@ -178,7 +180,8 @@ function node_get_placeholders($node) {
       $catpath = pathauto_cleanstring($parent->name).'/'.$catpath;
     }
     $placeholders[t('[catpath]')] = $catpath;
-  } else {
+  } 
+  else {
     $placeholders[t('[cat]')] = '';
     $placeholders[t('[catpath]')] = '';
     $placeholders[t('[vocab]')] = '';
@@ -253,7 +256,8 @@ function node_pathauto_page() {
 
   if ($lastalpha) {
     $pagetitle = check_plain(drupal_ucfirst($lastalpha));
-  } else {
+  } 
+  else {
     $pagetitle = 'Listing';
   }
 

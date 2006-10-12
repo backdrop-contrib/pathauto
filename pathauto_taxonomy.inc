@@ -67,7 +67,8 @@ function pathauto_taxonomy($op, $type, $object = NULL) {
             if ($category->parent) {
               $catpath = pathauto_cleanstring($category->name);
               $parents = taxonomy_get_parents_all($category->parent);
-            } else {
+            } 
+            else {
               $catpath = '';
               $parents = taxonomy_get_parents_all($category->tid);
             }
@@ -124,7 +125,8 @@ function taxonomy_pathauto_bulkupdate() {
     if ($category->parent) {
       $catpath = pathauto_cleanstring($category->name);
       $parents = taxonomy_get_parents_all($category->parent);
-    } else {
+    } 
+    else {
       $catpath = '';
       $parents = taxonomy_get_parents_all($category->tid);
     }

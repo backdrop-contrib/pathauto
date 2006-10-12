@@ -284,7 +284,8 @@ function pathauto_cleanstring($string) {
   if ($separator) {
     if (ctype_alnum($separator)) {
       $seppattern = $separator;
-    } else {
+    } 
+    else {
       $seppattern = '\\'.$separator;
     }
     $output = preg_replace("/^$seppattern+|$seppattern+$/", "", $output);
@@ -321,7 +322,8 @@ function pathauto_cleanstring($string) {
 function pathauto_create_alias($module, $op, $placeholders, $src, $type=NULL) {
   if (($op != 'bulkupdate') and variable_get('pathauto_verbose', FALSE)) {
     $verbose = TRUE;
-  } else {
+  } 
+  else {
     $verbose = FALSE;
   }
 
@@ -442,7 +444,8 @@ function _pathauto_set_alias($src, $dst, $pid = NULL, $verbose = FALSE, $oldalia
     if ($verbose and user_access('create url aliases')) {
       if ($pid) {
         drupal_set_message(t('Created new alias %dst for %src, replacing %oldalias', array('%dst' => $dst, '%src' => $src, '%oldalias' => $oldalias)));
-      } else {
+      } 
+      else {
         drupal_set_message(t('Created new alias %dst for %src', array('%dst' => $dst, '%src' => $src)));
       }
     }
@@ -458,7 +461,8 @@ function pathauto_create_index_alias($alias, $module) {
   foreach ($components as $component) {
     if ($alias) {
       $alias .= '/'.$component;
-    } else {
+    } 
+    else {
       $alias .= $component;
     }
     $alias_count = db_result(db_query("SELECT COUNT(dst) FROM {url_alias} WHERE dst = '%s'", $alias));
@@ -588,7 +592,8 @@ function _pathauto_update() {
               variable_set($var->name, '0/feed');
               break;
           }
-        } else {
+        } 
+        else {
           variable_set($var->name, '');
         }
         $var = db_fetch_object($result);
