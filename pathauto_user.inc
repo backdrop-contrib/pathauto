@@ -75,7 +75,7 @@ function tracker_pathauto($op) {
 /**
  * Implementation of hook_user() for users, trackers, and blogs
  */
-function pathauto_user($op, &$edit, &$user, $category=FALSE) {
+function pathauto_user($op, &$edit, &$user, $category = FALSE) {
   switch ($op) {
     case 'insert':
     case 'update':
@@ -120,12 +120,10 @@ function pathauto_user($op, &$edit, &$user, $category=FALSE) {
 
 // Generate aliases for all users without aliases
 function user_pathauto_bulkupdate() {
-  $query = 'SELECT uid,name,src,dst FROM {users} '.
-    "LEFT JOIN {url_alias} ON CONCAT('user/', uid) = src ".
-    'WHERE uid > 0';
+  $query = "SELECT uid,name,src,dst FROM {users} LEFT JOIN {url_alias} ON CONCAT('user/', uid) = src WHERE uid > 0";
   $result = db_query($query);
   $user = db_fetch_object($result);
-
+  
   $count = 0;
   $placeholders = array();
   while ($user) {
@@ -137,7 +135,7 @@ function user_pathauto_bulkupdate() {
     }
     $user = db_fetch_object($result);
   }
-
+  
   drupal_set_message(format_plural($count,
     "Bulk update of users completed, one alias generated.",
     "Bulk update of users completed, %count aliases generated."));
@@ -145,12 +143,10 @@ function user_pathauto_bulkupdate() {
 
 // Generate aliases for all blogs without aliases
 function blog_pathauto_bulkupdate() {
-  $query = 'SELECT uid,name,src,dst FROM {users} '.
-    "LEFT JOIN {url_alias} ON CONCAT('user/', uid) = src ".
-    'WHERE uid > 0';
+  $query = "SELECT uid,name,src,dst FROM {users} LEFT JOIN {url_alias} ON CONCAT('user/', uid) = src WHERE uid > 0";
   $result = db_query($query);
   $user = db_fetch_object($result);
-
+  
   $count = 0;
   $placeholders = array();
   while ($user) {
@@ -162,7 +158,7 @@ function blog_pathauto_bulkupdate() {
     }
     $user = db_fetch_object($result);
   }
-
+  
   drupal_set_message(format_plural($count,
     "Bulk update of user blogs completed, one alias generated.",
     "Bulk update of user blogs completed, %count aliases generated."));
@@ -170,12 +166,10 @@ function blog_pathauto_bulkupdate() {
 
 // Generate aliases for all tracker pages without aliases
 function tracker_pathauto_bulkupdate() {
-  $query = 'SELECT uid,name,src,dst FROM {users} '.
-    "LEFT JOIN {url_alias} ON CONCAT('user/', uid) = src ".
-    'WHERE uid > 0';
+  $query = "SELECT uid,name,src,dst FROM {users} LEFT JOIN {url_alias} ON CONCAT('user/', uid) = src WHERE uid > 0";
   $result = db_query($query);
   $user = db_fetch_object($result);
-
+  
   $count = 0;
   $placeholders = array();
   while ($user) {
@@ -187,7 +181,7 @@ function tracker_pathauto_bulkupdate() {
     }
     $user = db_fetch_object($result);
   }
-
+  
   drupal_set_message(format_plural($count,
     "Bulk update of user tracker pages completed, one alias generated.",
     "Bulk update of user tracker pages completed, %count aliases generated."));

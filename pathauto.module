@@ -18,7 +18,7 @@ function pathauto_perm() {
 function pathauto_admin_settings() {
   // Restrict administration of this module
   if (!user_access('administer pathauto')) {
-    $form['error'] = array('#type' => 'item',
+    $form["error"] = array('#type' => 'item',
       '#title' => t('You are not authorized to access the pathauto settings.'));
     return system_settings_form($form);
   }
@@ -38,38 +38,38 @@ function pathauto_admin_settings() {
 
   // Generate the form - settings applying to all patterns first
   $group_weight = -20;
-  $form['general'] = array('#type' => 'fieldset', '#weight' => $group_weight,
+  $form["general"] = array('#type' => 'fieldset', '#weight' => $group_weight,
     '#title' => t('General settings'), '#collapsible' => TRUE,
     '#collapsed' => TRUE);
   $group_weight++;
 
-  $form['general']['pathauto_verbose'] = array('#type' => 'checkbox',
+  $form["general"]["pathauto_verbose"] = array('#type' => 'checkbox',
     '#title' => t('Verbose'),
     '#default_value' => variable_get('pathauto_verbose', FALSE),
     '#description' => t('Display alias changes (except during bulk updates).'));
 
-  $form['general']['pathauto_separator'] = array('#type' => 'textfield',
+  $form["general"]["pathauto_separator"] = array('#type' => 'textfield',
     '#title' => t('Separator'), '#size' => 1, '#maxlength' => 1,
     '#default_value' => variable_get('pathauto_separator', '_'),
     '#description' => t('Character used to separate words in titles. This will replace any spaces and punctuation characters.'));
 
-  $form['general']['pathauto_quotes'] = array('#type' => 'radios',
+  $form["general"]["pathauto_quotes"] = array('#type' => 'radios',
     '#title' => t('Quotation marks'),
     '#default_value' => variable_get('pathauto_quotes', 0),
     '#options' => array(t('Remove'), t('Replace by separator')),
     );
     
-  $form['general']['pathauto_max_length'] = array('#type' => 'textfield',
+  $form["general"]["pathauto_max_length"] = array('#type' => 'textfield',
     '#title' => t('Maximum alias length'), '#size' => 3, '#maxlength' => 3,
     '#default_value' => variable_get('pathauto_max_length', 128),
     '#description' => t('Maximum text length of aliases to generate. 128 is the maximum permissible.'));
 
-  $form['general']['pathauto_max_component_length'] = array('#type' => 'textfield',
+  $form["general"]["pathauto_max_component_length"] = array('#type' => 'textfield',
     '#title' => t('Maximum component length'), '#size' => 3, '#maxlength' => 3,
     '#default_value' => variable_get('pathauto_max_component_length', 128),
     '#description' => t('Maximum text length of any single component in the alias (e.g., [title]). 128 is the maximum permissible.'));
 
-  $form['general']['pathauto_indexaliases'] = array('#type' => 'checkbox',
+  $form["general"]["pathauto_indexaliases"] = array('#type' => 'checkbox',
     '#title' => t('Create index aliases'),
     '#default_value' => variable_get('pathauto_indexaliases', FALSE),
     '#description' => t('When a pattern generates a hierarchical alias (i.e., any alias containing a slash), generate aliases for each step of the hierarchy which can be used to list content within that hierarchy. For example, if a node alias "music/concert/beethoven" is created, also create an alias "music/concert" which will list all concert nodes, and an alias "music" which will list all music nodes.'));
@@ -77,19 +77,19 @@ function pathauto_admin_settings() {
   // If requested, do a bulk generation of index aliases
   $do_index_bulkupdate = variable_get('pathauto_indexaliases_bulkupdate', FALSE);
   variable_set('pathauto_indexaliases_bulkupdate', FALSE);
-  $form['general']['pathauto_indexaliases_bulkupdate'] = array('#type' => 'checkbox',
+  $form["general"]["pathauto_indexaliases_bulkupdate"] = array('#type' => 'checkbox',
     '#title' => t('Bulk generate index aliases'),
     '#default_value' => FALSE,
     '#description' => t('Generate index aliases based on all pre-existing aliases.'));
 
-  $form['general']['pathauto_update_action'] = array('#type' => 'radios',
+  $form["general"]["pathauto_update_action"] = array('#type' => 'radios',
     '#title' => t('Update action'), '#default_value' => variable_get('pathauto_update_action', 0),
     '#options' => array(t('Do nothing, leaving the old alias intact'),
           t('Create a new alias in addition to the old alias'),
           t('Create a new alias, replacing the old one')),
     '#description' => t('What should pathauto do when updating an existing content item which already has an alias?'));
 
-  $form['general']['pathauto_ignore_words'] = array('#type' => 'textarea',
+  $form["general"]["pathauto_ignore_words"] = array('#type' => 'textarea',
     '#title' => t('Strings to Remove'), '#default_value' => variable_get('pathauto_ignore_words', implode(",", $ignore_words)),
     '#description' => t('Words to strip out of the URL alias, separated by commas')
   );
@@ -140,7 +140,7 @@ function pathauto_admin_settings() {
       $doc .= '<dd>'.$description.'</dd>';
     }
     $doc .= "</dl>\n";
-    $form[$module][$variable]['#description'] = $doc;
+    $form[$module][$variable]["#description"] = $doc;
 
     // If the module supports bulk updates, offer the update action here
     if ($settings->bulkname) {
@@ -272,7 +272,7 @@ function pathauto_cleanstring($string) {
   $output = strtr($output, $translations);
 
   // Get rid of words that are on the ignore list
-  $ignore_re = "\b" . preg_replace("/,/", "\b|\b", variable_get('pathauto_ignore_words', $ignore_words)) . "\b";
+  $ignore_re = "\b". preg_replace("/,/", "\b|\b", variable_get('pathauto_ignore_words', $ignore_words)) ."\b";
   $output = preg_replace("/$ignore_re/ie", "", $output);
 
   // Preserve alphanumerics, everything else becomes a separator
@@ -319,7 +319,7 @@ function pathauto_cleanstring($string) {
  * @return
  *   The alias that was created
  */
-function pathauto_create_alias($module, $op, $placeholders, $src, $type=NULL) {
+function pathauto_create_alias($module, $op, $placeholders, $src, $type = NULL) {
   if (($op != 'bulkupdate') and variable_get('pathauto_verbose', FALSE)) {
     $verbose = TRUE;
   } 
@@ -382,10 +382,10 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $type=NULL) {
   // If the alias already exists, generate a new variant
   $separator = variable_get('pathauto_separator', '_');
   if (_pathauto_alias_exists($alias, $src)) {
-    for ($i=0; _pathauto_alias_exists($alias.$separator.$i, $src); $i++) {
+    for ($i = 0; _pathauto_alias_exists($alias.$separator.$i, $src); $i++) {
     }
     // Make room for the sequence number
-    $alias = drupal_substr($alias, 0, $maxlength-1-($i/10+1));
+    $alias = drupal_substr($alias, 0, $maxlength - 1 -($i/10 + 1));
     $alias = $alias.$separator.$i;
   }
 
@@ -425,7 +425,7 @@ function _pathauto_path_is_callback($path) {
   }
   
   // Determine the menu item containing the callback.
-  return isset($menu['callbacks'][$path]);
+  return isset($menu["callbacks"][$path]);
 }
 
 function _pathauto_set_alias($src, $dst, $pid = NULL, $verbose = FALSE, $oldalias = NULL) {
@@ -529,9 +529,9 @@ function _pathauto_update() {
   $installed_version  = variable_get('pathauto_version', array('text'=> 'Unknown', 'build' => 1));
   $current_version =  _pathauto_version();
 
-  if ( $installed_version['build'] < $current_version['build']) {
+  if ( $installed_version["build"] < $current_version["build"]) {
     // Upgrading from original version - variable names were changed
-    if ( $installed_version['build'] <= 1 ) {
+    if ( $installed_version["build"] <= 1 ) {
       // Remove obsolete bulkupdate variables
       variable_del('pathauto_bulkupdate');
       variable_del('pathauto_cat_bulkupdate');
@@ -573,7 +573,7 @@ function _pathauto_update() {
         $var = db_fetch_object($result);
       }
     }
-    if ( $installed_version['build'] <= 2 ) {
+    if ( $installed_version["build"] <= 2 ) {
       // Change feed support variables from booleans to appended strings
       $query = 'SELECT name,value FROM {variable} '.
         "WHERE name LIKE 'pathauto_%_supportsfeeds'";
@@ -608,7 +608,7 @@ function _pathauto_update() {
         $aliasrow = db_fetch_object($result);
       }
     }
-    if ($installed_version['build'] <= 3) {
+    if ($installed_version["build"] <= 3) {
       // Change taxonomy pattern variables to use IDs instead
       // of names
       $query = 'SELECT name,value FROM {variable} '.
@@ -624,7 +624,7 @@ function _pathauto_update() {
         $var = db_fetch_object($result);
       }
     }
-    if ($installed_version['build'] <= 4) {
+    if ($installed_version["build"] <= 4) {
       // Make feed generation variables module-specific.
       $applytofeed = variable_get('pathauto_applytofeed', FALSE);
       if ($applytofeed) {
@@ -645,7 +645,7 @@ function _pathauto_update() {
     // Set the current version
     variable_set('pathauto_version', $current_version);
 
-    drupal_set_message('Upgraded pathauto from '.$installed_version['build'] .
-      ' to '. $current_version['build']);
+    drupal_set_message('Upgraded pathauto from '.$installed_version["build"] .
+      ' to '. $current_version["build"]);
   }
 } // end function _pathauto_update

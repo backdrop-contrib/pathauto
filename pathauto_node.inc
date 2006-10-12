@@ -36,28 +36,28 @@ function node_pathauto($op) {
       if (module_exists('taxonomy')) {
         $vocabularies = taxonomy_get_vocabularies();
         if (sizeof($vocabularies) > 0) {
-          $settings['placeholders'][t('[vocab]')] =
+          $settings["placeholders"][t('[vocab]')] =
             t("The vocabulary that the page's first category belongs to.");
-          $settings['placeholders'][t('[cat]')] =
+          $settings["placeholders"][t('[cat]')] =
             t('The name of the lowest-weight category that the page belongs to.');
-          $settings['placeholders'][t('[catpath]')] =
+          $settings["placeholders"][t('[catpath]')] =
             t('As [cat], but including its supercategories.');
-          $settings['placeholders'][t('[catalias]')] =
+          $settings["placeholders"][t('[catalias]')] =
             t('The alias for the lowest-weight category that the page belongs to. This is useful for long category names. You must first set up aliases for your categories.');
         }
       }
-
+      
       if (module_exists('book')) {
-        $settings['placeholders'][t('[book]')] =
+        $settings["placeholders"][t('[book]')] =
           t('For book pages, the title of the top-level book.');
-        $settings['placeholders'][t('[bookpath]')] =
+        $settings["placeholders"][t('[bookpath]')] =
           t('For book pages, the full hierarchy from the top-level book.');
       }
-
+            
       // Look for extensions from other modules
       $placeholders = module_invoke_all('pathauto_node', 'placeholders');
       $settings['placeholders'] = array_merge($settings['placeholders'], $placeholders);
-
+      
       $nodetypes = node_get_types();
       foreach ($nodetypes as $ntype => $nodetype) {
         $fieldlabel = t('Pattern for all '. $nodetype->name .' paths');
@@ -215,8 +215,7 @@ function node_pathauto_bulkupdate() {
     }
     $placeholders = node_get_placeholders($node);
     $src = "node/$node->nid";
-    if ($alias = pathauto_create_alias('node', 'bulkupdate', $placeholders,
-                  $src, $node->type)) {
+    if ($alias = pathauto_create_alias('node', 'bulkupdate', $placeholders, $src, $node->type)) {
       $count++;
     }
     $node_ref = db_fetch_object($result);
@@ -247,7 +246,7 @@ function node_pathauto_page() {
   $prefix = '';
   $lastalpha = '';
   // Skip first two components, which will always be "pathauto/node"
-  for ($i=2; arg($i); $i++) {
+  for ($i = 2; arg($i); $i++) {
     $prefix .= arg($i) . '/';
     if (preg_match('/[a-z]/i', arg($i))) {
       $lastalpha = arg($i);
@@ -261,11 +260,7 @@ function node_pathauto_page() {
     $pagetitle = 'Listing';
   }
 
-  $result = pager_query(db_rewrite_sql(  'SELECT n.nid FROM {url_alias} a '.
-    "INNER JOIN {node} n ON a.src = CONCAT('node/', n.nid)  ".
-    "WHERE n.status = 1 AND a.dst LIKE '%s%%' ".
-    'ORDER BY n.sticky DESC, n.created DESC'),
-    variable_get('default_nodes_main', 10), 0, NULL, $prefix);
+  $result = pager_query(db_rewrite_sql("SELECT n.nid FROM {url_alias} a INNER JOIN {node} n ON a.src = CONCAT('node/', n.nid)  WHERE n.status = 1 AND a.dst LIKE '%s%%' ORDER BY n.sticky DESC, n.created DESC"), variable_get('default_nodes_main', 10), 0, NULL, $prefix);
 
   $output = '';
   while ($node = db_fetch_object($result)) {
@@ -277,4 +272,3 @@ function node_pathauto_page() {
   drupal_set_title(t($pagetitle));
   return $output;
 }
-

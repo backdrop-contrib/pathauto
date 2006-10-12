@@ -5,7 +5,7 @@
  * Implementation of hook_pathauto_node()
  */
 
-function i18n_pathauto_node($op, $node=NULL) {
+function i18n_pathauto_node($op, $node = NULL) {
   switch ($op) {
     case 'placeholders':
       $placeholders = array();

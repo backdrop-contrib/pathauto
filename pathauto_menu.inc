@@ -11,7 +11,7 @@
 /*
  * Implementation of hook_pathauto_node()
  */
-function menu_pathauto_node($op, $node=NULL) {
+function menu_pathauto_node($op, $node = NULL) {
   switch ($op) {
     case 'placeholders':
       $placeholders = array();
@@ -49,14 +49,14 @@ function pathauto_menu_get_placeholders($in) {
     $mid = $_menu['visible'][$mid]['pid'];
   }
 
-  if ( !empty($trail) ) {
+  if (!empty($trail)) {
     $placeholders[t('[menu]')] = array_shift($trail);
   }
   else {
     $placeholders[t('[menu]')] = '';
   }
 
-  if ( !empty($trail) ) {
+  if (!empty($trail)) {
     $placeholders[t('[menupath]')] = implode('/', $trail);
   }
   else {
@@ -77,15 +77,15 @@ function pathauto_menu_get_placeholders($in) {
 function pathauto_menu_get_mid($in) {
   global $_menu;
 
-  if ( !is_numeric($in) ) {
-    if ( isset($_menu['path index'][$in]) ) {
+  if (!is_numeric($in)) {
+    if (isset($_menu['path index'][$in])) {
       $mid = $_menu['path index'][$in];
     }
     else {
       $mid = 0;
     }
   }
-  else if ( !isset($_menu['visible'][$in]) ) {
+  else if (!isset($_menu['visible'][$in])) {
     $mid = 0;
   }
 
