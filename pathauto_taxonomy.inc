@@ -131,6 +131,10 @@ function taxonomy_pathauto_bulkupdate() {
     }
     $placeholders['[catpath]'] = $catpath;
     
+    // Append any additional extensions
+    $extplaceholders = module_invoke_all('pathauto_taxonomy', 'values', $category);
+    $placeholders = array_merge($placeholders, $extplaceholders);
+    
     $forumvid = variable_get('forum_nav_vocabulary', '');
     if ($forumvid == $vid) {
       $src = 'forum/'.$category->tid;
