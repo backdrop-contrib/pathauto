@@ -1,6 +1,14 @@
 <?php
 // $Id$
 
+  // Look for any extensions installed in the pathauto directory
+  // we include this here instead of hook_menu for a reason - see http://drupal.org/node/60526
+  $path = drupal_get_path('module', 'pathauto');
+  $files = file_scan_directory($path, '^pathauto_.*\.inc$');
+  foreach ($files as $filename => $file) {
+    include_once($filename);
+  }
+  
 function pathauto_help($section) {
   switch ($section) {
     case 'admin/help#pathauto':
@@ -476,12 +484,6 @@ function pathauto_create_index_alias($alias, $module) {
 }
 
 function pathauto_menu($may_cache) {
-  // Look for any extensions installed in the pathauto directory
-  $path = drupal_get_path('module', 'pathauto');
-  $files = file_scan_directory($path, '^pathauto_.*\.inc$');
-  foreach ($files as $filename => $file) {
-    include_once($filename);
-  }
   
   $items = array();
   if ($may_cache) {
