@@ -490,7 +490,7 @@ function pathauto_menu($may_cache) {
   if ($may_cache) {
     $items[] = array(
       'path' => 'admin/settings/pathauto',
-      'title' => t('pathauto'),
+      'title' => t('Pathauto'),
       'description' => t('Configure how pathauto generates clean URLs for your content.'),
       'callback' => 'drupal_get_form',
       'callback arguments' => array('pathauto_admin_settings'),
