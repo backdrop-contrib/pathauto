@@ -10,6 +10,7 @@
   }
   
 function pathauto_help($section) {
+  $output = '';
   switch ($section) {
     case 'admin/help#pathauto':
       $output = t('Provides a mechanism for modules to automatically generate aliases for the content they manage.');
