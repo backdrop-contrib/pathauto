@@ -151,5 +151,5 @@ function taxonomy_pathauto_bulkupdate() {
   
   drupal_set_message(format_plural($count,
     "Bulk update of terms completed, one alias generated.",
-    "Bulk update of terms completed, %count aliases generated."));
+    "Bulk update of terms completed, @count aliases generated."));
 }

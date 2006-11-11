@@ -138,7 +138,7 @@ function user_pathauto_bulkupdate() {
   
   drupal_set_message(format_plural($count,
     "Bulk update of users completed, one alias generated.",
-    "Bulk update of users completed, %count aliases generated."));
+    "Bulk update of users completed, @count aliases generated."));
 }
 
 // Generate aliases for all blogs without aliases
@@ -161,7 +161,7 @@ function blog_pathauto_bulkupdate() {
   
   drupal_set_message(format_plural($count,
     "Bulk update of user blogs completed, one alias generated.",
-    "Bulk update of user blogs completed, %count aliases generated."));
+    "Bulk update of user blogs completed, @count aliases generated."));
 }
 
 // Generate aliases for all tracker pages without aliases
@@ -184,6 +184,6 @@ function tracker_pathauto_bulkupdate() {
   
   drupal_set_message(format_plural($count,
     "Bulk update of user tracker pages completed, one alias generated.",
-    "Bulk update of user tracker pages completed, %count aliases generated."));
+    "Bulk update of user tracker pages completed, @count aliases generated."));
 }
 

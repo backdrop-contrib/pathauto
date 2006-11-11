@@ -187,7 +187,7 @@ function pathauto_admin_settings() {
   if ($do_index_bulkupdate) {
     drupal_set_message(format_plural($indexcount,
       "Bulk update of index aliases completed, one alias generated.",
-      "Bulk update of index aliases completed, %count aliases generated."));
+      "Bulk update of index aliases completed, @count aliases generated."));
   }
 
   // Keep track of which modules currently support pathauto

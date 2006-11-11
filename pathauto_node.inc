@@ -223,7 +223,7 @@ function node_pathauto_bulkupdate() {
 
   drupal_set_message(format_plural($count,
     "Bulk update of nodes completed, one alias generated.",
-    "Bulk update of nodes completed, %count aliases generated."));
+    "Bulk update of nodes completed, @count aliases generated."));
 }
 
 function node_pathauto_bulkupdate_indexes() {
