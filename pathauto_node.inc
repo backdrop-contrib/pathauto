@@ -154,7 +154,7 @@ function node_get_placeholders($node) {
   }
 
   // And now taxonomy, which is a bit more work
-  if (module_exists('taxonomy') && is_array($node->taxonomy)) {
+  if (module_exists('taxonomy') && is_array($node->taxonomy) && count($node->taxonomy) > 0) {
     // When editing a node, the taxonomy array might have one or more zero
     // term IDs. Ignore them...
     foreach ($node->taxonomy as $firsttermid) {

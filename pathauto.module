@@ -103,10 +103,10 @@ function pathauto_admin_settings() {
     '#description' => t('Words to strip out of the URL alias, separated by commas')
   );
 
-
   // Call the hook on all modules - an array of 'settings' objects is returned
   $all_settings = module_invoke_all('pathauto', 'settings');
   $modulelist = '';
+  $indexcount = 0;
   foreach ($all_settings as $settings) {
     $items = '';
     $module = $settings->module;
@@ -114,7 +114,7 @@ function pathauto_admin_settings() {
     $patterndescr = $settings->patterndescr;
     $patterndefault = $settings->patterndefault;
     $groupheader = $settings->groupheader;
-    $supportsfeeds = $settings->supportsfeeds;
+    $supportsfeeds = isset($settings->supportsfeeds) ? $settings->supportsfeeds : NULL;
     variable_set('pathauto_'.$module.'_supportsfeeds', $supportsfeeds);
 
     $form[$module] = array('#type' => 'fieldset',
@@ -131,7 +131,7 @@ function pathauto_admin_settings() {
 
     // If the module supports a set of specialized patterns, set
     // them up here
-    if ($settings->patternitems) {
+    if (isset($settings->patternitems)) {
       foreach ($settings->patternitems as $itemname => $itemlabel) {
         $variable = 'pathauto_'.$module.'_'.$itemname.'_pattern';
         $form[$module][$variable] = array('#type' => 'textfield',
@@ -174,7 +174,7 @@ function pathauto_admin_settings() {
     }
 
     // If the module supports feeds, offer to generate aliases for them
-    if ($settings->supportsfeeds) {
+    if ($supportsfeeds) {
       $variable = 'pathauto_'.$module.'_applytofeeds';
       $form[$module][$variable] = array('#type' => 'checkbox',
         '#title' => t('Create feed aliases'),
