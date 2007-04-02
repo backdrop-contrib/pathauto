@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Pathauto\n"
 "POT-Creation-Date: 2007-03-23 21:57+0100\n"
-"PO-Revision-Date: 2007-03-25 21:14+0100\n"
+"PO-Revision-Date: 2007-04-02 20:15+0100\n"
 "Last-Translator: Alexander Hass\n"
 "Language-Team: Alexander Hass\n"
 "MIME-Version: 1.0\n"
@@ -98,7 +98,7 @@ msgid ""
 msgstr ""
 "<p>Stellt einen Mechanismus für Module zu Verfügung um automatisch Aliase für von diesen verwalte Inhalte zu erstellen.</p>\n"
 "<h2>Einstellungen</h2>\n"
-"<p>Der Wert der <strong>Maximallänge eines Aliases</strong> und <strong>Maximallänge einer Komponente</strong> beträgt Standardmäßig 100 und hat durch Autopfad eine Begrenzung von 128. Die Länge ist begrenzt durch die Länge der dst Spalte in der Datenbanktabelle url_alias. Das Standard Datenbankschema dieser Spalte ist 128. Wenn die Länge auf den gleichen Wert wie die dst Spalte gesetzt wird, verursacht dies Probleme in Situationen, wo das System an den URL Alias weitere Wörter anhängen muss. Zum Beispiel... URL's welche für Feeds erstellt werden, bekommen ein '/feed' am Ende angehängt. Der Wert sollte die Länge von dst abzüglich aller möglicherweise angehängten Zeichenketten betragen, welche am Ende der URL angehängt werden können. Die Länge der Zeichenketten, welche am Ende von URL's angehängt werden können hängt von den aktivierten Modulen und den Autopfad Einstellungen ab. Der Standard und empfohlene Wert ist 100.</p>"
+"<p>Der Wert der <strong>Maximallänge eines Aliases</strong> und <strong>Maximallänge einer Komponente</strong> beträgt Standardmäßig 100 und hat durch Autopfad eine Begrenzung von 128. Die Länge ist begrenzt durch die Länge der dst Spalte in der Datenbanktabelle url_alias. Das Standard Datenbankschema dieser Spalte ist 128. Wenn die Länge auf den gleichen Wert wie die dst Spalte gesetzt wird, verursacht dies Probleme in Situationen, wo das System an den URL Alias weitere Wörter anhängen muss. Zum Beispiel... URL´s welche für Feeds erstellt werden, bekommen ein „/feed“' am Ende angehängt. Der Wert sollte die Länge von dst abzüglich aller möglicherweise angehängten Zeichenketten betragen, welche am Ende der URL angehängt werden können. Die Länge der Zeichenketten, welche am Ende von URL´s angehängt werden können hängt von den aktivierten Modulen und den Autopfad Einstellungen ab. Der Standard und empfohlene Wert ist 100.</p>"
 
 #: pathauto.module:44
 msgid "You are not authorized to access the pathauto settings."
@@ -158,7 +158,7 @@ msgstr "Erstelle Index Aliase"
 
 #: pathauto.module:97
 msgid "When a pattern generates a hierarchical alias (i.e., any alias containing a slash), generate aliases for each step of the hierarchy which can be used to list content within that hierarchy. For example, if a node alias \"music/concert/beethoven\" is created, also create an alias \"music/concert\" which will list all concert nodes, and an alias \"music\" which will list all music nodes."
-msgstr "Wenn eine Vorlage einen hierarchischen Alias erstellt (z.b.: jeder Alias mit einem Schrägstrich), wird ein Aliase für jeden Schritt in der Hierachie erstellt, welche verwendet werden können um Inhalte innerhalb dieser Hierarchie anzuzeigen. Beispielsweise, wenn der Beitrag-Alias \"music/concert/beethoven\" erstellt wird, wird auch ein Alias \"music/concert\" erstellt, welcher alle Konzertbeiträge auflistet und ein Alias \"music\" welcher alle Musikbeiträge auflistet."
+msgstr "Wenn eine Vorlage einen hierarchischen Alias erstellt (z.b.: jeder Alias mit einem Schrägstrich), wird ein Aliase für jeden Schritt in der Hierachie erstellt, welche verwendet werden können um Inhalte innerhalb dieser Hierarchie anzuzeigen. Beispielsweise, wenn der Beitrag-Alias „music/concert/beethoven“ erstellt wird, wird auch ein Alias „music/concert“ erstellt, welcher alle Konzertbeiträge auflistet und ein Alias „music“ welcher alle Musikbeiträge auflistet."
 
 #: pathauto.module:103
 msgid "Bulk generate index aliases"
@@ -293,7 +293,7 @@ msgstr "[type]"
 
 #: pathauto_node.inc:24
 msgid "The node type (e.g., \"page\", \"story\", etc.)."
-msgstr "Der Inhaltstyp (z.b.: \"Seite\", \"Artikel\", usw. )."
+msgstr "Der Inhaltstyp (z.b.: „Seite“, „Artikel“, usw. )."
 
 #: pathauto_node.inc:25
 #: ;117
