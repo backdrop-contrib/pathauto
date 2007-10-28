@@ -1,4 +1,43 @@
-$Id$
+
+***DRUPAL-5 only***
+2007-05-16
+  Forum aliases are now handled separately.  Forum vocabularies will not get 
+    a regular taxonomy/term/[tid] alias and the pattern input is not available.
+
+  Added a "Delete all aliases" function.  See tabs at admin/build/path.
+
+  Bulk updates claim that they only impact non-aliased objects but really affect
+    everything (depending on update action).  Changed the queries so that now
+    pathauto will only impact items which are not aliased.  To get a clean slate 
+
+2007-04-01
+  Major update to use the token module.  The pattern set is now _much_ richer.  
+    Certain patterns have changed as noted below:
+      Node patterns: 
+      	[user] => [author-name]
+      	[uid]  => [author-uid]
+      	[cat] => [term]  (only for node patterns!!!)
+      	[catalias] => Nothing - so far this is not supported
+
+2006-03-19
+  Removed _pathauto_page capability which wasn't used by many sites
+    nor by any contrib modules.  If your site or module used this
+    consider creating a separate contributed module.  This also 
+    requires removing the index alias function.  See the Pathauto section
+    of the handbook for ideas on how to replace this functionality using views:
+    http://drupal.org/handbook/modules/pathauto and more specificially the 
+    Pathauto Pattern Recipes: http://drupal.org/node/124462
+
+2006-11-11
+  .inc files are now hardcoded instead of being dynamically included
+  	Note: may break your site if you use additional .inc files
+  New Defaults:
+  	Use - (dash) as the separator by default
+  	Limit aliases and components to 100 characters
+  	Make "Create new alias, replacing the old one." the default update action
+
+2006-10-12
+  Allow users to specify a list of words to strip out of the url
 
 ***DRUPAL-4-7 only***
 2006-01-02
@@ -135,3 +174,4 @@ $Id$
   Initial merger of Mike Ryan's autopath with Tommy Sundstrom's 
   path_automatic.
 
+$Id$
