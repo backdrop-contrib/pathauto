@@ -36,7 +36,7 @@ function pathauto_perm() {
 /*
  * Implementation of hook_menu
  */
-function pathauto_menu($may_cache) {
+function pathauto_menu() {
   $items['admin/settings/pathauto'] = array(
     'title' => t('Pathauto'),
     'page callback' => 'drupal_get_form',
@@ -209,10 +209,10 @@ function pathauto_admin_settings() {
     $description = '';
     if (!count($_POST)) {
       $error = _pathauto_check_pattern(variable_get($variable, $patterndefault), $settings->token_type);
-    }
-    if ($error) {
-      $form[$module]['#collapsed'] = FALSE;
-      $description = t('NOTE: This field contains potentially incorrect patterns.');
+      if ($error) {
+        $form[$module]['#collapsed'] = FALSE;
+        $description = t('NOTE: This field contains potentially incorrect patterns.');
+      }
     }
     $form[$module][$variable] = array('#type' => 'textfield',
       '#title' => $patterndescr,
@@ -227,10 +227,10 @@ function pathauto_admin_settings() {
         $variable = 'pathauto_'. $module .'_'. $itemname .'_pattern';
         if (!count($_POST)) {
           $error = _pathauto_check_pattern(variable_get($variable, $patterndefault), $settings->token_type);
-        }
-        if ($error) {
-          $form[$module]['#collapsed'] = FALSE;
-          $description = t('NOTE: This field contains potentially incorrect patterns.');
+          if ($error) {
+            $form[$module]['#collapsed'] = FALSE;
+            $description = t('NOTE: This field contains potentially incorrect patterns.');
+          }
         }
 
         $form[$module][$variable] = array('#type' => 'textfield',
@@ -266,7 +266,7 @@ function pathauto_admin_settings() {
     }
 
     // Perform bulk updates of indexes for this module, if asked
-    if ($do_index_bulkupdate) {
+    if (isset($do_index_bulkupdate) && $do_index_bulkupdate) {
       $function = $module .'_pathauto_bulkupdate_indexes';
       if (is_callable($function)) {
         $indexcount += call_user_func($function);
@@ -284,7 +284,7 @@ function pathauto_admin_settings() {
 
   }
 
-  if ($do_index_bulkupdate) {
+  if (isset($do_index_bulkupdate) && $do_index_bulkupdate) {
     drupal_set_message(format_plural($indexcount,
       "Bulk generation of index aliases completed, one alias generated.",
       "Bulk generation of index aliases completed, @count aliases generated."));
@@ -408,9 +408,9 @@ function pathauto_token_values($type, $object = NULL) {
             $values[$label .'alias'] = '';
           }
       }
+      return $values;
     }
   }
-  return $values;
 }
 
 /**
@@ -485,7 +485,6 @@ function pathauto_admin_delete() {
  *  Submit handler for the bulk delete form
  */
 function pathauto_admin_delete_submit($form, &$form_state) {
-  // TODO this structure may have changed as well
   foreach ($form_state['values'] as $key => $value) {
     if ($value) {
       if ($key == 'all_aliases') {
@@ -538,14 +537,15 @@ function pathauto_nodeapi(&$node, $op, $teaser, $page) {
  * into the path module's fieldset in the node form.
  */
 function pathauto_form_alter(&$form, $form_state, $form_id) {
-  if (isset($form['#id']) && ($form['#id'] == 'node-form')) { //TODO: this or the surrounding structure might have changed
+  if (isset($form['#id']) && ($form['#id'] == 'node-form')) {
     if (user_access('create url aliases')) {
-      $output .= t('An alias will be generated for you. If you wish to create your own alias below, untick this option.');
+      $output = t('An alias will be generated for you. If you wish to create your own alias below, untick this option.');
       if (user_access('administer pathauto')) {
         $output .= t(' To control the format of the generated aliases, see the <a href="@pathauto">Pathauto settings</a>.', array('@pathauto' => url('admin/settings/pathauto')));
       }
 
       drupal_add_js(drupal_get_path('module', 'pathauto') .'/pathauto.js');
+      $form['path']['#collapsed'] = FALSE;
 
       $form['path']['pathauto_perform_alias'] = array('#type' => 'checkbox',
         '#title' => t('Automatic alias'),
