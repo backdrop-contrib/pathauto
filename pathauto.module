@@ -344,11 +344,11 @@ function _pathauto_check_pattern($pattern, $type) {
 function pathauto_admin_settings_validate($form, &$form_state) {
   // Validate that the separator is not set to be removed per http://drupal.org/node/184119
   // This isn't really all that bad so warn, but still allow them to save the value.
-  $separator = $form['pathauto_separator'];
+  $separator = $form_state['values']['pathauto_separator'];
   $punctuation = pathauto_punctuation_chars();
   foreach ($punctuation as $name => $details) {
     if ($details['value'] == $separator) {
-      $action = $form['pathauto_punctuation_'. $name];
+      $action = $form_state['values']['pathauto_punctuation_'. $name];
       if ($action == 0) {
         drupal_set_message(t('You have configured the @name to be the separator and to be removed when encountered in strings.  This can cause problems with your patterns and especially with the catpath and termpath patterns.', array('@name' => $details['name'])), 'error');
       }
@@ -485,7 +485,8 @@ function pathauto_admin_delete() {
  *  Submit handler for the bulk delete form
  */
 function pathauto_admin_delete_submit($form, &$form_state) {
-  foreach ($form as $key => $value) {
+  // TODO this structure may have changed as well
+  foreach ($form_state['values'] as $key => $value) {
     if ($value) {
       if ($key == 'all_aliases') {
         db_query('DELETE FROM {url_alias}');
