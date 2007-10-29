@@ -320,7 +320,7 @@ function _pathauto_check_pattern($pattern, $type) {
 
   // Now, search the pattern and evaluate its contents.
   $matches = array();
-  if (preg_match_all('/\[[a-zA-z_\-]+\]/i', $pattern, $matches)) {
+  if (preg_match_all('/\[[a-zA-z_\-]+?\]/i', $pattern, $matches)) {
     // Loop over each found token.
     foreach ($matches[0] as $id => $token) {
       $token = str_replace('[', '', str_replace(']', '', $token));
