@@ -157,6 +157,10 @@ function pathauto_admin_settings() {
     $disable_transliteration = FALSE;
     $transliteration_help = "When a pattern includes certain characters (such as those with accents) should Pathauto attempt to transliterate them into the ASCII-96 alphabet?  Transliteration is determined by the i18n-ascii.txt file in the Pathauto directory.";
   }
+  else {
+    // Perhaps they've removed the file, set the transliterate option to FALSE
+    variable_set('pathauto_transliterate', FALSE);
+  }
   
   $form["general"]["pathauto_transliterate"] = array('#type' => 'checkbox',
     '#title' => t('Transliterate prior to creating alias'),

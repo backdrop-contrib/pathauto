@@ -47,7 +47,7 @@ function pathauto_install() {
   variable_set('pathauto_verbose', FALSE);
   
   // Make sure we "replace hyphen with separator" by default
-  variable_set('pathauto_punctuation_hyphen', 0); // 0 is replace
+  variable_set('pathauto_punctuation_hyphen', 1); // 1 is replace
 
   // Set the weight to 1
   db_query("UPDATE {system} SET weight = 1 WHERE name = 'pathauto'");
