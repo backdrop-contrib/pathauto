@@ -373,38 +373,40 @@ function pathauto_clean_token_values($full) {
 function pathauto_punctuation_chars() {
   $punctuation = array();
 
-  // Handle " ' , . - _ : ; | { { } ] + = * & % $ £ # @ ! ~ ( ) ? < > \
-  $punctuation['double_quotes']     = array('value' => '"', 'name' => t('Double quotes "'));
-  $punctuation['quotes']            = array('value' => "'", 'name' => t("Single quotes (apostrophe) '"));
-  $punctuation['backtick']          = array('value' => "`", 'name' => t("Back tick `"));
-  $punctuation['comma']             = array('value' => ",", 'name' => t('Comma ,'));
-  $punctuation['period']            = array('value' => ".", 'name' => t('Period .'));
-  $punctuation['hyphen']            = array('value' => "-", 'name' => t('Hyphen -'));
-  $punctuation['underscore']        = array('value' => "_", 'name' => t('Underscore _'));
-  $punctuation['colon']             = array('value' => ":", 'name' => t('Colon :'));
-  $punctuation['semicolon']         = array('value' => ";", 'name' => t('Semicolon ;'));
-  $punctuation['pipe']              = array('value' => "|", 'name' => t('Pipe |'));
-  $punctuation['left_curly']        = array('value' => "{", 'name' => t('Left curly bracket {'));
-  $punctuation['left_square']       = array('value' => "[", 'name' => t('Left square bracket ['));
-  $punctuation['right_curly']       = array('value' => "}", 'name' => t('Right curly bracket }'));
-  $punctuation['right_square']      = array('value' => "]", 'name' => t('Right square bracket ]'));
-  $punctuation['plus']              = array('value' => "+", 'name' => t('Plus +'));
-  $punctuation['equal']             = array('value' => "=", 'name' => t('Equal ='));
-  $punctuation['asterisk']          = array('value' => "*", 'name' => t('Asterisk *'));
-  $punctuation['ampersand']         = array('value' => "&", 'name' => t('Ampersand &'));
-  $punctuation['percent']           = array('value' => "%", 'name' => t('Percent %'));
-  $punctuation['caret']             = array('value' => "^", 'name' => t('Caret ^'));
-  $punctuation['dollar']            = array('value' => "$", 'name' => t('Dollar $'));
-  $punctuation['hash']              = array('value' => "#", 'name' => t('Hash #'));
-  $punctuation['at']                = array('value' => "@", 'name' => t('At @'));
-  $punctuation['exclamation']       = array('value' => "!", 'name' => t('Exclamation !'));
-  $punctuation['tilde']             = array('value' => "~", 'name' => t('Tilde ~'));
-  $punctuation['left_parenthesis']  = array('value' => "(", 'name' => t('Left parenthesis ('));
-  $punctuation['right_parenthesis'] = array('value' => ")", 'name' => t('right parenthesis )'));
-  $punctuation['question_mark']     = array('value' => "?", 'name' => t('Question mark ?'));
-  $punctuation['less_than']         = array('value' => "<", 'name' => t('Less than <'));
-  $punctuation['greater_than']      = array('value' => ">", 'name' => t('Greater than >'));
-  $punctuation['back_slash']        = array('value' => '\\', 'name' => t('Back slash \\'));
+  // Handle " ' , . - _ : ; | { { } ] + = * & % $ £ # @ ! ~ ( ) ? < > \ ¿ ¡
+  $punctuation['double_quotes']      = array('value' => '"', 'name' => t('Double quotes "'));
+  $punctuation['quotes']             = array('value' => "'", 'name' => t("Single quotes (apostrophe) '"));
+  $punctuation['backtick']           = array('value' => "`", 'name' => t("Back tick `"));
+  $punctuation['comma']              = array('value' => ",", 'name' => t('Comma ,'));
+  $punctuation['period']             = array('value' => ".", 'name' => t('Period .'));
+  $punctuation['hyphen']             = array('value' => "-", 'name' => t('Hyphen -'));
+  $punctuation['underscore']         = array('value' => "_", 'name' => t('Underscore _'));
+  $punctuation['colon']              = array('value' => ":", 'name' => t('Colon :'));
+  $punctuation['semicolon']          = array('value' => ";", 'name' => t('Semicolon ;'));
+  $punctuation['pipe']               = array('value' => "|", 'name' => t('Pipe |'));
+  $punctuation['left_curly']         = array('value' => "{", 'name' => t('Left curly bracket {'));
+  $punctuation['left_square']        = array('value' => "[", 'name' => t('Left square bracket ['));
+  $punctuation['right_curly']        = array('value' => "}", 'name' => t('Right curly bracket }'));
+  $punctuation['right_square']       = array('value' => "]", 'name' => t('Right square bracket ]'));
+  $punctuation['plus']               = array('value' => "+", 'name' => t('Plus +'));
+  $punctuation['equal']              = array('value' => "=", 'name' => t('Equal ='));
+  $punctuation['asterisk']           = array('value' => "*", 'name' => t('Asterisk *'));
+  $punctuation['ampersand']          = array('value' => "&", 'name' => t('Ampersand &'));
+  $punctuation['percent']            = array('value' => "%", 'name' => t('Percent %'));
+  $punctuation['caret']              = array('value' => "^", 'name' => t('Caret ^'));
+  $punctuation['dollar']             = array('value' => "$", 'name' => t('Dollar $'));
+  $punctuation['hash']               = array('value' => "#", 'name' => t('Hash #'));
+  $punctuation['at']                 = array('value' => "@", 'name' => t('At @'));
+  $punctuation['exclamation']        = array('value' => "!", 'name' => t('Exclamation !'));
+  $punctuation['tilde']              = array('value' => "~", 'name' => t('Tilde ~'));
+  $punctuation['left_parenthesis']   = array('value' => "(", 'name' => t('Left parenthesis ('));
+  $punctuation['right_parenthesis']  = array('value' => ")", 'name' => t('right parenthesis )'));
+  $punctuation['question_mark']      = array('value' => "?", 'name' => t('Question mark ?'));
+  $punctuation['less_than']          = array('value' => "<", 'name' => t('Less than <'));
+  $punctuation['greater_than']       = array('value' => ">", 'name' => t('Greater than >'));
+  $punctuation['back_slash']         = array('value' => '\\', 'name' => t('Back slash \\'));
+  $punctuation['exclamation_open']   = array('value' => "¡", 'name' => t('Opening exclamation ¡'));
+  $punctuation['question_mark_open'] = array('value' => "¿", 'name' => t('Opening question mark ¿'));
 
   return $punctuation;
 }
