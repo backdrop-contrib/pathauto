@@ -405,8 +405,6 @@ function pathauto_punctuation_chars() {
   $punctuation['less_than']          = array('value' => "<", 'name' => t('Less than <'));
   $punctuation['greater_than']       = array('value' => ">", 'name' => t('Greater than >'));
   $punctuation['back_slash']         = array('value' => '\\', 'name' => t('Back slash \\'));
-  $punctuation['exclamation_open']   = array('value' => "¡", 'name' => t('Opening exclamation ¡'));
-  $punctuation['question_mark_open'] = array('value' => "¿", 'name' => t('Opening question mark ¿'));
 
   return $punctuation;
 }
