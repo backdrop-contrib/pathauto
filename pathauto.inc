@@ -112,6 +112,12 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
     $output = strtr($output, $translations);
   }
 
+  // Reduce to the subset of ASCII128 letters and numbers
+  if (variable_get('pathauto_reduce_ascii', FALSE)) { 
+    $pattern = '/[^a-zA-Z0-9\/]+/ ';
+    $output = preg_replace($pattern, $separator, $output);
+  }
+
   // Get rid of words that are on the ignore list
   $ignore_re = "\b". preg_replace("/,/", "\b|\b", variable_get('pathauto_ignore_words', $ignore_words)) ."\b";
   $output = preg_replace("/$ignore_re/ie", "", $output);

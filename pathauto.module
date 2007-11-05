@@ -161,13 +161,18 @@ function pathauto_admin_settings() {
     // Perhaps they've removed the file, set the transliterate option to FALSE
     variable_set('pathauto_transliterate', FALSE);
   }
-  
   $form["general"]["pathauto_transliterate"] = array('#type' => 'checkbox',
     '#title' => t('Transliterate prior to creating alias'),
     '#default_value' => variable_get('pathauto_transliterate', FALSE),
     '#description' => t($transliteration_help),
     '#disabled' => $disable_transliteration,
   );
+  $form["general"]["pathauto_reduce_ascii"] = array('#type' => 'checkbox',
+    '#title' => t('Reduce strings to letters and numbers from ASCII-96'),
+    '#default_value' => variable_get('pathauto_reduce_ascii', FALSE),
+    '#description' => t("Filters the new alias to only letters and numbers found in the ASCII-96 set."),
+  );
+
 
   $form["general"]["pathauto_ignore_words"] = array('#type' => 'textarea',
     '#title' => t('Strings to Remove'), '#default_value' => variable_get('pathauto_ignore_words', implode(",", $ignore_words)),
