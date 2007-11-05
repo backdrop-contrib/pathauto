@@ -255,8 +255,16 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $type = NULL) 
   // by the module
   if (variable_get('pathauto_'. $module .'_applytofeeds', FALSE)) {
     $feedappend = variable_get('pathauto_'. $module .'_supportsfeeds', '');
-    // Handle replace case (get existing pid)
-    _pathauto_set_alias("$src/$feedappend", "$alias/feed", NULL, $verbose);
+    // If we're in a forum, the src doesn't form the base of the rss feed
+    // TODO refactor this out
+    if ($module == 'forum') {
+      $pieces = explode('/', $src);
+      $tid = $pieces[1];
+      _pathauto_set_alias("taxonomy/term/$tid/$feedappend", "$alias/feed", NULL, $verbose);
+    }
+    else {
+      _pathauto_set_alias("$src/$feedappend", "$alias/feed", NULL, $verbose);
+    }
   }
 
   return $alias;
