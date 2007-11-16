@@ -64,10 +64,10 @@ function pathauto_menu() {
  */
 function _pathauto_include() {
   $pathauto_path = drupal_get_path('module', 'pathauto');
-  include_once("$pathauto_path/pathauto.inc");
-  include_once("$pathauto_path/pathauto_node.inc");
-  include_once("$pathauto_path/pathauto_taxonomy.inc");
-  include_once("$pathauto_path/pathauto_user.inc");
+  require_once("$pathauto_path/pathauto.inc");
+  require_once("$pathauto_path/pathauto_node.inc");
+  require_once("$pathauto_path/pathauto_taxonomy.inc");
+  require_once("$pathauto_path/pathauto_user.inc");
 }
 
 
