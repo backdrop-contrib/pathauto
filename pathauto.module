@@ -30,7 +30,7 @@ function pathauto_help($path, $arg) {
  * Implementation of hook_perm
  */
 function pathauto_perm() {
-  return array('administer pathauto');
+  return array('administer pathauto', 'notify of path changes');
 }
 
 /*
@@ -112,7 +112,6 @@ function pathauto_admin_settings() {
     '#default_value' => variable_get('pathauto_case', 1),
     '#options' => array(t('Leave case the same as source token values.'), t('Change to lower case')),
     );
-
     
   $form["general"]["pathauto_max_length"] = array('#type' => 'textfield',
     '#title' => t('Maximum alias length'), '#size' => 3, '#maxlength' => 3,

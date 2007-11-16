@@ -172,7 +172,7 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
  *   The alias that was created
  */
 function pathauto_create_alias($module, $op, $placeholders, $src, $type = NULL) {
-  if (($op != 'bulkupdate') and variable_get('pathauto_verbose', FALSE)) {
+  if (($op != 'bulkupdate') and variable_get('pathauto_verbose', FALSE) && user_access('notify of path changes')) {
     $verbose = TRUE;
   } 
   else {
@@ -306,7 +306,7 @@ function _pathauto_path_is_callback($path) {
 function _pathauto_set_alias($src, $dst, $pid = NULL, $verbose = FALSE, $old_alias = NULL) {
   // Alert users that an existing callback cannot be overridden automatically
   if (_pathauto_path_is_callback($dst)) {
-    if ($verbose and user_access('create url aliases')) {
+    if ($verbose and user_access('notify of path changes')) {
       drupal_set_message(t('Ignoring alias '). $dst .t(' due to existing path conflict'));
     }
     return;
@@ -324,7 +324,7 @@ function _pathauto_set_alias($src, $dst, $pid = NULL, $verbose = FALSE, $old_ali
         $redirect = TRUE; 
       }
     }
-    if ($verbose and user_access('create url aliases')) {
+    if ($verbose and user_access('notify of path changes')) {
       if ($redirect) {
         drupal_set_message(t('Created new alias %dst for %src, replacing %old_alias. %old_alias now redirects to %dst', array('%dst' => $dst, '%src' => $src, '%old_alias' => $old_alias)));
       }
