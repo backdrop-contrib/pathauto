@@ -219,7 +219,7 @@ function pathauto_admin_settings() {
       $error = _pathauto_check_pattern(variable_get($variable, $patterndefault), $settings->token_type);
       if ($error) {
         $form[$module]['#collapsed'] = FALSE;
-        $description = t('NOTE: This field contains potentially incorrect patterns.');
+        $description = $error;
       }
     }
     $form[$module][$variable] = array('#type' => 'textfield',
@@ -237,7 +237,7 @@ function pathauto_admin_settings() {
           $error = _pathauto_check_pattern(variable_get($variable, $patterndefault), $settings->token_type);
           if ($error) {
             $form[$module]['#collapsed'] = FALSE;
-            $description = t('NOTE: This field contains potentially incorrect patterns.');
+            $description = $error;
           }
         }
 
@@ -331,7 +331,7 @@ function _pathauto_check_pattern($pattern, $type) {
       // Check if the token is even valid in this context.
       if (!array_key_exists($token, $all_tokens)) {
         drupal_set_message(t('You are using the token [%token] which is not valid within the scope of tokens where you are using it.', array('%token' => $token)), 'error');
-        $return = TRUE;
+        $return[] = $token;
       }
       // Check if there is a raw companion that they should be using.
       elseif (!preg_match('/\-raw/i', $token)) {
@@ -340,12 +340,20 @@ function _pathauto_check_pattern($pattern, $type) {
           if (!isset($warned) || !array_key_exists($token, $warned)) {
             drupal_set_message(t('You are using the token [%token] which has a -raw companion available [%raw_token].  For Pathauto patterns you should use the -raw version of tokens unless you really know what you are doing.  See the <a href="@pathauto-help">Pathauto help</a> for more details.', array('%token' => $token, '%raw_token' => $raw_token, '@pathauto-help' => url('admin/help/pathauto'))), 'error');
             $warned[$token] = $token;
-            $return = TRUE;
           }
+          $return[] = $token;
         }
       }
     }
   }
+
+  if ($return) {
+    $description = t('NOTE: This field contains potentially incorrect patterns. ');
+    $description .= format_plural(count($return), "Problem token: ", "Problem tokens: ");
+    $description .= t('%problems', array('%problems' => implode(', ', $return)));
+    $return = $description;
+  }
+
   return $return;
 }
 
