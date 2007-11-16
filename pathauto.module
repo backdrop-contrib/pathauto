@@ -385,6 +385,16 @@ function pathauto_token_values($type, $object = NULL) {
           $category->vid = $vid;
           // In the realm of nodes these are terms, in the realm of Taxonomy, cats
           $label = 'term';
+
+          // We're on a node and it's a book and it has a parent?  Get the book path alias
+          if (module_exists('book')) {
+            if ($object->type == 'book' && $object->parent) {
+              $values['bookpathalias'] = drupal_get_path_alias('node/'. $object->parent);
+            }
+            else {
+              $values['bookpathalias'] = '';
+            }
+          }
           
         case 'taxonomy':
         default:
@@ -445,6 +455,11 @@ function pathauto_token_list($type = 'all') {
       $tokens['node']['termpath-raw'] = t("As [term-raw], but including its supercategories separated by /. WARNING - raw user input.");
       $tokens['node']['termalias'] = t("URL alias for the term.");
     }
+  }
+  if (module_exists('book')) {
+    if ($type == 'node' || $type == 'all') {
+      $tokens['node']['bookpathalias'] = t("URL alias for the parent book.");
+    }    
   }
   return $tokens;
 }
