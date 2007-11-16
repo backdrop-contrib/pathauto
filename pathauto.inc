@@ -96,7 +96,7 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
     $output = str_replace('/', '', $output);
   }
 
-  // Optionally remove accents and transliterate to a subset of ASCII-96 characters.
+  // Optionally remove accents and transliterate
   if (variable_get('pathauto_transliterate', FALSE)) { 
 
     static $i18n_loaded = false;
@@ -112,7 +112,7 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
     $output = strtr($output, $translations);
   }
 
-  // Reduce to the subset of ASCII128 letters and numbers
+  // Reduce to the subset of ASCII96 letters and numbers
   if (variable_get('pathauto_reduce_ascii', FALSE)) { 
     $pattern = '/[^a-zA-Z0-9\/]+/ ';
     $output = preg_replace($pattern, $separator, $output);
