@@ -631,9 +631,18 @@ function pathauto_user($op, &$edit, &$user, $category = FALSE) {
         $placeholders = pathauto_get_placeholders('user', $pathauto_user);
         $src = 'user/'. $user->uid;
         $alias = pathauto_create_alias('user', $op, $placeholders, $src);
+
         if (module_exists('blog')) {
-          $src = 'blog/'. $user->uid;
-          $alias = pathauto_create_alias('blog', $op, $placeholders, $src);
+          $new_user = $user;
+          $new_user->roles = $edit['roles'] + array(DRUPAL_AUTHENTICATED_RID => 'authenticated user');
+          if (user_access('edit own blog', $new_user)) {
+            $src = 'blog/'. $user->uid;
+            $alias = pathauto_create_alias('blog', $op, $placeholders, $src);
+          }
+          else {
+            path_set_alias('blog/'. $user->uid);
+            path_set_alias('blog/'. $user->uid .'/feed');
+          }
         }
         if (module_exists('tracker')) {
           $src = 'user/'. $user->uid .'/track';
