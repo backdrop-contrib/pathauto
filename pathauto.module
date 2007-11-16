@@ -569,7 +569,11 @@ function pathauto_nodeapi(&$node, $op, $teaser, $page) {
  */
 function pathauto_form_alter(&$form, $form_state, $form_id) {
   if (isset($form['#id']) && ($form['#id'] == 'node-form')) {
-    if (user_access('create url aliases')) {
+    $pattern = variable_get('pathauto_node_'. $form['type']['#value'] .'_pattern', FALSE);
+    if (!$pattern) {
+      $pattern = variable_get('pathauto_node_pattern', FALSE);
+    }
+    if ($pattern && user_access('create url aliases')) {
       $output = t('An alias will be generated for you. If you wish to create your own alias below, untick this option.');
       if (user_access('administer pathauto')) {
         $output .= t(' To control the format of the generated aliases, see the <a href="@pathauto">Pathauto settings</a>.', array('@pathauto' => url('admin/settings/pathauto')));
