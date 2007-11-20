@@ -487,18 +487,24 @@ function pathauto_admin_delete() {
   // First we do the "all" case
   $total_count = db_result(db_query("SELECT count(1) FROM {url_alias}"));
   $form['delete']['all_aliases'] = array('#type' => 'checkbox',
-                                         '#title' => t('all aliases'),
-                                         '#default_value' => FALSE,
-                                         '#description' => t('Delete all aliases.  Number of aliases which will be deleted: %count.', array('%count' => $total_count)));
+    '#title' => t('all aliases'),
+    '#default_value' => FALSE,
+    '#description' => t('Delete all aliases.  Number of aliases which will be deleted: %count.', array('%count' => $total_count)));
+
+  $total_count = db_result(db_query("SELECT count(1) FROM url_alias ua INNER JOIN url_alias_extra uax ON ua.pid = uax.pid AND ua.dst = uax.dst"));
+  $form['delete']['all_pathauto_aliases'] = array('#type' => 'checkbox',
+    '#title' => t('all Pathauto aliases'),
+    '#default_value' => FALSE,
+    '#description' => t('Delete aliases created by Pathauto 5.x-2.1 or higher.  Number of aliases which will be deleted: %count.', array('%count' => $total_count)));
 
   // Next, iterate over an array of objects/alias types which can be deleted and provide checkboxes
   $objects = _pathauto_objects_to_delete();
   foreach ($objects as $internal_name => $label) {
     $count = db_result(db_query("SELECT count(1) FROM {url_alias} WHERE src LIKE '%s%%'", $internal_name));
     $form['delete'][$internal_name] = array('#type' => 'checkbox',
-                                            '#title' => $label, // This label is sent through t() in the hard coded function where it is defined
-                                            '#default_value' => FALSE,
-                                            '#description' => t('Delete aliases for all @label. Number of aliases which will be deleted: %count.', array('@label' => $label, '%count' => $count)));
+      '#title' => $label, // This label is sent through t() in the hard coded function where it is defined
+      '#default_value' => FALSE,
+      '#description' => t('Delete aliases for all @label. Number of aliases which will be deleted: %count.', array('@label' => $label, '%count' => $count)));
   }
 
   // Warn them and give a button that shows we mean business
@@ -517,8 +523,12 @@ function pathauto_admin_delete() {
 function pathauto_admin_delete_submit($form, &$form_state) {
   foreach ($form_state['values'] as $key => $value) {
     if ($value) {
-      if ($key == 'all_aliases') {
+      if ($key === 'all_aliases') {
         db_query('DELETE FROM {url_alias}');
+        drupal_set_message(t('All of your path aliases have been deleted.'));
+      }
+      if ($key === 'all_pathauto_aliases') {
+        db_query('DELETE {url_alias} ua,  {url_alias_extra} uax FROM {url_alias} ua INNER JOIN {url_alias_extra} uax on ua.pid = uax.pid and ua.dst = uax.dst');
         drupal_set_message(t('All of your path aliases have been deleted.'));
       }
       $objects = _pathauto_objects_to_delete();
@@ -550,7 +560,7 @@ function pathauto_nodeapi(&$node, $op, $teaser, $page) {
         if ($node->pathauto_perform_alias || !isset($node->pathauto_perform_alias)) {
           $placeholders = pathauto_get_placeholders('node', $node);
           $src = "node/$node->nid";
-          $alias = pathauto_create_alias('node', $op, $placeholders, $src, $node->type);
+          $alias = pathauto_create_alias('node', $op, $placeholders, $src, $node->nid, $node->type);
         }
         break;
       default:
@@ -572,6 +582,8 @@ function pathauto_form_alter(&$form, $form_state, $form_id) {
     if (!$pattern) {
       $pattern = variable_get('pathauto_node_pattern', FALSE);
     }
+    $path = $form['path']['path']['#default_value'];
+    $pid = db_result(db_query("SELECT pid FROM {url_alias_extra} WHERE dst = '%s'", $path));
     if ($pattern && user_access('create url aliases')) {
       $output = t('An alias will be generated for you. If you wish to create your own alias below, untick this option.');
       if (user_access('administer pathauto')) {
@@ -583,7 +595,7 @@ function pathauto_form_alter(&$form, $form_state, $form_id) {
 
       $form['path']['pathauto_perform_alias'] = array('#type' => 'checkbox',
         '#title' => t('Automatic alias'),
-        '#default_value' => TRUE,
+        '#default_value' => $pid,
         '#description' => $output,
         '#weight' => 0
       );
@@ -648,7 +660,7 @@ function pathauto_user($op, &$edit, &$user, $category = FALSE) {
       if ($user->name) {
         $placeholders = pathauto_get_placeholders('user', $pathauto_user);
         $src = 'user/'. $user->uid;
-        $alias = pathauto_create_alias('user', $op, $placeholders, $src);
+        $alias = pathauto_create_alias('user', $op, $placeholders, $src, $user->uid);
 
         if (module_exists('blog')) {
           $new_user = $user;
@@ -656,7 +668,7 @@ function pathauto_user($op, &$edit, &$user, $category = FALSE) {
           $new_user->roles[DRUPAL_AUTHENTICATED_RID] = 'authenticated user'; // Add this back
           if (user_access('edit own blog', $new_user)) {
             $src = 'blog/'. $user->uid;
-            $alias = pathauto_create_alias('blog', $op, $placeholders, $src);
+            $alias = pathauto_create_alias('blog', $op, $placeholders, $src, $user->uid);
           }
           else {
             path_set_alias('blog/'. $user->uid);
@@ -665,7 +677,7 @@ function pathauto_user($op, &$edit, &$user, $category = FALSE) {
         }
         if (module_exists('tracker')) {
           $src = 'user/'. $user->uid .'/track';
-          $alias = pathauto_create_alias('tracker', $op, $placeholders, $src);
+          $alias = pathauto_create_alias('tracker', $op, $placeholders, $src, $user->uid);
         }
       }
       break;

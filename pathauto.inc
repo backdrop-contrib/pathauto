@@ -171,7 +171,7 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
  * @return
  *   The alias that was created
  */
-function pathauto_create_alias($module, $op, $placeholders, $src, $type = NULL) {
+function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $type = NULL) {
   if (($op != 'bulkupdate') and variable_get('pathauto_verbose', FALSE) && user_access('notify of path changes')) {
     $verbose = TRUE;
   } 
@@ -249,7 +249,7 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $type = NULL) 
 
   // If $pid is NULL, a new alias is created - otherwise, the existing
   // alias for the designated src is replaced
-  _pathauto_set_alias($src, $alias, $pid, $verbose, $old_alias);
+  _pathauto_set_alias($src, $alias, $module, $entity_id, $pid, $verbose, $old_alias);
 
   // Also create a related feed alias if requested, and if supported
   // by the module
@@ -260,10 +260,10 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $type = NULL) 
     if ($module == 'forum') {
       $pieces = explode('/', $src);
       $tid = $pieces[1];
-      _pathauto_set_alias("taxonomy/term/$tid/$feedappend", "$alias/feed", NULL, $verbose);
+      _pathauto_set_alias("taxonomy/term/$tid/$feedappend", "$alias/feed", $module, $entity_id, NULL, $verbose);
     }
     else {
-      _pathauto_set_alias("$src/$feedappend", "$alias/feed", NULL, $verbose);
+      _pathauto_set_alias("$src/$feedappend", "$alias/feed", $module, $entity_id, NULL, $verbose);
     }
   }
 
@@ -303,7 +303,7 @@ function _pathauto_path_is_callback($path) {
  *   If the item is currently aliased, the existing alias for that item.
  * 
  */
-function _pathauto_set_alias($src, $dst, $pid = NULL, $verbose = FALSE, $old_alias = NULL) {
+function _pathauto_set_alias($src, $dst, $entity_type, $entity_id, $pid = NULL, $verbose = FALSE, $old_alias = NULL) {
   // Alert users that an existing callback cannot be overridden automatically
   if (_pathauto_path_is_callback($dst)) {
     if ($verbose and user_access('notify of path changes')) {
@@ -315,6 +315,9 @@ function _pathauto_set_alias($src, $dst, $pid = NULL, $verbose = FALSE, $old_ali
   // Skip replacing the current alias with an identical alias
   if ($old_alias != $dst) {
     path_set_alias($src, $dst, $pid);
+    $new_pid = db_result(db_query("SELECT pid FROM {url_alias} WHERE src = '%s' and dst = '%s'", $src, $dst));
+    db_query("INSERT INTO {url_alias_extra} (pid, dst, entity_type, entity_id, created_by) VALUES (%d, '%s', '%s', %d, '%s')", $new_pid, $dst, $entity_type, $entity_id, 'Pathauto'); 
+
     if (variable_get('pathauto_update_action', 2) == 3 && function_exists('path_redirect_save')) {
       if (isset($old_alias)) {
         $save['path'] = $old_alias;

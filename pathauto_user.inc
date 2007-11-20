@@ -92,7 +92,7 @@ function user_pathauto_bulkupdate() {
   while ($user = db_fetch_object($result)) {
     $placeholders = pathauto_get_placeholders('user', $user);        
     $src = 'user/'. $user->uid;
-    if ($alias = pathauto_create_alias('user', 'bulkupdate', $placeholders, $src)) {
+    if ($alias = pathauto_create_alias('user', 'bulkupdate', $placeholders, $src, $user->uid)) {
       $count++;
     }
   }
@@ -115,7 +115,7 @@ function blog_pathauto_bulkupdate() {
   while ($user = db_fetch_object($result)) {
     $placeholders = pathauto_get_placeholders('user', $user);
     $src = 'blog/'. $user->uid;
-    if ($alias = pathauto_create_alias('blog', 'bulkupdate', $placeholders, $src)) {
+    if ($alias = pathauto_create_alias('blog', 'bulkupdate', $placeholders, $src, $user->uid)) {
       $count++;
     }
   }
@@ -137,7 +137,7 @@ function tracker_pathauto_bulkupdate() {
   while ($user = db_fetch_object($result)) {
     $placeholders = pathauto_get_placeholders('user', $user);
     $src = 'user/'. $user->uid .'/track';
-    if ($alias = pathauto_create_alias('tracker', 'bulkupdate', $placeholders, $src)) {
+    if ($alias = pathauto_create_alias('tracker', 'bulkupdate', $placeholders, $src, $user->uid)) {
       $count++;
     }
   }
