@@ -66,7 +66,7 @@ function tracker_pathauto($op) {
       $settings['token_type'] = 'user';
       $settings['groupheader'] = t('User-tracker path settings');
       $settings['patterndescr'] = t('Pattern for user-tracker page paths');
-      $settings['patterndefault'] = t('users/[user]/track');
+      $settings['patterndefault'] = t('users/[user-raw]/track');
       $patterns = module_invoke_all('token_list', 'user');
       foreach ($patterns['user'] as $pattern => $description) {
         $settings['placeholders'][t('['. $pattern .']')] = t($description);
