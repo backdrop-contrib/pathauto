@@ -377,6 +377,7 @@ function pathauto_admin_settings_validate($form, &$form_state) {
 function pathauto_token_values($type, $object = NULL) {
   if (module_exists('taxonomy')) {
     if ($type == 'taxonomy' || $type == 'node' || $type == 'all') {
+      _pathauto_include();
       switch ($type) {
         case 'node':
           $vid = db_result(db_query("SELECT t.vid FROM {term_node} r INNER JOIN {term_data} t ON r.tid = t.tid INNER JOIN {vocabulary} v ON t.vid = v.vid WHERE r.nid = %d ORDER BY v.weight, t.weight, t.name LIMIT 1", $object->nid));
