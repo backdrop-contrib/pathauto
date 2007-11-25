@@ -17,7 +17,7 @@ function taxonomy_pathauto($op) {
       foreach ($patterns as $type => $pattern_set) {
         if ($type != 'global') {
           foreach ($pattern_set as $pattern => $description) {
-            $settings['placeholders'][t('['. $pattern .']')] = t($description);
+            $settings['placeholders']['['. $pattern .']'] = $description;
           }
         }
       }
@@ -109,7 +109,7 @@ function forum_pathauto($op) {
       foreach ($patterns as $type => $pattern_set) {
         if ($type != 'global') {
           foreach ($pattern_set as $pattern => $description) {
-            $settings['placeholders'][t('['. $pattern .']')] = t($description);
+            $settings['placeholders']['['. $pattern .']'] = $description;
           }
         }
       }

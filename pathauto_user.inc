@@ -17,7 +17,7 @@ function user_pathauto($op) {
       foreach ($patterns as $type => $pattern_set) {
         if ($type != 'global') {
           foreach ($pattern_set as $pattern => $description) {
-            $settings['placeholders'][t('['. $pattern .']')] = t($description);
+            $settings['placeholders']['['. $pattern .']'] = $description;
           }
         }
       }
@@ -44,7 +44,7 @@ function blog_pathauto($op) {
       $settings['patterndefault'] = t('blogs/[user-raw]');
       $patterns = token_get_list('user');
       foreach ($patterns['user'] as $pattern => $description) {
-        $settings['placeholders'][t('['. $pattern .']')] = t($description);
+        $settings['placeholders']['['. $pattern .']'] = $description;
       }
       $settings['supportsfeeds'] = 'feed';
       $settings['bulkname'] = t('Bulk generate aliases for blogs that are not aliased');
@@ -69,7 +69,7 @@ function tracker_pathauto($op) {
       $settings['patterndefault'] = t('users/[user-raw]/track');
       $patterns = module_invoke_all('token_list', 'user');
       foreach ($patterns['user'] as $pattern => $description) {
-        $settings['placeholders'][t('['. $pattern .']')] = t($description);
+        $settings['placeholders']['['. $pattern .']'] = $description;
       }
       $settings['supportsfeeds'] = 'feed';
       $settings['bulkname'] = t('Bulk generate aliases for user-tracker paths that are not aliased');
