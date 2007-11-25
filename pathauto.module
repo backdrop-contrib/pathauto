@@ -256,7 +256,17 @@ function pathauto_admin_settings() {
       $doc .= '<dd>'. $description .'</dd>';
     }
     $doc .= "</dl>\n";
-    $form[$module][$variable]["#description"] .= $doc;
+    $form[$module]['token_help'] = array(
+      '#title' => t('Replacement patterns'),
+      '#type' => 'fieldset',
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      '#description' => t('Use -raw replacements for text to avoid problems with HTML entities.'),
+    );
+    $form[$module]['token_help']['help'] = array(
+      '#value' => $doc,
+    );
+
 
     // If the module supports bulk updates, offer the update action here
     if ($settings->bulkname) {
