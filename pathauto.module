@@ -502,7 +502,7 @@ function pathauto_admin_delete() {
     '#default_value' => FALSE,
     '#description' => t('Delete all aliases.  Number of aliases which will be deleted: %count.', array('%count' => $total_count)));
 
-  $total_count = db_result(db_query("SELECT count(1) FROM url_alias ua INNER JOIN url_alias_extra uax ON ua.pid = uax.pid AND ua.dst = uax.dst"));
+  $total_count = db_result(db_query("SELECT count(1) FROM {url_alias} ua INNER JOIN {url_alias_extra} uax ON ua.pid = uax.pid AND ua.dst = uax.dst"));
   $form['delete']['all_pathauto_aliases'] = array('#type' => 'checkbox',
     '#title' => t('all Pathauto aliases'),
     '#default_value' => FALSE,
