@@ -55,7 +55,7 @@ function taxonomy_pathauto_bulkupdate() {
   $count = 0;
   $placeholders = array();
   while ($category = db_fetch_object($result)) {
-    $count = _taxonomy_pathauto_alias($category, 'bulkupdate') + $count;
+    $count += _taxonomy_pathauto_alias($category, 'bulkupdate');
   }
   
   drupal_set_message(format_plural($count,

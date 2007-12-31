@@ -63,6 +63,39 @@ function _pathauto_alias_exists($alias, $src) {
 }
 
 /**
+ * Returns old alias and pid if there is already an alias pointing to a different item
+ * 
+ * @param string $src
+ *   A string that is the internal path
+ * 
+ */
+function _pathauto_existing_alias_data ($src) {
+  $output = array(
+    'pid' => '',
+    'old_alias' => ''
+  );
+  $result = db_query("SELECT pid, dst FROM {url_alias} WHERE src='%s'", $src);
+  if ($data = db_fetch_object($result)) {
+    // The item is already aliased, check what to do...
+    switch (variable_get('pathauto_update_action', 2)) {
+      // Replace old alias - remember the pid to update
+      case 2:
+      case 3:
+        $output['pid'] = $data->pid;
+      // Add new alias in addition to old one
+      case 1:
+        $output['old_alias'] = $data->dst;
+        break;
+      // Do nothing
+      case 0:
+      default:
+        break;
+    }
+  }
+  return $output;
+}
+
+/**
  * Clean up a string value provided by a module, resulting in a
  * string containing only alphanumerics and separators
  * @param $string
@@ -193,31 +226,29 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $t
     return '';
   }
 
+  if ($module == 'taxonomy') {
+    // Get proper path for term.
+    $term_path = taxonomy_term_path(taxonomy_get_term($entity_id));
+    if ($term_path != $src) {
+      // Quietly alias 'taxonomy/term/[tid]' with proper path for term.
+      $update_data = _pathauto_existing_alias_data($src);
+      _pathauto_set_alias($src, $term_path, $module, $entity_id, $update_data['pid'], FALSE, $update_data['old_alias']);
+      // Set $src as proper path.
+      $src = $term_path;
+    }
+  }
+  
   // Special handling when updating an item which is already aliased.
   $pid = NULL;
   $old_alias = NULL;
   if ($op == 'update' or $op == 'bulkupdate') {
-    $result = db_query("SELECT pid, dst FROM {url_alias} WHERE src='%s'", $src);
-    if ($data = db_fetch_object($result)) {
-      // The item is already aliased, check what to do...
-      switch (variable_get('pathauto_update_action', 2)) {
-        // Do nothing
-        case 0:
-          return '';
-        // Add new alias in addition to old one
-        case 1:
-          $old_alias = $data->dst;
-          break;
-        // Replace old alias - remember the pid to update
-        case 2:
-        case 3:
-          $pid = $data->pid;
-          $old_alias = $data->dst;
-          break;
-        default:
-          break;
-      }
+    if (variable_get('pathauto_update_action', 2) == 0) {
+      // Do nothing
+      return '';
     }
+    $update_data = _pathauto_existing_alias_data($src);
+    $pid = $update_data['pid'];
+    $old_alias = $update_data['old_alias'];
   }
 
   // Replace the placeholders with the values provided by the module,
@@ -255,19 +286,12 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $t
   // by the module
   if (variable_get('pathauto_'. $module .'_applytofeeds', FALSE)) {
     $feedappend = variable_get('pathauto_'. $module .'_supportsfeeds', '');
-    // If we're in a forum, the src doesn't form the base of the rss feed
-    // TODO refactor this out
-    if ($module == 'forum') {
-      $feed_src = "taxonomy/term/$entity_id/$feedappend";
+    // For forums and taxonomies, the src doesn't always form the base of the rss feed (ie. image galleries)
+    if ($module == 'taxonomy' || $module == 'forum') {
+      _pathauto_set_alias("taxonomy/term/$entity_id/$feedappend", "$alias/feed", $module, $entity_id, NULL, $verbose);
     }
     else {
-      $feed_src = "$src/$feedappend";
-    }
-    // check if the same alias does not already exist
-    if (db_result(db_query(
-        "SELECT COUNT(dst) FROM {url_alias} WHERE dst = '%s' AND src = '%s'",
-        "$alias/feed", "$feed_src")) == 0) {
-      _pathauto_set_alias($feed_src, "$alias/feed", $module, $entity_id, NULL, $verbose);
+      _pathauto_set_alias("$src/$feedappend", "$alias/feed", $module, $entity_id, NULL, $verbose);
     }
   }
 

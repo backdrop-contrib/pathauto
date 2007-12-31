@@ -659,6 +659,7 @@ function pathauto_taxonomy($op, $type, $object = NULL) {
           //If the category is deleted, remove the path aliases
           $category = (object) $object;
           path_set_alias('taxonomy/term/'. $category->tid);
+          path_set_alias(taxonomy_term_path($category));
           path_set_alias('forum/'. $category->tid);
           path_set_alias('taxonomy/term/'. $category->tid .'/0/feed');
           break;
