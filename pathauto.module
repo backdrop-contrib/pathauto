@@ -418,6 +418,7 @@ function pathauto_token_values($type, $object = NULL) {
           }
           $separator = variable_get('pathauto_separator', '-');
           $parents = taxonomy_get_parents_all($category->tid);
+          array_shift($parents);
           $catpath = '';
           $catpath_raw = '';
           foreach ($parents as $parent) {
@@ -425,8 +426,8 @@ function pathauto_token_values($type, $object = NULL) {
             $catpath = pathauto_cleanstring(check_plain(preg_replace('/\//', '', $parent->name))) .'/'. $catpath;
             $catpath_raw = pathauto_cleanstring(preg_replace('/\//', '', $parent->name)) .'/'. $catpath_raw;
           }
-          $values[$label .'path'] = $catpath;
-          $values[$label .'path-raw'] = $catpath_raw;
+          $values[$label .'path'] = $catpath .'/'. check_plain($category->name);
+          $values[$label .'path-raw'] = $catpath_raw .'/'. $category->name;
           
           // We only do this for taxonomy because token already provides the [term] value but has problem with [cat] TODO: fix that?
           if ($type == 'taxonomy') { 
@@ -642,6 +643,11 @@ function pathauto_taxonomy($op, $type, $object = NULL) {
           $category = (object) $object;
           if ($category->name) {
             $count = _taxonomy_pathauto_alias($category, $op);
+          }
+
+          //For all children generate new alias (important if [catpath] used)
+          foreach (taxonomy_get_tree($category->vid,$category->tid) as $subcategory) {
+            $count = _taxonomy_pathauto_alias($subcategory, $op);
           }
 
           break;
