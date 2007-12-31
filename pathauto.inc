@@ -311,7 +311,14 @@ function _pathauto_set_alias($src, $dst, $entity_type, $entity_id, $pid = NULL, 
   // Alert users that an existing callback cannot be overridden automatically
   if (_pathauto_path_is_callback($dst)) {
     if ($verbose and user_access('notify of path changes')) {
-      drupal_set_message(t('Ignoring alias '). $dst .t(' due to existing path conflict'));
+      drupal_set_message(t('Ignoring alias %dst due to existing path conflict.', array('%dst' => $dst)));
+    }
+    return;
+  }
+  // Alert users if they are trying to create an alias that is the same as the internal path
+  if ($src == $dst) {
+    if ($verbose and user_access('notify of path changes')) {
+      drupal_set_message(t('Ignoring alias %dst  because it is the same as the internal path.', array('%dst' => $dst)));
     }
     return;
   }
