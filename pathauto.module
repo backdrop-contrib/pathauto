@@ -669,6 +669,9 @@ function pathauto_taxonomy($op, $type, $object = NULL) {
  * Implementation of hook_user() for users, trackers, and blogs
  */
 function pathauto_user($op, &$edit, &$user, $category = FALSE) {
+  // Under rare circumstances the global $user isn't available yet so we call it here
+  // See http://drupal.org/node/193733 for more details why this should stay here
+  global $user;
   _pathauto_include();
   switch ($op) {
     case 'insert':
