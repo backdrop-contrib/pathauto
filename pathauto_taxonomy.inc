@@ -23,7 +23,7 @@ function taxonomy_pathauto($op) {
       }
       $settings['supportsfeeds'] = '0/feed';
       $settings['bulkname'] = t('Bulk generate aliases for categories that are not aliased');
-      $settings['bulkdescr'] = t('Generate aliases for all existing categories which do not already have aliases. Note: Bulk Update may not complete on large or slow sites. See the README.txt for more information.');
+      $settings['bulkdescr'] = t('Generate aliases for all existing categories which do not already have aliases.');
 
       $vocabularies = taxonomy_get_vocabularies();
       if (sizeof($vocabularies) > 0) {

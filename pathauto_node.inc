@@ -14,7 +14,7 @@ function node_pathauto($op) {
       $settings['patterndescr'] = t('Default path pattern (applies to all node types with blank patterns below)');
       $settings['patterndefault'] = t('content/[title-raw]');
       $settings['bulkname'] = t('Bulk generate aliases for nodes that are not aliased');
-      $settings['bulkdescr'] = t('Generate aliases for all existing nodes which do not already have aliases. Note: Bulk Update may not complete on large or slow sites. See the README.txt for more information.');
+      $settings['bulkdescr'] = t('Generate aliases for all existing nodes which do not already have aliases.');
 
       $patterns = token_get_list('node');
       foreach ($patterns as $type => $pattern_set) {

@@ -23,7 +23,7 @@ function user_pathauto($op) {
       }
 
       $settings['bulkname'] = t('Bulk generate aliases for users that are not aliased');
-      $settings['bulkdescr'] = t('Generate aliases for all existing user account pages which do not already have aliases. Note: Bulk Update may not complete on large or slow sites. See the README.txt for more information.');
+      $settings['bulkdescr'] = t('Generate aliases for all existing user account pages which do not already have aliases.');
       return (object) $settings;
     default:
       break;
@@ -48,7 +48,7 @@ function blog_pathauto($op) {
       }
       $settings['supportsfeeds'] = 'feed';
       $settings['bulkname'] = t('Bulk generate aliases for blogs that are not aliased');
-      $settings['bulkdescr'] = t('Generate aliases for all existing blog pages which do not already have aliases. Note: Bulk Update may not complete on large or slow sites. See the README.txt for more information.');
+      $settings['bulkdescr'] = t('Generate aliases for all existing blog pages which do not already have aliases.');
       return (object) $settings;
     default:
       break;
