@@ -416,32 +416,32 @@ function pathauto_token_values($type, $object = NULL) {
           if (!isset($label)) {
             $label = 'cat';
           }
-          $separator = variable_get('pathauto_separator', '-');
-          $parents = taxonomy_get_parents_all($category->tid);
-          array_shift($parents);
-          $catpath = '';
-          $catpath_raw = '';
-          foreach ($parents as $parent) {
-            // Replace any / characters in individual terms which might create confusing URLs
-            $catpath = pathauto_cleanstring(check_plain(preg_replace('/\//', '', $parent->name))) .'/'. $catpath;
-            $catpath_raw = pathauto_cleanstring(preg_replace('/\//', '', $parent->name)) .'/'. $catpath_raw;
+          if (isset($category->tid)) {
+            $separator = variable_get('pathauto_separator', '-');
+            $parents = taxonomy_get_parents_all($category->tid);
+            array_shift($parents);
+            $catpath = '';
+            $catpath_raw = '';
+            foreach ($parents as $parent) {
+              // Replace any / characters in individual terms which might create confusing URLs
+              $catpath = pathauto_cleanstring(check_plain(preg_replace('/\//', '', $parent->name))) .'/'. $catpath;
+              $catpath_raw = pathauto_cleanstring(preg_replace('/\//', '', $parent->name)) .'/'. $catpath_raw;
+            }
+            $values[$label .'path'] = $catpath .'/'. check_plain($category->name);
+            $values[$label .'path-raw'] = $catpath_raw .'/'. $category->name;
+            
+            // We only do this for taxonomy because token already provides the [term] value but has problem with [cat] TODO: fix that?
+            if ($type == 'taxonomy') { 
+              $values[$label] = check_plain($category->name);
+              $values[$label .'-raw'] = $category->name;
+            }
+            
+            $values[$label .'alias'] = drupal_get_path_alias('taxonomy/term/'. $category->tid);
+            if (!strncasecmp($values[$label .'alias'], 'taxonomy', 8)) {
+              $values[$label .'alias'] = $values[$label];
+            }
           }
-          $values[$label .'path'] = $catpath .'/'. check_plain($category->name);
-          $values[$label .'path-raw'] = $catpath_raw .'/'. $category->name;
-          
-          // We only do this for taxonomy because token already provides the [term] value but has problem with [cat] TODO: fix that?
-          if ($type == 'taxonomy') { 
-            $values[$label] = check_plain($category->name);
-            $values[$label .'-raw'] = $category->name;
-          }
-          
-          $values[$label .'alias'] = drupal_get_path_alias('taxonomy/term/'. $category->tid);
-          if (!strncasecmp($values[$label .'alias'], 'taxonomy', 8)) {
-            $values[$label .'alias'] = $values[$label];
-          }
-          
-          // Provide some defaults if they aren't set.
-          if (!isset($values[$label .'path'])) {
+          else { // Provide some defaults if they aren't set.
             $values[$label .'path'] = '';
             $values[$label .'path-raw'] = '';
             $values[$label .'alias'] = '';

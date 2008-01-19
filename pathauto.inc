@@ -368,7 +368,7 @@ function _pathauto_set_alias($src, $dst, $entity_type, $entity_id, $pid = NULL, 
       }
     }
     if ($verbose and user_access('notify of path changes')) {
-      if ($redirect) {
+      if (isset($redirect) && $redirect) {
         drupal_set_message(t('Created new alias %dst for %src, replacing %old_alias. %old_alias now redirects to %dst', array('%dst' => $dst, '%src' => $src, '%old_alias' => $old_alias)));
       }
       elseif ($pid) {
