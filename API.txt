@@ -13,8 +13,8 @@ of the form pathauto_<module>.inc in the pathauto directory.
 Note that as of Pathauto 5-2 this API is vastly simplified.  If all you want is
 to enable tokens for your module you will simply need to implement two functions
 
-	hook_token_values
-	hook_token_list
+  hook_token_values
+  hook_token_list
 
 See the token.module for more information about this process.  
 
@@ -99,6 +99,22 @@ The function should iterate over the content items controlled by the
 module, calling pathauto_create_alias() for each one. It is
 recommended that the function report on its success (e.g., with a 
 count of created aliases) via drupal_set_message().
+
+
+==================
+4 - Bulk delete hook
+==================
+
+For modules that create new types of pages that can be aliased with pathauto, a
+hook implementation is needed to allow the user to delete them all at once.
+
+function hook_path_alias_types()
+
+This hook returns an array whose keys match the beginning of the source paths
+(e.g.: "node/", "user/", etc.) and whose values describe the type of page (e.g.:
+"content", "users"). Like all displayed strings, these descriptionsshould be 
+localized with t(). Use % to match interior pieces of a path; "user/%/track". This
+is a database wildcard, so be careful.
 
 
 ==================

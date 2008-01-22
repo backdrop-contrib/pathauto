@@ -512,7 +512,7 @@ function pathauto_admin_delete() {
     '#description' => t('Delete aliases created by Pathauto 5.x-2.1 or higher.  Number of aliases which will be deleted: %count.', array('%count' => $total_count)));
 
   // Next, iterate over an array of objects/alias types which can be deleted and provide checkboxes
-  $objects = _pathauto_objects_to_delete();
+  $objects = module_invoke_all('path_alias_types');
   foreach ($objects as $internal_name => $label) {
     $count = db_result(db_query("SELECT count(1) FROM {url_alias} WHERE src LIKE '%s%%'", $internal_name));
     $form['delete'][$internal_name] = array('#type' => 'checkbox',
@@ -545,7 +545,7 @@ function pathauto_admin_delete_submit($form, &$form_state) {
         db_query('DELETE {url_alias} ua,  {url_alias_extra} uax FROM {url_alias} ua INNER JOIN {url_alias_extra} uax on ua.pid = uax.pid and ua.dst = uax.dst');
         drupal_set_message(t('All of your path aliases have been deleted.'));
       }
-      $objects = _pathauto_objects_to_delete();
+      $objects = module_invoke_all('path_alias_types');
       if (array_key_exists($key, $objects)) {
         db_query("DELETE FROM {url_alias} WHERE src LIKE '%s%%'", $key);
         drupal_set_message(t('All of your %type path aliases have been deleted.', array('%type' => $objects[$key])));
@@ -555,7 +555,7 @@ function pathauto_admin_delete_submit($form, &$form_state) {
   return 'admin/build/path/delete_bulk';
 }
 
-function _pathauto_objects_to_delete() {
+function pathauto_path_alias_types() {
   return array('user/' => t('users'), 'node/' => t('content') , 'taxonomy/' => t('vocabularies and terms'), 'blog/' => t('user blogs'), 'user/%/track' => t('user trackers'));
 }
 
