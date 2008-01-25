@@ -698,7 +698,7 @@ function pathauto_user($op, &$edit, &$user, $category = FALSE) {
 
         if (module_exists('blog')) {
           $new_user = $user;
-          $new_user->roles = $edit['roles'];
+          $new_user->roles = isset($edit['roles']) ? $edit['roles']: array();
           $new_user->roles[DRUPAL_AUTHENTICATED_RID] = 'authenticated user'; // Add this back
           if (user_access('edit own blog', $new_user)) {
             $src = 'blog/'. $user->uid;
