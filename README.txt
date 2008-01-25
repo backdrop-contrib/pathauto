@@ -67,6 +67,10 @@ http://drupal.org/project/issues/pathauto - and specifically at the issues
 http://drupal.org/node/76172 and http://drupal.org/node/67665 You can help 
 provide ideas, code, and testing in those issues to make pathauto better.
 
+**WYSIWYG Conflicts - FCKEditor, TinyMCE, etc.
+If you use a WYSIWYG editor, please disable it for the Pathauto admin page.  
+Failure to do so may cause errors about "preg_replace" problems due to the <p>
+tag being added to the "strings to replace".  See http://drupal.org/node/175772
 
 **Credits:
 
