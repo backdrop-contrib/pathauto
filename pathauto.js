@@ -1,6 +1,6 @@
-(function($) {
-  $(function() {
-    if ($("#edit-pathauto-perform-alias").attr("checked")) {
+if (Drupal.jsEnabled) {
+  $(document).ready(function() {
+    if ($("#edit-pathauto-perform-alias").size() && $("#edit-pathauto-perform-alias").attr("checked")) {
       // Disable input and hide its description.
       $("#edit-path").attr("disabled","disabled");
       $("#edit-path-wrapper > div.description").hide(0);
@@ -19,4 +19,4 @@
       }
     });
   });
-})(jQuery);
+}
