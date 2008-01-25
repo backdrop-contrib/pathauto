@@ -288,10 +288,12 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $t
     $feedappend = variable_get('pathauto_'. $module .'_supportsfeeds', '');
     // For forums and taxonomies, the src doesn't always form the base of the rss feed (ie. image galleries)
     if ($module == 'taxonomy' || $module == 'forum') {
-      _pathauto_set_alias("taxonomy/term/$entity_id/$feedappend", "$alias/feed", $module, $entity_id, NULL, $verbose);
+      $update_data = _pathauto_existing_alias_data("taxonomy/term/$entity_id/$feedappend"); 
+      _pathauto_set_alias("taxonomy/term/$entity_id/$feedappend", "$alias/feed", $module, $entity_id, $update_data['pid'], $verbose,$update_data['old_alias']);
     }
     else {
-      _pathauto_set_alias("$src/$feedappend", "$alias/feed", $module, $entity_id, NULL, $verbose);
+      $update_data = _pathauto_existing_alias_data("$src/$feedappend");
+      _pathauto_set_alias("$src/$feedappend", "$alias/feed", $module, $entity_id, $update_data['pid'], $verbose, $update_data['old_alias']);
     }
   }
 
