@@ -215,10 +215,10 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $t
   // Retrieve and apply the pattern for this content type
   $pattern = '';
   if ($type) {
-    $pattern = drupal_strtolower(variable_get('pathauto_'. $module .'_'. $type .'_pattern', ''));
+    $pattern = variable_get('pathauto_'. $module .'_'. $type .'_pattern', '');
   }
   if (!trim($pattern)) {
-    $pattern = drupal_strtolower(variable_get('pathauto_'. $module .'_pattern', ''));
+    $pattern = variable_get('pathauto_'. $module .'_pattern', '');
   }
   
   // No pattern? Do nothing (otherwise we may blow away existing aliases...)

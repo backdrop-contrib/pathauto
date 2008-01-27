@@ -50,7 +50,7 @@ function node_pathauto_bulkupdate() {
 
     // If it's not set, check the default
     if (!trim($pattern)) {
-      $pattern = drupal_strtolower(variable_get('pathauto_node_pattern', ''));
+      $pattern = variable_get('pathauto_node_pattern', '');
     }
     if (trim($pattern)) {
       $pattern_types[] = $type;
