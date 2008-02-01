@@ -571,7 +571,24 @@ function pathauto_nodeapi(&$node, $op, $teaser, $page) {
     switch ($op) {
       case 'insert':
       case 'update':
-        if ($node->pathauto_perform_alias || !isset($node->pathauto_perform_alias)) {
+        // If the box is checked we should alias it
+        // If the box is not checked but it's already being managed by Pathauto we should alias it
+        // If the box is not checked, it's not being managed by Pathauto, but this is the submit, we should do it
+        drupal_set_message(print_r($node, true));
+        if ($node->pathauto_perform_alias) {
+          $placeholders = pathauto_get_placeholders('node', $node);
+          $src = "node/$node->nid";
+          $alias = pathauto_create_alias('node', $op, $placeholders, $src, $node->nid, $node->type);
+        }
+        else if (db_result(db_query("SELECT pid FROM {url_alias_extra} WHERE dst = '%s' AND created_by = 'Pathauto'", drupal_get_path_alias($node->nid)))) {
+          // it's an existing node and Pathauto currently controls the alias for it
+          dsm('doing update for non admin user');
+          $placeholders = pathauto_get_placeholders('node', $node);
+          $src = "node/$node->nid";
+          $alias = pathauto_create_alias('node', $op, $placeholders, $src, $node->nid, $node->type);
+        }
+        else if (!user_access('ceate url aliases') && $op == 'insert') {
+          // It's a user who won't be able to create their own and it's an insert
           $placeholders = pathauto_get_placeholders('node', $node);
           $src = "node/$node->nid";
           $alias = pathauto_create_alias('node', $op, $placeholders, $src, $node->nid, $node->type);
