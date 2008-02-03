@@ -574,7 +574,6 @@ function pathauto_nodeapi(&$node, $op, $teaser, $page) {
         // If the box is checked we should alias it
         // If the box is not checked but it's already being managed by Pathauto we should alias it
         // If the box is not checked, it's not being managed by Pathauto, but this is the submit, we should do it
-        drupal_set_message(print_r($node, true));
         if ($node->pathauto_perform_alias) {
           $placeholders = pathauto_get_placeholders('node', $node);
           $src = "node/$node->nid";
