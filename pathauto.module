@@ -505,12 +505,6 @@ function pathauto_admin_delete() {
     '#default_value' => FALSE,
     '#description' => t('Delete all aliases.  Number of aliases which will be deleted: %count.', array('%count' => $total_count)));
 
-  $total_count = db_result(db_query("SELECT count(1) FROM {url_alias} ua INNER JOIN {url_alias_extra} uax ON ua.pid = uax.pid AND ua.dst = uax.dst"));
-  $form['delete']['all_pathauto_aliases'] = array('#type' => 'checkbox',
-    '#title' => t('all Pathauto aliases'),
-    '#default_value' => FALSE,
-    '#description' => t('Delete aliases created by Pathauto 5.x-2.1 or higher.  Number of aliases which will be deleted: %count.', array('%count' => $total_count)));
-
   // Next, iterate over an array of objects/alias types which can be deleted and provide checkboxes
   $objects = module_invoke_all('path_alias_types');
   foreach ($objects as $internal_name => $label) {
@@ -541,10 +535,6 @@ function pathauto_admin_delete_submit($form, &$form_state) {
         db_query('DELETE FROM {url_alias}');
         drupal_set_message(t('All of your path aliases have been deleted.'));
       }
-      if ($key === 'all_pathauto_aliases') {
-        db_query('DELETE {url_alias} ua,  {url_alias_extra} uax FROM {url_alias} ua INNER JOIN {url_alias_extra} uax on ua.pid = uax.pid and ua.dst = uax.dst');
-        drupal_set_message(t('All of your path aliases have been deleted.'));
-      }
       $objects = module_invoke_all('path_alias_types');
       if (array_key_exists($key, $objects)) {
         db_query("DELETE FROM {url_alias} WHERE src LIKE '%s%%'", $key);
@@ -571,26 +561,20 @@ function pathauto_nodeapi(&$node, $op, $teaser, $page) {
     switch ($op) {
       case 'insert':
       case 'update':
-        // If the box is checked we should alias it
-        // If the box is not checked but it's already being managed by Pathauto we should alias it
-        // If the box is not checked, it's not being managed by Pathauto, but this is the submit, we should do it
-        if ($node->pathauto_perform_alias) {
-          $placeholders = pathauto_get_placeholders('node', $node);
-          $src = "node/$node->nid";
-          $alias = pathauto_create_alias('node', $op, $placeholders, $src, $node->nid, $node->type);
+        // Get the specific pattern or the default
+        $pattern = variable_get('pathauto_node_'. $node->type .'_pattern', FALSE);
+        if (!$pattern) {
+          $pattern = variable_get('pathauto_node_pattern', FALSE);
         }
-        else if (db_result(db_query("SELECT pid FROM {url_alias_extra} WHERE dst = '%s' AND created_by = 'Pathauto'", drupal_get_path_alias($node->nid)))) {
-          // it's an existing node and Pathauto currently controls the alias for it
-          dsm('doing update for non admin user');
-          $placeholders = pathauto_get_placeholders('node', $node);
-          $src = "node/$node->nid";
-          $alias = pathauto_create_alias('node', $op, $placeholders, $src, $node->nid, $node->type);
-        }
-        else if (!user_access('ceate url aliases') && $op == 'insert') {
-          // It's a user who won't be able to create their own and it's an insert
-          $placeholders = pathauto_get_placeholders('node', $node);
-          $src = "node/$node->nid";
-          $alias = pathauto_create_alias('node', $op, $placeholders, $src, $node->nid, $node->type);
+        // Only do work if there's a pattern
+        if ($pattern) {
+          // If the box is checked we should alias it
+          // If the box is not checked, but the user doesn't have the perms on the box we should alias it
+          if ($node->pathauto_perform_alias || !user_access('ceate url aliases')) {
+            $placeholders = pathauto_get_placeholders('node', $node);
+            $src = "node/$node->nid";
+            $alias = pathauto_create_alias('node', $op, $placeholders, $src, $node->nid, $node->type);
+          }
         }
         break;
       case 'delete':
@@ -611,21 +595,14 @@ function pathauto_nodeapi(&$node, $op, $teaser, $page) {
  * into the path module's fieldset in the node form.
  */
 function pathauto_form_alter(&$form, $form_state, $form_id) {
+  // Only do this for node forms
   if (isset($form['#id']) && ($form['#id'] == 'node-form')) {
+    // See if there is a pathauto pattern or default applicable
     $pattern = variable_get('pathauto_node_'. $form['type']['#value'] .'_pattern', FALSE);
     if (!$pattern) {
       $pattern = variable_get('pathauto_node_pattern', FALSE);
     }
-    $path = $form['path']['path']['#default_value'];
-    if(strlen($path)) {
-      $pathauto_alias = db_result(db_query("SELECT pid FROM {url_alias_extra} WHERE dst = '%s'", $path));
-    }
-    else if ($form['nid']['#value']) {
-      $pathauto_alias = FALSE;
-    }
-    else {
-      $pathauto_alias = TRUE;
-    }
+    // If there is a pattern AND the user is allowed to create aliases AND the path textbox is present on this form
     if ($pattern && user_access('create url aliases') && isset($form['path']['path'])) {
       $output = t('An alias will be generated for you. If you wish to create your own alias below, untick this option.');
       if (user_access('administer pathauto')) {
@@ -637,7 +614,7 @@ function pathauto_form_alter(&$form, $form_state, $form_id) {
 
       $form['path']['pathauto_perform_alias'] = array('#type' => 'checkbox',
         '#title' => t('Automatic alias'),
-        '#default_value' => $pathauto_alias,
+        '#default_value' => TRUE,
         '#description' => $output,
         '#weight' => 0
       );
