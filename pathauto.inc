@@ -387,11 +387,15 @@ function _pathauto_set_alias($src, $dst, $entity_type, $entity_id, $pid = NULL, 
  *  
  */
 function pathauto_get_placeholders($type, $object) {
-  $full = token_get_values($type, $object, TRUE);
-  $tokens = token_prepare_tokens($full->tokens);
-  $values = pathauto_clean_token_values($full);
-  
-  return array('tokens' => $tokens, 'values' => $values);
+  if (function_exists('token_get_values')) {
+    $full = token_get_values($type, $object, TRUE);
+    $tokens = token_prepare_tokens($full->tokens);
+    $values = pathauto_clean_token_values($full);
+    return array('tokens' => $tokens, 'values' => $values);
+  }
+  // TODO at some point try removing this and see if install profiles have problems again.
+  watchdog('Pathauto', t('It appears that you have installed Pathauto, which depends on token, but token is either not installed or not installed properly.'));
+  return array('tokens' => array() 'values' => array());
 }
 
 /**
