@@ -24,7 +24,7 @@ function node_pathauto($op) {
           }
         }
       }
-
+      $settings['supportsfeeds'] = 'feed';
       $nodetypes = node_get_types();
       foreach ($nodetypes as $ntype => $nodetype) {
         $fieldlabel = t('Pattern for all @node_type paths', array('@node_type' => $nodetype->name));

@@ -114,8 +114,8 @@ function pathauto_update_1() {
  *
  */
 function pathauto_update_3() {
+  // Do nothing, this update was a mistake
   $items = array();
-  variable_del('pathauto_node_supportsfeeds');
   return $items;
 }
 
