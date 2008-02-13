@@ -622,6 +622,30 @@ function pathauto_form_alter(&$form, $form_state, $form_id) {
   }
 }
 
+/**
+* Implementation of hook_node_operations().
+*/
+function pathauto_node_operations() {
+  $operations = array(
+    'publish' => array(
+      'label' => t('Update path alias'),
+      'callback' => 'pathauto_node_operations_update',
+    ),
+  );
+  return $operations;
+}
+
+/**
+* Callback function for updating node aliases.
+*/
+function pathauto_node_operations_update($nodes) {
+  foreach ($nodes as $nid) {
+    $node = node_load($nid);
+    $placeholders = pathauto_get_placeholders('node', $node);
+    pathauto_create_alias('node', 'bulkupdate', $placeholders, "node/$node->nid", $node->nid, $node->type);
+  }
+}
+
 //==============================================================================
 // Taxonomy related functions.
 /**
