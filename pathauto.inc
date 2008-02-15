@@ -360,7 +360,7 @@ function _pathauto_set_alias($src, $dst, $entity_type, $entity_id, $pid = NULL, 
     path_set_alias($src, $dst, $pid);
 
     if (variable_get('pathauto_update_action', 2) == 3 && function_exists('path_redirect_save')) {
-      if (isset($old_alias)) {
+      if (isset($old_alias) && strlen($old_alias)) {
         $save['path'] = $old_alias;
         $save['redirect'] = $src;
         $save['type'] = 301; //moved permanently
