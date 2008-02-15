@@ -105,7 +105,7 @@ function pathauto_admin_settings() {
   $form["general"]["pathauto_separator"] = array('#type' => 'textfield',
     '#title' => t('Separator'), '#size' => 1, '#maxlength' => 1,
     '#default_value' => variable_get('pathauto_separator', '-'),
-    '#description' => t('Character used to separate words in titles. This will replace any spaces and punctuation characters.'));
+    '#description' => t('Character used to separate words in titles. This will replace any spaces and punctuation characters. Using a space or + character can cause unexpected results.'));
 
   $form["general"]["pathauto_case"] = array('#type' => 'radios',
     '#title' => t('Character case'),
