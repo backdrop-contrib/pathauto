@@ -153,7 +153,13 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
 
   // Get rid of words that are on the ignore list
   $ignore_re = "\b". preg_replace("/,/", "\b|\b", variable_get('pathauto_ignore_words', $ignore_words)) ."\b";
-  $output = preg_replace("/$ignore_re/ie", "", $output);
+
+  if (function_exists('mb_ereg_replace')) {
+    $output = mb_ereg_replace("/$ignore_re/i", "", $output);
+  }
+  else {
+    $output = preg_replace("/$ignore_re/i", "", $output);
+  }
 
   // Always replace whitespace with the separator.
   $output = preg_replace("/\s+/", $separator, $output);
