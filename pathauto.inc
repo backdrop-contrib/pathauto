@@ -57,9 +57,16 @@ define('PREG_CLASS_ALNUM',
  *
  */
 function _pathauto_alias_exists($alias, $src) {
-  return db_result(db_query(
-    "SELECT COUNT(dst) FROM {url_alias} WHERE dst = '%s' AND src != '%s'",
-    $alias, $src));
+  $alias_pid = db_result(db_query("SELECT pid FROM {url_alias} WHERE dst = '%s' AND src != '%s'", $alias, $src, 0, 1));
+  if (db_table_exists('path_redirect')) {
+    $redirect_rid = db_result(db_query_range("SELECT rid FROM {path_redirect} WHERE path = '%s'", $alias, 0, 1));
+  }
+  if ($alias_pid || $redirect_rid) {
+    return TRUE;
+  }
+  else {
+    return FALSE;
+  }
 }
 
 /**
@@ -274,7 +281,7 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $t
   $maxlength = min(variable_get('pathauto_max_length', 100), 128);
   $alias = drupal_substr($alias, 0, $maxlength);
 
-  // If the alias already exists, generate a new variant
+  // If the alias already exists, generate a new, hopefully unique, variant
   $separator = variable_get('pathauto_separator', '-');
   if (_pathauto_alias_exists($alias, $src)) {
     for ($i = 0; _pathauto_alias_exists(drupal_substr($alias, 0, $maxlength - strlen($i)) . $separator . $i, $src); $i++) {
