@@ -284,14 +284,6 @@ function pathauto_admin_settings() {
         '#description' => $settings->bulkdescr);
     }
 
-    // Perform bulk updates of indexes for this module, if asked
-    if (isset($do_index_bulkupdate) && $do_index_bulkupdate) {
-      $function = $module .'_pathauto_bulkupdate_indexes';
-      if (is_callable($function)) {
-        $indexcount += call_user_func($function);
-      }
-    }
-
     // If the module supports feeds, offer to generate aliases for them
     if ($supportsfeeds) {
       $variable = 'pathauto_'. $module .'_applytofeeds';
