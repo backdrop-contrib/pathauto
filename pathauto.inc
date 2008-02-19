@@ -297,8 +297,9 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $t
 
   // Also create a related feed alias if requested, and if supported
   // by the module
-  if (variable_get('pathauto_'. $module .'_applytofeeds', FALSE)) {
-    $feedappend = variable_get('pathauto_'. $module .'_supportsfeeds', '');
+  if (strlen(variable_get('pathauto_'. $module .'_applytofeeds', ''))) {
+    $feedappend = variable_get('pathauto_'. $module .'_applytofeeds', '');
+    
     // For forums and taxonomies, the src doesn't always form the base of the rss feed (ie. image galleries)
     if ($module == 'taxonomy' || $module == 'forum') {
       $update_data = _pathauto_existing_alias_data("taxonomy/term/$entity_id/$feedappend"); 

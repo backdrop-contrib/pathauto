@@ -295,10 +295,18 @@ function pathauto_admin_settings() {
     // If the module supports feeds, offer to generate aliases for them
     if ($supportsfeeds) {
       $variable = 'pathauto_'. $module .'_applytofeeds';
-      $form[$module][$variable] = array('#type' => 'checkbox',
-        '#title' => t('Create feed aliases'),
-        '#default_value' => variable_get($variable, FALSE),
-        '#description' => t('Also generate aliases for RSS feeds.'));
+      $current = variable_get($variable, $supportsfeeds);
+      // This checks for the old style from 2.0 and earlier. TODO: At some point we can drop that.
+      if (is_numeric($current)) {
+        $current = $supportsfeeds;
+      }
+
+      $form[$module][$variable] = array('#type' => 'textfield',
+        '#title' => t('Internal feed alias text (leave blank to disable)'),
+        '#size' => 65,
+        '#maxlength' => 1280,
+        '#default_value' => $current,
+        '#description' => t('The text to use for aliases for RSS feeds. Examples are "feed" and "0/feed".'));
     }
 
   }
