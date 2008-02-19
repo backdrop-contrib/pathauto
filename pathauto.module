@@ -608,7 +608,7 @@ function pathauto_nodeapi(&$node, $op, $teaser, $page) {
  */
 function pathauto_form_alter(&$form, $form_state, $form_id) {
   // Only do this for node forms
-  if (isset($form['#id']) && ($form['#id'] == 'node-form')) {
+  if (isset($form['#id']) && ($form['#id'] == 'node-form') && arg(0) == 'node') {
     // See if there is a pathauto pattern or default applicable
     $pattern = variable_get('pathauto_node_'. $form['type']['#value'] .'_pattern', FALSE);
     if (!$pattern) {
