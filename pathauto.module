@@ -582,7 +582,7 @@ function pathauto_nodeapi(&$node, $op, $teaser, $page) {
         if ($pattern) {
           // If the box is checked we should alias it
           // If the box is not checked, but the user doesn't have the perms on the box we should alias it
-          if ($node->pathauto_perform_alias || !user_access('ceate url aliases')) {
+          if ($node->pathauto_perform_alias || !user_access('create url aliases')) {
             $placeholders = pathauto_get_placeholders('node', $node);
             $src = "node/$node->nid";
             $alias = pathauto_create_alias('node', $op, $placeholders, $src, $node->nid, $node->type);
