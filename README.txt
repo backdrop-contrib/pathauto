@@ -3,11 +3,6 @@ They contain answers to many common questions.
 If you are developing for this module, the API.txt may be interesting.
 If you are upgrading, check the CHANGELOG.txt for major changes.
 
-**Version Compatibility:
-As of Version 5.x-2.x of Pathauto, you must use PHP4.4.x or PHP5.1.x 
-or above.  Pathauto5.x-2.x has improvements for localization which 
-require the use of new constructs only available in those versions.
-
 **Description:
 The Pathauto module provides support functions for other modules to 
 automatically generate aliases based on appropriate criteria, with a 
