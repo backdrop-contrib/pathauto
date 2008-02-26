@@ -639,7 +639,7 @@ function pathauto_form_alter(&$form, $form_state, $form_id) {
 */
 function pathauto_node_operations() {
   $operations = array(
-    'publish' => array(
+    'update_alias' => array(
       'label' => t('Update path alias'),
       'callback' => 'pathauto_node_operations_update',
     ),
