@@ -79,7 +79,7 @@ function _taxonomy_pathauto_alias($category, $op) {
   // If we're in a forum vocabulary, also create a forum container, forum, or forum topic alias.
   if (module_exists('forum') && $forum_vid == (int)$category->vid) {
     $src = 'forum/'. $category->tid;
-    if ($alias = pathauto_create_alias('forum', $op, $placeholders, $src, $category->tid, $vid)) {
+    if ($alias = pathauto_create_alias('forum', $op, $placeholders, $src, $category->tid, $category->vid)) {
       $count++;
     }
   }

@@ -430,15 +430,9 @@ function pathauto_token_values($type, $object = NULL) {
             $values[$label .'path'] = $catpath .'/'. check_plain($category->name);
             $values[$label .'path-raw'] = $catpath_raw .'/'. $category->name;
             
-            // We only do this for taxonomy because token already provides the [term] value but has problem with [cat] TODO: fix that?
-            if ($type == 'taxonomy') { 
-              $values[$label] = check_plain($category->name);
-              $values[$label .'-raw'] = $category->name;
-            }
-            
             $values[$label .'alias'] = drupal_get_path_alias('taxonomy/term/'. $category->tid);
             if (!strncasecmp($values[$label .'alias'], 'taxonomy', 8)) {
-              $values[$label .'alias'] = $values[$label];
+              $values[$label .'alias'] = check_plain($category->name);
             }
           }
           else { // Provide some defaults if they aren't set.
