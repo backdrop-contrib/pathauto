@@ -541,7 +541,7 @@ function pathauto_admin_delete_submit($form, &$form_state) {
 
 function pathauto_path_alias_types() {
   $objects = array('user/' => t('users'), 'node/' => t('content'));
-  if (module_exists('blogs')) {
+  if (module_exists('blog')) {
     $objects['blog/'] = t('user blogs');
   }
   if (module_exists('taxonomy')) {
@@ -550,7 +550,9 @@ function pathauto_path_alias_types() {
   if (module_exists('taxonomy')) {
     $objects['user/%/track'] = t('user trackers');
   }
-
+  if (module_exists('forum')) {
+    $objects['forum/%'] = t('forums');
+  }
 
   return $objects;
 }
