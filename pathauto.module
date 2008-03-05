@@ -576,9 +576,8 @@ function pathauto_nodeapi(&$node, $op, $teaser, $page) {
         }
         // Only do work if there's a pattern
         if ($pattern) {
-          // If the box is checked we should alias it
-          // If the box is not checked, but the user doesn't have the perms on the box we should alias it
-          if ($node->pathauto_perform_alias || !user_access('create url aliases')) {
+          // Only create an alias if the checkbox was not provided or if the checkbox was provided and is checked
+          if (!isset($node->pathauto_perform_alias) || $node->pathauto_perform_alias) {
             $placeholders = pathauto_get_placeholders('node', $node);
             $src = "node/$node->nid";
             $alias = pathauto_create_alias('node', $op, $placeholders, $src, $node->nid, $node->type);
