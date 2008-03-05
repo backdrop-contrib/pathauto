@@ -584,8 +584,8 @@ function pathauto_nodeapi(&$node, $op, $teaser, $page) {
         }
         break;
       case 'delete':
-        path_set_alias('$node/'. $node->nid);
-        path_set_alias('$node/'. $node->nid .'/feed');
+        path_set_alias('node/'. $node->nid);
+        path_set_alias('node/'. $node->nid .'/feed');
         break;
       default:
         break;
