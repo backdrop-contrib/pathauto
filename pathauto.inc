@@ -423,7 +423,7 @@ function pathauto_clean_token_values($full) {
   foreach ($full->values as $key => $value) {
     
     // If it's a "path" or "url friendly" token don't remove the "/" character
-    if (substr($full->tokens[$key], -4, 4) === 'path' || substr($full->tokens[$key], -8, 8) === 'path-raw') {
+    if (substr($full->tokens[$key], -4, 4) === 'path' || substr($full->tokens[$key], -8, 8) === 'path-raw' || substr($full->tokens[$key], -5, 5) === 'alias') {
       $full->values[$key] = pathauto_cleanstring($value, FALSE);
     }
     else {
