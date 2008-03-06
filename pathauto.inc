@@ -61,7 +61,7 @@ function _pathauto_alias_exists($alias, $src) {
   if (db_table_exists('path_redirect')) {
     $redirect_rid = db_result(db_query_range("SELECT rid FROM {path_redirect} WHERE path = '%s'", $alias, 0, 1));
   }
-  if ($alias_pid || $redirect_rid) {
+  if ($alias_pid || (isset($redirect_rid) && $redirect_rid)) {
     return TRUE;
   }
   else {
