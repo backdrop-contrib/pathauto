@@ -567,6 +567,19 @@ function pathauto_nodeapi(&$node, $op, $teaser, $page) {
   _pathauto_include();
   if (module_exists('path')) {
     switch ($op) {
+      case 'presave':
+        // About to be saved (before insert/update)
+        if (isset($node->pathauto_perform_alias) && isset($node->old_alias)
+            && $node->pathauto_perform_alias && $node->path == '' && $node->old_alias != '') {
+          /**
+           * There was an old alias, but when pathauto_perform_alias was checked
+           * the javascript disabled the textbox which led to an empty value being 
+           * submitted. Restoring the old path-value here prevents the Path module
+           * from deleting any old alias before Pathauto gets control.
+           */
+          $node->path = $node->old_alias;
+        }
+        break;
       case 'insert':
       case 'update':
         // Get the specific pattern or the default
@@ -625,6 +638,10 @@ function pathauto_form_alter(&$form, $form_state, $form_id) {
         '#description' => $output,
         '#weight' => 0
       );
+
+      //For Pathauto to remember the old alias and prevent the Path-module from deleteing it when Pathauto wants to preserve it
+      $old_alias = $form['path']['path']['#default_value'];
+      $form['path']['old_alias'] = array('#type' => 'value', '#value' => $old_alias);
     }
   }
 }
