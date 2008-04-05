@@ -57,7 +57,7 @@ define('PREG_CLASS_ALNUM',
  *
  */
 function _pathauto_alias_exists($alias, $src) {
-  $alias_pid = db_result(db_query("SELECT pid FROM {url_alias} WHERE dst = '%s' AND src != '%s'", $alias, $src, 0, 1));
+  $alias_pid = db_result(db_query("SELECT pid FROM {url_alias} WHERE dst = '%s' AND src <> '%s'", $alias, $src, 0, 1));
   if (db_table_exists('path_redirect')) {
     $redirect_rid = db_result(db_query_range("SELECT rid FROM {path_redirect} WHERE path = '%s'", $alias, 0, 1));
   }
@@ -143,7 +143,7 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
     static $translations = array();
     if (!$i18n_loaded) {
       $path = drupal_get_path('module', 'pathauto');
-      if (is_file($path. '/i18n-ascii.txt')) {
+      if (is_file($path .'/i18n-ascii.txt')) {
         $translations = parse_ini_file($path. '/i18n-ascii.txt');
       }
       $i18n_loaded = true;
@@ -174,7 +174,7 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
   // In preparation for pattern matching, 
   // escape the separator if and only if it is not alphanumeric)
   if (isset($separator)) {
-    if (preg_match('/^[^'. PREG_CLASS_ALNUM .']+$/uD',$separator)) {
+    if (preg_match('/^[^'. PREG_CLASS_ALNUM .']+$/uD', $separator)) {
       $seppattern = $separator;
     } 
     else {
@@ -268,7 +268,7 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $t
   // and optionally lower-case the result
   $alias = str_replace($placeholders['tokens'], $placeholders['values'], $pattern);
 
-  if (variable_get('pathauto_case',1)) {
+  if (variable_get('pathauto_case', 1)) {
     $alias = drupal_strtolower($alias);
   }
 
@@ -303,7 +303,7 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $t
     // For forums and taxonomies, the src doesn't always form the base of the rss feed (ie. image galleries)
     if ($module == 'taxonomy' || $module == 'forum') {
       $update_data = _pathauto_existing_alias_data("taxonomy/term/$entity_id/$feedappend"); 
-      _pathauto_set_alias("taxonomy/term/$entity_id/$feedappend", "$alias/feed", $module, $entity_id, $update_data['pid'], $verbose,$update_data['old_alias']);
+      _pathauto_set_alias("taxonomy/term/$entity_id/$feedappend", "$alias/feed", $module, $entity_id, $update_data['pid'], $verbose, $update_data['old_alias']);
     }
     else {
       $update_data = _pathauto_existing_alias_data("$src/$feedappend");

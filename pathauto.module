@@ -377,7 +377,7 @@ function pathauto_admin_settings_validate($form, &$form_state) {
     if ($details['value'] == $separator) {
       $action = $form_state['values']['pathauto_punctuation_'. $name];
       if ($action == 0) {
-        drupal_set_message(t('You have configured the @name to be the separator and to be removed when encountered in strings.  This can cause problems with your patterns and especially with the catpath and termpath patterns.', array('@name' => $details['name'])), 'error');
+        drupal_set_message(t('You have configured the @name to be the separator and to be removed when encountered in strings.  This can cause problems with your patterns and especially with the catpath and termpath patterns. You should probably set the action for @name to be "replace by separator"', array('@name' => $details['name'])), 'error');
       }
     }
   }
@@ -392,8 +392,8 @@ function pathauto_token_values($type, $object = NULL) {
       _pathauto_include();
       switch ($type) {
         case 'node':
-          $vid = db_result(db_query("SELECT t.vid FROM {term_node} r INNER JOIN {term_data} t ON r.tid = t.tid INNER JOIN {vocabulary} v ON t.vid = v.vid WHERE r.nid = %d ORDER BY v.weight, t.weight, t.name LIMIT 1", $object->nid));
-          $category = db_fetch_object(db_query("SELECT t.tid, t.name FROM {term_data} t INNER JOIN {term_node} r ON r.tid = t.tid WHERE t.vid = %d AND r.nid = %d ORDER BY weight LIMIT 1", $vid, $object->nid));
+          $vid = db_result(db_query_range("SELECT t.vid FROM {term_node} r INNER JOIN {term_data} t ON r.tid = t.tid INNER JOIN {vocabulary} v ON t.vid = v.vid WHERE r.nid = %d ORDER BY v.weight, t.weight, t.name", 0, 1, $object->nid));
+          $category = db_fetch_object(db_query("SELECT t.tid, t.name FROM {term_data} t INNER JOIN {term_node} r ON r.tid = t.tid WHERE t.vid = %d AND r.nid = %d ORDER BY weight", 0, 1, $vid, $object->nid));
           $category->vid = $vid;
           // In the realm of nodes these are terms, in the realm of Taxonomy, cats
           $label = 'term';
@@ -647,8 +647,8 @@ function pathauto_form_alter(&$form, $form_state, $form_id) {
 }
 
 /**
-* Implementation of hook_node_operations().
-*/
+ * Implementation of hook_node_operations().
+ */
 function pathauto_node_operations() {
   $operations = array(
     'update_alias' => array(
@@ -660,8 +660,8 @@ function pathauto_node_operations() {
 }
 
 /**
-* Callback function for updating node aliases.
-*/
+ * Callback function for updating node aliases.
+ */
 function pathauto_node_operations_update($nodes) {
   foreach ($nodes as $nid) {
     $node = node_load($nid);
