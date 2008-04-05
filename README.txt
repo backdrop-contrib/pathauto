@@ -12,7 +12,6 @@ Implementations are provided for core content types: nodes, taxonomy
 terms, users, blogs, and events.
 
 **Benefits:
-
 Besides making the page address more reflective of its content than
 "node/138", it's important to know that modern search engines give 
 heavy weight to search terms which appear in a page's URL. By 
@@ -20,12 +19,10 @@ automatically using keywords based directly on the page content in the URL,
 relevant search engine hits for your page can be significantly
 enhanced.
 
-
 **Installation AND Upgrades:
 See the INSTALL.txt - especially step 4.
 
 **Notices:
-
 Pathauto just adds url aliases to nodes and taxonomy terms. Because it's an 
 alias, the standard Drupal url (for example node/123 or taxonomy/term/1) will 
 still function as normal.  If you have external links to your site pointing to 
@@ -51,6 +48,11 @@ those won't get replaced with their corresponding aliases. Use instead
 
 See http://api.drupal.org/api/HEAD/function/url and 
 http://api.drupal.org/api/HEAD/function/l for more information.
+
+** Disabling Pathauto for a specific node type (or taxonomy)
+When the pattern for a node type is left blank, the default pattern will be 
+used. But if the default pattern is also blank, Pathauto will be disabled 
+for that node type.
 
 ** Bulk Updates Must be Run Multiple Times:
 As of 5.x-2.x Pathauto now performs bulk updates in a manner which is more 
