@@ -49,7 +49,7 @@ function taxonomy_pathauto($op) {
  */ 
 function taxonomy_pathauto_bulkupdate() {
   $forum_vid = variable_get('forum_nav_vocabulary', '');
-  $query = "SELECT tid, vid, name, src, dst FROM {term_data} LEFT JOIN {url_alias} ON CONCAT('taxonomy/term/', tid) = src WHERE src IS NULL AND vid != %d";
+  $query = "SELECT tid, vid, name, src, dst FROM {term_data} LEFT JOIN {url_alias} ON CAST(CONCAT('taxonomy/term/', tid) AS CHAR) = src WHERE src IS NULL AND vid != %d";
   $result = db_query_range($query, $forum_vid, 0, variable_get('pathauto_max_bulk_update', 50));
   
   $count = 0;
@@ -128,7 +128,7 @@ function forum_pathauto($op) {
  */
 function forum_pathauto_bulkupdate() {
   $forum_vid = variable_get('forum_nav_vocabulary', '');
-  $query = "SELECT tid, vid, name, src, dst FROM {term_data} LEFT JOIN {url_alias} ON CONCAT('forum/', tid) = src WHERE vid = %d AND src IS NULL";
+  $query = "SELECT tid, vid, name, src, dst FROM {term_data} LEFT JOIN {url_alias} ON CAST(CONCAT('forum/', tid) AS CHAR) = src WHERE vid = %d AND src IS NULL";
   $result = db_query_range($query, $forum_vid, 0, variable_get('pathauto_max_bulk_update', 50));
 
   $count = 0;
