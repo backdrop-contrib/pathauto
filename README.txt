@@ -52,15 +52,12 @@ those won't get replaced with their corresponding aliases. Use instead
 See http://api.drupal.org/api/HEAD/function/url and 
 http://api.drupal.org/api/HEAD/function/l for more information.
 
-Bulk Updates May Destroy Existing Aliases:
-Bulk Updates may not work if your site has a large number of items to alias 
-and/or if your server is particularly slow. If you are concerned about this 
-problem you should backup your database (particularly the url_alias table) prior
-to executing the Bulk Update. If you are interested in helping speed up this 
-operation look at the Pathauto issue queue - 
-http://drupal.org/project/issues/pathauto - and specifically at the issues 
-http://drupal.org/node/76172 and http://drupal.org/node/67665 You can help 
-provide ideas, code, and testing in those issues to make pathauto better.
+** Bulk Updates Must be Run Multiple Times:
+As of 5.x-2.x Pathauto now performs bulk updates in a manner which is more 
+likely to succeed on large sites.  The drawback is that it needs to be run 
+multiple times.  If you want to reduce the number of times that you need to run 
+Pathauto you can increase the "Maximum number of objects to alias in a bulk 
+update:" setting under General Settings.  
 
 **WYSIWYG Conflicts - FCKEditor, TinyMCE, etc.
 If you use a WYSIWYG editor, please disable it for the Pathauto admin page.  
