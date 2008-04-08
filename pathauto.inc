@@ -326,7 +326,7 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $t
  */
 function _pathauto_path_is_callback($path) {
   $menu = menu_get_item($path);
-  if (isset($menu['path'])) {
+  if (isset($menu['path']) && $menu['path'] == $path) {
     return TRUE;
   }
   return FALSE;
