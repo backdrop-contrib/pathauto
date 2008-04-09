@@ -64,7 +64,6 @@ function node_pathauto_bulkupdate() {
   }
   $type_where .= ')';
 
-  $query = "SELECT nid, type, title, uid, created, src, dst, vid FROM {node} LEFT JOIN {url_alias} ON CONCAT('node/', CAST(nid AS CHAR)) = src WHERE src IS NULL ". $type_where;
   $query = "SELECT n.nid, n.type, n.title, n.uid, n.created, alias.src, alias.dst, n.vid FROM {node} n LEFT JOIN {url_alias} alias ON CONCAT('node/', n.nid) = alias.src WHERE alias.src IS NULL ". $type_where;
   $result = db_query_range($query, $pattern_types, 0, variable_get('pathauto_max_bulk_update', 50));
 

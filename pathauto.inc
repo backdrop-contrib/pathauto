@@ -57,9 +57,9 @@ define('PREG_CLASS_ALNUM',
  *   A string indicating the path's language.
  */
 function _pathauto_alias_exists($alias, $src, $language = '') {
-  $alias_pid = db_result(db_query_range("SELECT pid FROM {url_alias} WHERE dst = '%s' AND src <> '%s' AND language = '%s'", 0, 1, $alias, $src, $language));
+  $alias_pid = db_result(db_query_range("SELECT pid FROM {url_alias} WHERE dst = '%s' AND src <> '%s' AND language = '%s'", array($alias, $src, $language), 0, 1));
   if (db_table_exists('path_redirect')) {
-    $redirect_rid = db_result(db_query_range("SELECT rid FROM {path_redirect} WHERE path = '%s'", 0, 1, $alias));
+    $redirect_rid = db_result(db_query_range("SELECT rid FROM {path_redirect} WHERE path = '%s'", $alias, 0, 1));
   }
   if ($alias_pid || (isset($redirect_rid) && $redirect_rid)) {
     return TRUE;
