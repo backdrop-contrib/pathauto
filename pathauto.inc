@@ -49,17 +49,17 @@ define('PREG_CLASS_ALNUM',
 /**
  * Check to see if there is already an alias pointing to a different item
  * 
- * @param string $alias
- *   A string alias (i.e. dst)
- * @param string $src
- *   A string that is the internal path
- * 
- *
+ * @param $alias
+ *   A string alias (i.e. dst).
+ * @param $src
+ *   A string that is the internal path.
+ * @param $lang
+ *   A string indicating the path's language.
  */
-function _pathauto_alias_exists($alias, $src) {
-  $alias_pid = db_result(db_query("SELECT pid FROM {url_alias} WHERE dst = '%s' AND src <> '%s'", $alias, $src, 0, 1));
+function _pathauto_alias_exists($alias, $src, $language = '') {
+  $alias_pid = db_result(db_query_range("SELECT pid FROM {url_alias} WHERE dst = '%s' AND src <> '%s' AND language = '%s'", 0, 1, $alias, $src, $language));
   if (db_table_exists('path_redirect')) {
-    $redirect_rid = db_result(db_query_range("SELECT rid FROM {path_redirect} WHERE path = '%s'", $alias, 0, 1));
+    $redirect_rid = db_result(db_query_range("SELECT rid FROM {path_redirect} WHERE path = '%s'", 0, 1, $alias));
   }
   if ($alias_pid || (isset($redirect_rid) && $redirect_rid)) {
     return TRUE;
@@ -214,10 +214,12 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
  *   For modules which provided patternitems in hook_pathauto(),
  *   the relevant identifier for the specific item to be aliased (e.g.,
  *   $node->type)
+ * @param $language
+ *   A string specify the path's language.
  * @return
  *   The alias that was created
  */
-function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $type = NULL) {
+function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $type = NULL, $language = '') {
   if (($op != 'bulkupdate') and variable_get('pathauto_verbose', FALSE) && user_access('notify of path changes')) {
     $verbose = TRUE;
   } 
@@ -245,7 +247,7 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $t
     if ($term_path != $src) {
       // Quietly alias 'taxonomy/term/[tid]' with proper path for term.
       $update_data = _pathauto_existing_alias_data($src);
-      _pathauto_set_alias($src, $term_path, $module, $entity_id, $update_data['pid'], FALSE, $update_data['old_alias']);
+      _pathauto_set_alias($src, $term_path, $module, $entity_id, $update_data['pid'], FALSE, $update_data['old_alias'], $language);
       // Set $src as proper path.
       $src = $term_path;
     }
@@ -283,8 +285,8 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $t
 
   // If the alias already exists, generate a new, hopefully unique, variant
   $separator = variable_get('pathauto_separator', '-');
-  if (_pathauto_alias_exists($alias, $src)) {
-    for ($i = 0; _pathauto_alias_exists(drupal_substr($alias, 0, $maxlength - strlen($i)) . $separator . $i, $src); $i++) {
+  if (_pathauto_alias_exists($alias, $src, $language)) {
+    for ($i = 0; _pathauto_alias_exists(drupal_substr($alias, 0, $maxlength - strlen($i)) . $separator . $i, $src, $language); $i++) {
     }
     // Make room for the sequence number
     $alias = drupal_substr($alias, 0, $maxlength - strlen($i));
@@ -293,7 +295,7 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $t
 
   // If $pid is NULL, a new alias is created - otherwise, the existing
   // alias for the designated src is replaced
-  _pathauto_set_alias($src, $alias, $module, $entity_id, $pid, $verbose, $old_alias);
+  _pathauto_set_alias($src, $alias, $module, $entity_id, $pid, $verbose, $old_alias, $language);
 
   // Also create a related feed alias if requested, and if supported
   // by the module
@@ -303,11 +305,11 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $t
     // For forums and taxonomies, the src doesn't always form the base of the rss feed (ie. image galleries)
     if ($module == 'taxonomy' || $module == 'forum') {
       $update_data = _pathauto_existing_alias_data("taxonomy/term/$entity_id/$feedappend"); 
-      _pathauto_set_alias("taxonomy/term/$entity_id/$feedappend", "$alias/feed", $module, $entity_id, $update_data['pid'], $verbose, $update_data['old_alias']);
+      _pathauto_set_alias("taxonomy/term/$entity_id/$feedappend", "$alias/feed", $module, $entity_id, $update_data['pid'], $verbose, $update_data['old_alias'], $language);
     }
     else {
       $update_data = _pathauto_existing_alias_data("$src/$feedappend");
-      _pathauto_set_alias("$src/$feedappend", "$alias/feed", $module, $entity_id, $update_data['pid'], $verbose, $update_data['old_alias']);
+      _pathauto_set_alias("$src/$feedappend", "$alias/feed", $module, $entity_id, $update_data['pid'], $verbose, $update_data['old_alias'], $language);
     }
   }
 
@@ -345,9 +347,10 @@ function _pathauto_path_is_callback($path) {
  *   If the admin has enabled verbose, should be TRUE.  Else FALSE or NULL.
  * @param $old_alias
  *   If the item is currently aliased, the existing alias for that item.
- * 
+ * @param $language
+ *   The path's language.
  */
-function _pathauto_set_alias($src, $dst, $entity_type, $entity_id, $pid = NULL, $verbose = FALSE, $old_alias = NULL) {
+function _pathauto_set_alias($src, $dst, $entity_type, $entity_id, $pid = NULL, $verbose = FALSE, $old_alias = NULL, $language = '') {
   // Alert users that an existing callback cannot be overridden automatically
   if (_pathauto_path_is_callback($dst)) {
     if ($verbose and user_access('notify of path changes')) {
@@ -365,7 +368,7 @@ function _pathauto_set_alias($src, $dst, $entity_type, $entity_id, $pid = NULL, 
 
   // Skip replacing the current alias with an identical alias
   if ($old_alias != $dst) {
-    path_set_alias($src, $dst, $pid);
+    path_set_alias($src, $dst, $pid, $language);
 
     if (variable_get('pathauto_update_action', 2) == 3 && function_exists('path_redirect_save')) {
       if (isset($old_alias) && strlen($old_alias)) {
