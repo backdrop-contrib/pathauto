@@ -51,7 +51,7 @@ function pathauto_menu() {
     'title' => t('Delete aliases'),
     'page callback' => 'drupal_get_form', 
     'page arguments' => array('pathauto_admin_delete'),
-    'access' => user_access('administer url aliases'), 
+    'access arguments' => array('administer url aliases'), 
     'type' => MENU_LOCAL_TASK,
   );
 
