@@ -25,10 +25,15 @@ function node_pathauto($op) {
         }
       }
       $settings['supportsfeeds'] = 'feed';
-      $nodetypes = node_get_types();
-      foreach ($nodetypes as $ntype => $nodetype) {
-        $fieldlabel = t('Pattern for all @node_type paths', array('@node_type' => $nodetype->name));
-        $settings['patternitems'][$ntype] = $fieldlabel;
+
+      $languages = module_exists('locale') ? locale_language_list() : array();
+      foreach (node_get_types('names') as $node_type => $node_name) {
+        $fieldlabel = t('Pattern for all @node_type paths', array('@node_type' => $node_name));
+        $settings['patternitems'][$node_type] = $fieldlabel;
+        foreach ($languages as $lang_code => $lang_name) {
+          $fieldlabel = t('Pattern for all @node_type paths in @language', array('@node_type' => $node_name, '@language' => $lang_name));
+          $settings['patternitems'][$node_type .'_'. $lang_code] = $fieldlabel;
+        }
       }
       return (object) $settings;
     default:
@@ -43,45 +48,49 @@ function node_pathauto_bulkupdate() {
 
   // From all node types, only attempt to update those with patterns
   $pattern_types = array();
-  $type_where = '';
-  foreach (node_get_types() as $type => $info) {
-    $pattern = '';
-    $pattern = variable_get('pathauto_node_'. $type .'_pattern', '');
-
-    // If it's not set, check the default
-    if (!trim($pattern)) {
-      $pattern = variable_get('pathauto_node_pattern', '');
-    }
-    if (trim($pattern)) {
-      $pattern_types[] = $type;
-      if (!trim($type_where)) {
-        $type_where = " AND (type = '%s' ";
+  
+  // If there's a default pattern we assume all types might be updated.
+  if (trim(variable_get('pathauto_node_pattern', ''))) {
+    $pattern_types = array_keys(node_get_types('names')); 
+  }
+  else {
+    // Check first for a node specific pattern...
+    $languages = module_exists('locale') ? locale_language_list() : array();
+    foreach (array_keys(node_get_types('names')) as $type) {
+      if (trim(variable_get('pathauto_node_'. $type .'_pattern', ''))) {
+        $pattern_types[$type] = $type;
+        continue;
       }
-      else {
-        $type_where .= " OR type = '%s'";
+      // ...then for a node-language pattern.
+      foreach ($languages as $lang_code => $lang_name) {
+        if (trim(variable_get('pathauto_node_'. $type .'_'. $lang_code .'_pattern', ''))) {
+          $pattern_types[$type] = $type;
+          continue 2;
+        }
       }
     }
   }
-  $type_where .= ')';
-
-  $query = "SELECT n.nid, n.type, n.title, n.uid, n.created, alias.src, alias.dst, n.vid FROM {node} n LEFT JOIN {url_alias} alias ON CONCAT('node/', n.nid) = alias.src WHERE alias.src IS NULL ". $type_where;
-  $result = db_query_range($query, $pattern_types, 0, variable_get('pathauto_max_bulk_update', 50));
 
   $count = 0;
-  $placeholders = array();
-  while ($node_ref = db_fetch_object($result)) {
-    $node = node_load($node_ref->nid, NULL, TRUE);
-    $node->src = $node_ref->src;
-    $node->dst = $node_ref->dst;
-    if (module_exists('taxonomy')) {
+  if (count($pattern_types)) {
+    $query = "SELECT n.nid, n.vid, n.type, n.title, n.uid, n.created, alias.src, alias.dst, n.language FROM {node} n LEFT JOIN {url_alias} alias ON CONCAT('node/', n.nid) = alias.src WHERE alias.src IS NULL AND n.type IN (". db_placeholders($pattern_types, 'varchar') .')';
+    $result = db_query_range($query, $pattern_types, 0, variable_get('pathauto_max_bulk_update', 50));
+
+    $placeholders = array();
+    while ($node_ref = db_fetch_object($result)) {
+      $node = node_load($node_ref->nid, NULL, TRUE);
+      $node->src = $node_ref->src;
+      $node->dst = $node_ref->dst;
+      if (module_exists('taxonomy')) {
         // Must populate the terms for the node here for the category
         // placeholders to work
         $node->taxonomy = array_keys(taxonomy_node_get_terms($node));
-    }
-    $placeholders = pathauto_get_placeholders('node', $node);
-    $src = "node/$node->nid";
-    if ($alias = pathauto_create_alias('node', 'bulkupdate', $placeholders, $src, $node->nid, $node->type, $node->language)) {
-      $count++;
+      }
+      $placeholders = pathauto_get_placeholders('node', $node);
+      $src = "node/$node->nid";
+      if ($alias = pathauto_create_alias('node', 'bulkupdate', $placeholders, $src, $node->nid, $node->type, $node->language)) {
+        $count++;
+      }
     }
   }
 
