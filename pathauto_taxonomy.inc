@@ -10,7 +10,7 @@ function taxonomy_pathauto($op) {
       $settings = array();
       $settings['module'] = 'taxonomy';
       $settings['token_type'] = 'taxonomy';
-      $settings['groupheader'] = t('Category path settings');
+      $settings['groupheader'] = t('Taxonomy term path settings');
       $settings['patterndescr'] = t('Default path pattern (applies to all vocabularies with blank patterns below)');
       $settings['patterndefault'] = t('category/[vocab-raw]/[catpath-raw]');
       $patterns = token_get_list('taxonomy');
@@ -22,8 +22,8 @@ function taxonomy_pathauto($op) {
         }
       }
       $settings['supportsfeeds'] = '0/feed';
-      $settings['bulkname'] = t('Bulk generate aliases for categories that are not aliased');
-      $settings['bulkdescr'] = t('Generate aliases for all existing categories which do not already have aliases.');
+      $settings['bulkname'] = t('Bulk generate aliases for terms that are not aliased');
+      $settings['bulkdescr'] = t('Generate aliases for all existing terms which do not already have aliases.');
 
       $vocabularies = taxonomy_get_vocabularies();
       if (sizeof($vocabularies) > 0) {
