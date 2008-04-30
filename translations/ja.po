@@ -3,21 +3,21 @@
 # Japanese translation of Drupal (pathauto)
 # Copyright 2008 0829 <hixarg+0829@gmail.com>
 # Generated from files:
-#  pathauto_node_i18n.inc,v 1.3 2006/10/12 14:54:15 greggles Exp
 #  pathauto_node_event.inc,v 1.3 2006/10/12 14:54:15 greggles Exp
-#  pathauto_taxonomy.inc,v 1.26 2008/02/29 20:49:01 greggles Exp
-#  pathauto_user.inc,v 1.22 2007/12/31 19:59:00 greggles Exp
+#  pathauto_node_i18n.inc,v 1.3 2006/10/12 14:54:15 greggles Exp
+#  pathauto.inc,v 1.29 2008/04/28 18:20:23 greggles Exp
 #  pathauto.info,v 1.4 2007/10/28 21:06:13 greggles Exp
-#  pathauto_node.inc,v 1.35 2008/02/13 13:05:45 greggles Exp
-#  pathauto.module,v 1.93 2008/03/05 21:34:59 greggles Exp
 #  pathauto.install,v 1.5 2008/02/13 13:05:45 greggles Exp
-#  pathauto.inc,v 1.24 2008/03/06 16:27:38 greggles Exp
+#  pathauto.module,v 1.100 2008/04/28 19:47:10 greggles Exp
+#  pathauto_node.inc,v 1.40 2008/04/28 18:20:23 greggles Exp
+#  pathauto_taxonomy.inc,v 1.30 2008/04/28 19:47:10 greggles Exp
+#  pathauto_user.inc,v 1.24 2008/04/08 12:30:46 greggles Exp
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Drupal 6.x\n"
-"POT-Creation-Date: 2008-03-09 15:44+0900\n"
-"PO-Revision-Date: 2008-03-09 15:50+0900\n"
+"POT-Creation-Date: 2008-04-30 17:08+0900\n"
+"PO-Revision-Date: 2008-04-30 17:51+0900\n"
 "Last-Translator: 0829 <hixarg+0829@gmail.com>\n"
 "Language-Team: DRUPAL*DRUPAL <hixarg+0829@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -25,21 +25,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
 
-#: modules/pathauto/contrib/pathauto_node_i18n.inc:12;16
-msgid "[lang]"
-msgstr "[lang]"
-
-#: modules/pathauto/contrib/pathauto_node_i18n.inc:12
-msgid "Language code of the document"
-msgstr "ドキュメントの言語コード"
-
 #: modules/pathauto/contrib/pathauto_node_event.inc:12;22
 msgid "[eventyyyy]"
 msgstr "[eventyyyy]"
 
 #: modules/pathauto/contrib/pathauto_node_event.inc:12
 msgid "The year the event starts."
-msgstr "イベント開始年"
+msgstr "繧､繝吶Φ繝磯幕蟋句ｹｴ"
 
 #: modules/pathauto/contrib/pathauto_node_event.inc:13;23
 msgid "[eventmm]"
@@ -47,7 +39,7 @@ msgstr "[eventmm]"
 
 #: modules/pathauto/contrib/pathauto_node_event.inc:13
 msgid "The two-digit month (01-12) the event starts."
-msgstr "イベント開始月（01-12）"
+msgstr "繧､繝吶Φ繝磯幕蟋区怦ｼ01-12ｼ"
 
 #: modules/pathauto/contrib/pathauto_node_event.inc:14;24
 msgid "[eventmon]"
@@ -55,7 +47,7 @@ msgstr "[eventmon]"
 
 #: modules/pathauto/contrib/pathauto_node_event.inc:14
 msgid "The three-letter month (jan-dec) the event starts."
-msgstr "イベント開始月（jan-dec）"
+msgstr "繧､繝吶Φ繝磯幕蟋区怦ｼjan-decｼ"
 
 #: modules/pathauto/contrib/pathauto_node_event.inc:15;25
 msgid "[eventdd]"
@@ -63,7 +55,7 @@ msgstr "[eventdd]"
 
 #: modules/pathauto/contrib/pathauto_node_event.inc:15
 msgid "The two-digit day of the month (00-31) the event starts."
-msgstr "イベント開始日（00-31）"
+msgstr "繧､繝吶Φ繝磯幕蟋区律ｼ00-31ｼ"
 
 #: modules/pathauto/contrib/pathauto_node_event.inc:16;26
 msgid "[eventday]"
@@ -71,7 +63,7 @@ msgstr "[eventday]"
 
 #: modules/pathauto/contrib/pathauto_node_event.inc:16
 msgid "The three-letter day of the week (sun-sat) the event starts."
-msgstr "イベント開始曜日（sun-sat）"
+msgstr "繧､繝吶Φ繝磯幕蟋区屆譌･ｼsun-satｼ"
 
 #: modules/pathauto/contrib/pathauto_node_event.inc:17;27
 msgid "[eventweek]"
@@ -79,179 +71,175 @@ msgstr "[eventweek]"
 
 #: modules/pathauto/contrib/pathauto_node_event.inc:17
 msgid "The week number (1-52) of the year the event starts."
-msgstr "イベント開始週（1-52）"
+msgstr "繧､繝吶Φ繝磯幕蟋矩ｱｼ1-52ｼ"
 
-#: modules/pathauto/pathauto_taxonomy.inc:13
-msgid "Category path settings"
-msgstr "カテゴリの URL 設定"
+#: modules/pathauto/contrib/pathauto_node_i18n.inc:12;16
+msgid "[lang]"
+msgstr "[lang]"
 
-#: modules/pathauto/pathauto_taxonomy.inc:14
-msgid "Default path pattern (applies to all vocabularies with blank patterns below)"
-msgstr "デフォルトの URL パターン（下記で設定が空白になっているすべてのボキャブラリに適用）"
+#: modules/pathauto/contrib/pathauto_node_i18n.inc:12
+msgid "Language code of the document"
+msgstr "繝峨く繝･繝｡繝ｳ繝医ｮ險隱槭さ繝ｼ繝"
 
-#: modules/pathauto/pathauto_taxonomy.inc:15
-msgid "category/[vocab-raw]/[catpath-raw]"
-msgstr "category/[vocab-raw]/[catpath-raw]"
+#: modules/pathauto/pathauto.inc:361
+msgid "Ignoring alias %dst due to existing path conflict."
+msgstr "繧ｨ繧､繝ｪ繧｢繧ｹ %dst 縺ｯ縲∵里蟄倥ｮ繝代せ縺ｨ繧ｳ繝ｳ繝輔Μ繧ｯ繝医☆繧九◆繧∫┌隕悶＆繧後∪縺励◆縲"
 
-#: modules/pathauto/pathauto_taxonomy.inc:25
-msgid "Bulk generate aliases for categories that are not aliased"
-msgstr "URL エイリアスが生成されていないカテゴリに対して、URL エイリアスの大量アップデートを行う"
+#: modules/pathauto/pathauto.inc:368
+msgid "Ignoring alias %dst  because it is the same as the internal path."
+msgstr "繧ｨ繧､繝ｪ繧｢繧ｹ %dst 縺ｯ縲∝驛ｨ繝代せ縺ｨ驥崎､縺吶ｋ縺溘ａ辟｡隕悶＆繧後∪縺励◆縲"
 
-#: modules/pathauto/pathauto_taxonomy.inc:26
-msgid "Generate aliases for all existing categories which do not already have aliases."
-msgstr "URL エイリアスを持たないすべてのカテゴリに URL エイリアスを生成します。"
+#: modules/pathauto/pathauto.inc:388
+msgid "Created new alias %dst for %src, replacing %old_alias. %old_alias now redirects to %dst"
+msgstr "%src 縺ｮ譁ｰ縺励＞ URL 繧ｨ繧､繝ｪ繧｢繧ｹ %dst 繧剃ｽ懈舌＠縺ｾ縺励◆縲 %old_alias 縺ｯ縲∽ｻ雁ｾ %dst 縺ｸ繝ｪ繝繧､繝ｬ繧ｯ繝医＆繧後∪縺吶"
 
-#: modules/pathauto/pathauto_taxonomy.inc:35
-msgid "Pattern for all %vocab-name paths"
-msgstr "%vocab-name ボキャブラリ内のすべてカテゴリの URL パターン"
+#: modules/pathauto/pathauto.inc:391
+msgid "Created new alias %dst for %src, replacing %old_alias"
+msgstr "%src 縺ｮ譁ｰ縺励＞ URL 繧ｨ繧､繝ｪ繧｢繧ｹ %dst 繧剃ｽ懈舌＠縺ｾ縺励◆縲 %old_alias 縺ｯ譁ｰ縺励＞繧ｨ繧､繝ｪ繧｢繧ｹ縺ｫ鄂ｮ謠帙＆繧後∪縺吶"
 
-#: modules/pathauto/pathauto_taxonomy.inc:105
-msgid "Forum path settings"
-msgstr "フォーラムの URL 設定"
+#: modules/pathauto/pathauto.inc:394
+msgid "Created new alias %dst for %src"
+msgstr "%src 縺ｮ譁ｰ縺励＞ URL 繧ｨ繧､繝ｪ繧｢繧ｹ %dst 繧剃ｽ懈舌＠縺ｾ縺励◆縲"
 
-#: modules/pathauto/pathauto_taxonomy.inc:106
-msgid "Pattern for forums and forum containers"
-msgstr "フォーラムとフォーラムコンテナの URL パターン"
+#: modules/pathauto/pathauto.inc:418
+msgid "It appears that you have installed Pathauto, which depends on token, but token is either not installed or not installed properly."
+msgstr "Token 縺ｫ萓晏ｭ倥☆繧 Pathauto 縺後う繝ｳ繧ｹ繝医ｼ繝ｫ縺輔ｌ縺溘ｈ縺縺ｧ縺吶′縲ゝoken 縺後う繝ｳ繧ｹ繝医ｼ繝ｫ縺輔ｌ縺ｦ縺縺ｪ縺縺九∵ｭ｣縺励￥蜍穂ｽ懊＠縺ｦ縺縺ｾ縺帙ｓ縲"
 
-#: modules/pathauto/pathauto_taxonomy.inc:107
-msgid "[vocab-raw]/[catpath-raw]"
-msgstr "[vocab-raw]/[catpath-raw]"
+#: modules/pathauto/pathauto.inc:454
+msgid "Double quotes \""
+msgstr "繝繝悶Ν繧ｯ繧ｩ繝ｼ繝茨ｼ亥ｼ慕畑隨ｦｼ \""
 
-#: modules/pathauto/pathauto_taxonomy.inc:117
-msgid "Bulk generate forum paths"
-msgstr "フォーラムの URL エイリアスに対して、大量アップデートを実行する"
+#: modules/pathauto/pathauto.inc:455
+msgid "Single quotes (apostrophe) '"
+msgstr "繧ｷ繝ｳ繧ｰ繝ｫ繧ｯ繧ｩ繝ｼ繝茨ｼ医い繝昴せ繝医Ο繝輔ぅｼ '"
 
-#: modules/pathauto/pathauto_taxonomy.inc:118
-msgid "Generate aliases for all existing forums and forum containers which do not already have aliases."
-msgstr "URL エイリアスを持たないすべてのフォーラムとフォーラムコンテナに URL エイリアスを生成します。"
+#: modules/pathauto/pathauto.inc:456
+msgid "Back tick `"
+msgstr "繝舌ャ繧ｯ繧ｯ繧ｩ繝ｼ繝 `"
 
-#: modules/pathauto/pathauto_taxonomy.inc:61
-msgid "Bulk generation of terms completed, one alias generated."
-msgid_plural "Bulk generation of terms completed, @count aliases generated."
-msgstr[0] "カテゴリの大量アップデートが完了しました。 1 個の URL エイリアスが生成されました。"
-msgstr[1] "カテゴリの大量アップデートが完了しました。 @count 個の URL エイリアスが生成されました。"
+#: modules/pathauto/pathauto.inc:457
+msgid "Comma ,"
+msgstr "繧ｳ繝ｳ繝 ,"
 
-#: modules/pathauto/pathauto_taxonomy.inc:140
-msgid "Bulk update of forums and forum containers completed, one alias generated."
-msgid_plural "Bulk update of forums and forum containers completed, @count aliases generated."
-msgstr[0] "フォーラムとフォーラムコンテナの大量アップデートが完了しました。 1 個の URL エイリアスが生成されました。"
-msgstr[1] "フォーラムとフォーラムコンテナの大量アップデートが完了しました。 @count 個の URL エイリアスが生成されました。"
+#: modules/pathauto/pathauto.inc:458
+msgid "Period ."
+msgstr "繝斐Μ繧ｪ繝 ."
 
-#: modules/pathauto/pathauto_user.inc:13
-msgid "User path settings"
-msgstr "ユーザページの URL 設定"
+#: modules/pathauto/pathauto.inc:459
+msgid "Hyphen -"
+msgstr "繝上う繝輔Φ -"
 
-#: modules/pathauto/pathauto_user.inc:14
-msgid "Pattern for user account page paths"
-msgstr "ユーザアカウントページの URL パターン"
+#: modules/pathauto/pathauto.inc:460
+msgid "Underscore _"
+msgstr "繧｢繝ｳ繝繝ｼ繧ｹ繧ｳ繧｢ｼ医い繝ｳ繝繝ｼ繝舌ｼｼ _"
 
-#: modules/pathauto/pathauto_user.inc:15
-msgid "users/[user-raw]"
-msgstr "users/[user-raw]"
+#: modules/pathauto/pathauto.inc:461
+msgid "Colon :"
+msgstr "繧ｳ繝ｭ繝ｳ :"
 
-#: modules/pathauto/pathauto_user.inc:25
-msgid "Bulk generate aliases for users that are not aliased"
-msgstr "URL エイリアスを持たない他のユーザページに対して、大量アップデートを実行する"
+#: modules/pathauto/pathauto.inc:462
+msgid "Semicolon ;"
+msgstr "繧ｻ繝溘さ繝ｭ繝ｳ ;"
 
-#: modules/pathauto/pathauto_user.inc:26
-msgid "Generate aliases for all existing user account pages which do not already have aliases."
-msgstr "URL エイリアスを持たないすべてのユーザアカウントページに URL エイリアスを生成します。"
+#: modules/pathauto/pathauto.inc:463
+msgid "Pipe |"
+msgstr "繝代う繝 |"
 
-#: modules/pathauto/pathauto_user.inc:42
-msgid "Blog path settings"
-msgstr "ユーザ別ブログの URL 設定"
+#: modules/pathauto/pathauto.inc:464
+msgid "Left curly bracket {"
+msgstr "蟾ｦ荳ｭ繧ｫ繝繧ｳ {"
 
-#: modules/pathauto/pathauto_user.inc:43
-msgid "Pattern for blog page paths"
-msgstr "ユーザ別ブログの URL パターン"
+#: modules/pathauto/pathauto.inc:465
+msgid "Left square bracket ["
+msgstr "蟾ｦ螟ｧ繧ｫ繝繧ｳ ["
 
-#: modules/pathauto/pathauto_user.inc:44
-msgid "blogs/[user-raw]"
-msgstr "blogs/[user-raw]"
+#: modules/pathauto/pathauto.inc:466
+msgid "Right curly bracket }"
+msgstr "蜿ｳ荳ｭ繧ｫ繝繧ｳ }"
 
-#: modules/pathauto/pathauto_user.inc:50
-msgid "Bulk generate aliases for blogs that are not aliased"
-msgstr "URL エイリアスを持たない他のユーザ別ブログに対して、大量アップデートを実行する"
+#: modules/pathauto/pathauto.inc:467
+msgid "Right square bracket ]"
+msgstr "蜿ｳ螟ｧ繧ｫ繝繧ｳ }"
 
-#: modules/pathauto/pathauto_user.inc:51
-msgid "Generate aliases for all existing blog pages which do not already have aliases."
-msgstr "URL エイリアスを持たないすべてのブログページに URL エイリアスを生成します。"
+#: modules/pathauto/pathauto.inc:468
+msgid "Plus +"
+msgstr "繝励Λ繧ｹ +"
 
-#: modules/pathauto/pathauto_user.inc:67
-msgid "User-tracker path settings"
-msgstr "ユーザー別投稿の軌跡ページの URL 設定"
+#: modules/pathauto/pathauto.inc:469
+msgid "Equal ="
+msgstr "繧､繧ｳ繝ｼ繝ｫ ="
 
-#: modules/pathauto/pathauto_user.inc:68
-msgid "Pattern for user-tracker page paths"
-msgstr "ユーザ別投稿の軌跡ページの URL パターン"
+#: modules/pathauto/pathauto.inc:470
+msgid "Asterisk *"
+msgstr "繧｢繧ｹ繧ｿ繝ｪ繧ｹ繧ｯ *"
 
-#: modules/pathauto/pathauto_user.inc:69
-msgid "users/[user-raw]/track"
-msgstr "users/[user-raw]/track"
+#: modules/pathauto/pathauto.inc:471
+msgid "Ampersand &"
+msgstr "繧｢繝ｳ繝代し繝ｳ繝会ｼ医い繝ｳ繝会ｼ &"
 
-#: modules/pathauto/pathauto_user.inc:75
-msgid "Bulk generate aliases for user-tracker paths that are not aliased"
-msgstr "URL エイリアスを持たない他のユーザ別投稿の軌跡ページに対して、大量アップデートを実行する"
+#: modules/pathauto/pathauto.inc:472
+msgid "Percent %"
+msgstr "繝代ｼ繧ｻ繝ｳ繝 %"
 
-#: modules/pathauto/pathauto_user.inc:76
-msgid "Generate aliases for all existing user-tracker pages which do not already have aliases."
-msgstr "URL エイリアスを持たないすべてのユーザ別投稿の軌跡ページに URL エイリアスを生成します。"
+#: modules/pathauto/pathauto.inc:473
+msgid "Caret ^"
+msgstr "繧ｭ繝｣繝ｬ繝繝 ^"
 
-#: modules/pathauto/pathauto_user.inc:100
-msgid "Bulk generation of users completed, one alias generated."
-msgid_plural "Bulk generation of users completed, @count aliases generated."
-msgstr[0] "ユーザアカウントページの大量アップデートが完了しました。 1 個の URL エイリアスが生成されました。"
-msgstr[1] "ユーザアカウントページの大量アップデートが完了しました。 @count 個の URL エイリアスが生成されました。"
+#: modules/pathauto/pathauto.inc:474
+msgid "Dollar $"
+msgstr "繝峨Ν繝槭ｼ繧ｯｼ医ム繝ｩ繝ｼｼ $"
 
-#: modules/pathauto/pathauto_user.inc:123
-msgid "Bulk generation of user blogs completed, one alias generated."
-msgid_plural "Bulk generation of user blogs completed, @count aliases generated."
-msgstr[0] "ユーザ別ブログの大量アップデートが完了しました。 1 個の URL エイリアスが生成されました。"
-msgstr[1] "ユーザ別ブログの大量アップデートが完了しました。 @count 個の URL エイリアスが生成されました。"
+#: modules/pathauto/pathauto.inc:475
+msgid "Hash #"
+msgstr "繝上ャ繧ｷ繝･繝槭ｼ繧ｯｼ医す繝｣繝ｼ繝暦ｼ #"
 
-#: modules/pathauto/pathauto_user.inc:145
-msgid "Bulk generation of user tracker pages completed, one alias generated."
-msgid_plural "Bulk generation of user tracker pages completed, @count aliases generated."
-msgstr[0] "ユーザ別投稿の軌跡ページの大量アップデートが完了しました。 1 個の URL エイリアスが生成されました。"
-msgstr[1] "ユーザ別投稿の軌跡ページの大量アップデートが完了しました。 @count 個の URL エイリアスが生成されました。"
+#: modules/pathauto/pathauto.inc:476
+msgid "At @"
+msgstr "繧｢繝繝医槭ｼ繧ｯ @"
 
-#: modules/pathauto/pathauto.info:0 modules/pathauto/pathauto.module:41
+#: modules/pathauto/pathauto.inc:477
+msgid "Exclamation !"
+msgstr "繧ｨ繧ｯ繧ｹ繧ｯ繝ｩ繝｡繝ｼ繧ｷ繝ｧ繝ｳ繝槭ｼ繧ｯｼ域─蝌隨ｦｼ !"
+
+#: modules/pathauto/pathauto.inc:478
+msgid "Tilde ~"
+msgstr "繝√Ν繝 ~"
+
+#: modules/pathauto/pathauto.inc:479
+msgid "Left parenthesis ("
+msgstr "蟾ｦ蟆上き繝繧ｳ ("
+
+#: modules/pathauto/pathauto.inc:480
+msgid "right parenthesis )"
+msgstr "蜿ｳ蟆上き繝繧ｳ )"
+
+#: modules/pathauto/pathauto.inc:481
+msgid "Question mark ?"
+msgstr "繧ｯ繧ｨ繧ｹ繝√Ι繝ｳ繝槭ｼ繧ｯｼ育桝蝠冗ｬｦｼ ?"
+
+#: modules/pathauto/pathauto.inc:482
+msgid "Less than <"
+msgstr "荳咲ｭ牙捷ｼ亥ｰ上↑繧奇ｼ <"
+
+#: modules/pathauto/pathauto.inc:483
+msgid "Greater than >"
+msgstr "荳咲ｭ牙捷ｼ亥､ｧ縺ｪ繧奇ｼ <"
+
+#: modules/pathauto/pathauto.inc:484
+msgid "Back slash \\"
+msgstr "繝舌ャ繧ｯ繧ｹ繝ｩ繝繧ｷ繝･ｼ亥繝槭ｼ繧ｯｼ \\"
+
+#: modules/pathauto/pathauto.info:0
 msgid "Pathauto"
-msgstr "URL エイリアス自動生成"
+msgstr "閾ｪ蜍輔お繧､繝ｪ繧｢繧ｹ險ｭ螳"
 
 #: modules/pathauto/pathauto.info:0
 msgid "Provides a mechanism for modules to automatically generate aliases for the content they manage."
-msgstr "コンテンツ管理のために、自動的に URL エイリアス（別名）を生成するメカニズムを提供します。"
+msgstr "繧ｳ繝ｳ繝繝ｳ繝邂｡逅縺ｮ縺溘ａ縺ｫ縲∬ｪ蜍慕噪縺ｫ URL 繧ｨ繧､繝ｪ繧｢繧ｹｼ亥挨蜷搾ｼ峨ｒ逕滓舌☆繧九Γ繧ｫ繝九ぜ繝繧呈署萓帙＠縺ｾ縺吶"
 
-#: modules/pathauto/pathauto_node.inc:13
-msgid "Node path settings"
-msgstr "コンテンツの URL 設定"
-
-#: modules/pathauto/pathauto_node.inc:14
-msgid "Default path pattern (applies to all node types with blank patterns below)"
-msgstr "デフォルトの URL パターン（下記で設定が空白になっているすべてのコンテンツタイプに適用）"
-
-#: modules/pathauto/pathauto_node.inc:15
-msgid "content/[title-raw]"
-msgstr "content/[title-raw]"
-
-#: modules/pathauto/pathauto_node.inc:16
-msgid "Bulk generate aliases for nodes that are not aliased"
-msgstr "URL エイリアスを持たない他のコンテンツに対して、大量アップデートを実行する"
-
-#: modules/pathauto/pathauto_node.inc:17
-msgid "Generate aliases for all existing nodes which do not already have aliases."
-msgstr "URL エイリアスを持たないすべてのコンテンツに URL エイリアスを生成します。"
-
-#: modules/pathauto/pathauto_node.inc:30
-msgid "Pattern for all @node_type paths"
-msgstr "@node_type タイプのすべてのコンテンツの URL パターン"
-
-#: modules/pathauto/pathauto_node.inc:88
-msgid "Bulk generation of nodes completed, one alias generated."
-msgid_plural "Bulk generation of nodes completed, @count aliases generated."
-msgstr[0] "コンテンツの大量アップデートが完了しました。 1 個の URL エイリアスが生成されました。"
-msgstr[1] "コンテンツの大量アップデートが完了しました。 @count 個の URL エイリアスが生成されました。"
+#: modules/pathauto/pathauto.install:17
+msgid "Extra table to help Pathauto interact with the core url_alias table"
+msgstr "繧ｳ繧｢縺ｮ url_alias 繝繝ｼ繝悶Ν縺ｨ逶ｸ莠偵↓菴懃畑縺吶ｋ Pathauto 縺ｮ縺溘ａ縺ｮ霑ｽ蜉繝繝ｼ繝悶Ν"
 
 #: modules/pathauto/pathauto.module:11
 msgid ""
@@ -270,462 +258,475 @@ msgid ""
 "                  system which ensures that raw user content is filtered.  Failure to use -raw tokens can cause problems\n"
 "                  with the Pathauto punctuation filtering system.</p>"
 msgstr ""
-"<p>コンテンツ管理のために、自動的に URL エイリアス（別名）を生成するメカニズムを提供します。</p>\n"
-"<h2>設定について</h2>\n"
-"<p>URL エイリアスの<strong>最大文字数</strong>および<strong>コンポーネントの最大文字数</strong>の最大値はデフォルトで 100 となっており、このモジュールで設定できる限界の値は 128 までとなります。 \n"
-"この値は、url_alias データベーステーブルの dst カラムの限界値となります。 デフォルトのデータベーススキーマでは、このカラムの値が 128 に設定されています。 \n"
-"URL エイリアスの最大文字数に dst カラムの値と同じ文字数を設定している場合、システムが URL エイリアスの自動生成時に別の文字列を追加する必要が生じた際にトラブルを引き起こす可能性があります。 \n"
-"例えば... フィード配信のための URL を生成する場合には URL エイリアスの末尾に '/feed' が追加されます。 \n"
-"この問題を回避するために、URL エイリアスの最大文字数には、URL の末尾に追加されることが予測される文字列の最大となる文字数を dst カラムの値から差し引いた値を設定してください。 \n"
-"URL の末尾に追加されることが予測される文字列の文字数は、使用しているモジュールやこのモジュールの設定に依存します。 デフォルトの値である 100 が推奨されます。</p>\n"
-"<p>URL エイリアスを自動生成するための定義としてトークンの値を使用する場合は <strong>トークン の -raw 形式</strong>のプレースホルダーを参照します。 \n"
-"URL のエイリアスは、コンテンツのデータを RAW データとしてフィルタリングシステムに通過させて生成されます。 \n"
-"そのため、トークンの -raw 形式のデータを参照していない場合は、句読点などの処理を行うためのフィルタリングシステムで問題が発生する可能性があります。</p>"
+"<p>繧ｳ繝ｳ繝繝ｳ繝邂｡逅縺ｮ縺溘ａ縺ｫ縲∬ｪ蜍慕噪縺ｫ URL 繧ｨ繧､繝ｪ繧｢繧ｹｼ亥挨蜷搾ｼ峨ｒ逕滓舌☆繧九Γ繧ｫ繝九ぜ繝繧呈署萓帙＠縺ｾ縺吶</p>\n"
+"<h2>險ｭ螳壹↓縺､縺縺ｦ</h2>\n"
+"<p>URL 繧ｨ繧､繝ｪ繧｢繧ｹ縺ｮ<strong>譛螟ｧ譁蟄玲焚</strong>縺翫ｈ縺ｳ<strong>繧ｳ繝ｳ繝昴ｼ繝阪Φ繝医ｮ譛螟ｧ譁蟄玲焚</strong>縺ｮ譛螟ｧ蛟､縺ｯ繝繝輔か繝ｫ繝医〒 100 縺ｨ縺ｪ縺｣縺ｦ縺翫ｊ縲√％縺ｮ繝｢繧ｸ繝･繝ｼ繝ｫ縺ｧ險ｭ螳壹〒縺阪ｋ髯千阜縺ｮ蛟､縺ｯ 128 縺ｾ縺ｧ縺ｨ縺ｪ繧翫∪縺吶 \n"
+"縺薙ｮ蛟､縺ｯ縲「rl_alias 繝繝ｼ繧ｿ繝吶ｼ繧ｹ繝繝ｼ繝悶Ν縺ｮ dst 繧ｫ繝ｩ繝縺ｮ髯千阜蛟､縺ｨ縺ｪ繧翫∪縺吶 繝繝輔か繝ｫ繝医ｮ繝繝ｼ繧ｿ繝吶ｼ繧ｹ繧ｹ繧ｭ繝ｼ繝槭〒縺ｯ縲√％縺ｮ繧ｫ繝ｩ繝縺ｮ蛟､縺 128 縺ｫ險ｭ螳壹＆繧後※縺縺ｾ縺吶 \n"
+"URL 繧ｨ繧､繝ｪ繧｢繧ｹ縺ｮ譛螟ｧ譁蟄玲焚縺ｫ dst 繧ｫ繝ｩ繝縺ｮ蛟､縺ｨ蜷後§譁蟄玲焚繧定ｨｭ螳壹＠縺ｦ縺繧句ｴ蜷医√す繧ｹ繝繝縺 URL 繧ｨ繧､繝ｪ繧｢繧ｹ縺ｮ閾ｪ蜍慕函謌先凾縺ｫ蛻･縺ｮ譁蟄怜励ｒ霑ｽ蜉縺吶ｋ蠢隕√′逕溘§縺滄圀縺ｫ繝医Λ繝悶Ν繧貞ｼ輔″襍ｷ縺薙☆蜿ｯ閭ｽ諤ｧ縺後≠繧翫∪縺吶 \n"
+"萓九∴縺ｰ... 繝輔ぅ繝ｼ繝蛾堺ｿ｡縺ｮ縺溘ａ縺ｮ URL 繧堤函謌舌☆繧句ｴ蜷医↓縺ｯ URL 繧ｨ繧､繝ｪ繧｢繧ｹ縺ｮ譛ｫ蟆ｾ縺ｫ '/feed' 縺瑚ｿｽ蜉縺輔ｌ縺ｾ縺吶 \n"
+"縺薙ｮ蝠城｡後ｒ蝗樣∩縺吶ｋ縺溘ａ縺ｫ縲ゞRL 繧ｨ繧､繝ｪ繧｢繧ｹ縺ｮ譛螟ｧ譁蟄玲焚縺ｫ縺ｯ縲ゞRL 縺ｮ譛ｫ蟆ｾ縺ｫ霑ｽ蜉縺輔ｌ繧九％縺ｨ縺御ｺ域ｸｬ縺輔ｌ繧区枚蟄怜励ｮ譛螟ｧ縺ｨ縺ｪ繧区枚蟄玲焚繧 dst 繧ｫ繝ｩ繝縺ｮ蛟､縺九ｉ蟾ｮ縺怜ｼ輔＞縺溷､繧定ｨｭ螳壹＠縺ｦ縺上□縺輔＞縲 \n"
+"URL 縺ｮ譛ｫ蟆ｾ縺ｫ霑ｽ蜉縺輔ｌ繧九％縺ｨ縺御ｺ域ｸｬ縺輔ｌ繧区枚蟄怜励ｮ譁蟄玲焚縺ｯ縲∽ｽｿ逕ｨ縺励※縺繧九Δ繧ｸ繝･繝ｼ繝ｫ繧縺薙ｮ繝｢繧ｸ繝･繝ｼ繝ｫ縺ｮ險ｭ螳壹↓萓晏ｭ倥＠縺ｾ縺吶 繝繝輔か繝ｫ繝医ｮ蛟､縺ｧ縺ゅｋ 100 縺梧耳螂ｨ縺輔ｌ縺ｾ縺吶</p>\n"
+"<p>URL 繧ｨ繧､繝ｪ繧｢繧ｹ繧定ｪ蜍慕函謌舌☆繧九◆繧√ｮ螳夂ｾｩ縺ｨ縺励※繝医ｼ繧ｯ繝ｳ縺ｮ蛟､繧剃ｽｿ逕ｨ縺吶ｋ蝣ｴ蜷医ｯ <strong>繝医ｼ繧ｯ繝ｳ 縺ｮ -raw 蠖｢蠑</strong>縺ｮ繝励Ξ繝ｼ繧ｹ繝帙Ν繝繝ｼ繧貞盾辣ｧ縺励∪縺吶 \n"
+"URL 縺ｮ繧ｨ繧､繝ｪ繧｢繧ｹ縺ｯ縲√さ繝ｳ繝繝ｳ繝縺ｮ繝繝ｼ繧ｿ繧 RAW 繝繝ｼ繧ｿ縺ｨ縺励※繝輔ぅ繝ｫ繧ｿ繝ｪ繝ｳ繧ｰ繧ｷ繧ｹ繝繝縺ｫ騾夐℃縺輔○縺ｦ逕滓舌＆繧後∪縺吶 \n"
+"縺昴ｮ縺溘ａ縲√ヨ繝ｼ繧ｯ繝ｳ縺ｮ -raw 蠖｢蠑上ｮ繝繝ｼ繧ｿ繧貞盾辣ｧ縺励※縺縺ｪ縺蝣ｴ蜷医ｯ縲∝唱隱ｭ轤ｹ縺ｪ縺ｩ縺ｮ蜃ｦ逅繧定｡後≧縺溘ａ縺ｮ繝輔ぅ繝ｫ繧ｿ繝ｪ繝ｳ繧ｰ繧ｷ繧ｹ繝繝縺ｧ蝠城｡後′逋ｺ逕溘☆繧句庄閭ｽ諤ｧ縺後≠繧翫∪縺吶</p>"
 
-#: modules/pathauto/pathauto.module:46
-msgid "Configure how pathauto generates clean URLs for your content."
-msgstr "コンテンツの URL を自動生成するためのルールを設定します。"
+#: modules/pathauto/pathauto.module:41
+msgid "Automated alias settings"
+msgstr "閾ｪ蜍輔お繧､繝ｪ繧｢繧ｹ險ｭ螳"
 
 #: modules/pathauto/pathauto.module:51
 msgid "Delete aliases"
-msgstr "エイリアスの削除"
+msgstr "繧ｨ繧､繝ｪ繧｢繧ｹ縺ｮ蜑企勁"
 
 #: modules/pathauto/pathauto.module:82
 msgid "It appears that the <a href=\"@token_link\">Token module</a> is not installed.  Please ensure that you have it installed so that Pathauto can work properly.  You may need to disable Pathauto and re-enable it to get Token enabled."
-msgstr "<a href=\"@token_link\">トークンモジュール</a>がインストールされていません。 URL エイリアス自動生成モジュールの動作にはトークンモジュールがインストールされている環境が必要です。 一旦 URL エイリアス自動生成モジュールを無効にし、トークンモジュールを有効にした後、再度 URL エイリアス自動生成モジュールを有効にしてください。"
+msgstr "<a href=\"@token_link\">繝医ｼ繧ｯ繝ｳ繝｢繧ｸ繝･繝ｼ繝ｫ</a>縺後う繝ｳ繧ｹ繝医ｼ繝ｫ縺輔ｌ縺ｦ縺縺ｾ縺帙ｓ縲 閾ｪ蜍輔お繧､繝ｪ繧｢繧ｹ險ｭ螳壹Δ繧ｸ繝･繝ｼ繝ｫ縺ｮ蜍穂ｽ懊↓縺ｯ繝医ｼ繧ｯ繝ｳ繝｢繧ｸ繝･繝ｼ繝ｫ縺後う繝ｳ繧ｹ繝医ｼ繝ｫ縺輔ｌ縺ｦ縺繧狗腸蠅縺悟ｿ隕√〒縺吶 荳譌ｦ閾ｪ蜍輔お繧､繝ｪ繧｢繧ｹ險ｭ螳壹Δ繧ｸ繝･繝ｼ繝ｫ繧堤┌蜉ｹ縺ｫ縺励√ヨ繝ｼ繧ｯ繝ｳ繝｢繧ｸ繝･繝ｼ繝ｫ繧呈怏蜉ｹ縺ｫ縺励◆蠕後∝榊ｺｦ閾ｪ蜍輔お繧､繝ｪ繧｢繧ｹ險ｭ螳壹Δ繧ｸ繝･繝ｼ繝ｫ繧呈怏蜉ｹ縺ｫ縺励※縺上□縺輔＞縲"
 
 #: modules/pathauto/pathauto.module:96
 msgid "General settings"
-msgstr "全般の設定"
+msgstr "蜈ｨ闊ｬ縺ｮ險ｭ螳"
 
 #: modules/pathauto/pathauto.module:101
 msgid "Verbose"
-msgstr "冗長な説明"
+msgstr "蜀鈴聞縺ｪ隱ｬ譏"
 
 #: modules/pathauto/pathauto.module:103
 msgid "Display alias changes (except during bulk updates)."
-msgstr "エイリアスの変更内容を表示します。（大量アップデート時は除く）"
+msgstr "繧ｨ繧､繝ｪ繧｢繧ｹ縺ｮ螟画峩蜀螳ｹ繧定｡ｨ遉ｺ縺励∪縺吶ゑｼ亥､ｧ驥上い繝繝励ョ繝ｼ繝域凾縺ｯ髯､縺擾ｼ"
 
 #: modules/pathauto/pathauto.module:106
 msgid "Separator"
-msgstr "セパレータ"
+msgstr "繧ｻ繝代Ξ繝ｼ繧ｿ"
 
 #: modules/pathauto/pathauto.module:108
 msgid "Character used to separate words in titles. This will replace any spaces and punctuation characters. Using a space or + character can cause unexpected results."
-msgstr "タイトル中の単語を区切るために使用される文字（記号）です。 セパレータはスペースや句読点（記号）の置換にも利用されます。 スペースやプラス（+）記号を使用した場合、予想外の結果を引き起こす可能性があります。"
+msgstr "繧ｿ繧､繝医Ν荳ｭ縺ｮ蜊倩ｪ槭ｒ蛹ｺ蛻繧九◆繧√↓菴ｿ逕ｨ縺輔ｌ繧区枚蟄暦ｼ郁ｨ伜捷ｼ峨〒縺吶 繧ｻ繝代Ξ繝ｼ繧ｿ縺ｯ繧ｹ繝壹ｼ繧ｹ繧蜿･隱ｭ轤ｹｼ郁ｨ伜捷ｼ峨ｮ鄂ｮ謠帙↓繧ょ茜逕ｨ縺輔ｌ縺ｾ縺吶 繧ｹ繝壹ｼ繧ｹ繧繝励Λ繧ｹｼ+ｼ芽ｨ伜捷繧剃ｽｿ逕ｨ縺励◆蝣ｴ蜷医∽ｺ域Φ螟悶ｮ邨先棡繧貞ｼ輔″襍ｷ縺薙☆蜿ｯ閭ｽ諤ｧ縺後≠繧翫∪縺吶"
 
 #: modules/pathauto/pathauto.module:111
 msgid "Character case"
-msgstr "文字体系"
+msgstr "譁蟄嶺ｽ鍋ｳｻ"
 
 #: modules/pathauto/pathauto.module:113
 msgid "Leave case the same as source token values."
-msgstr "トークンからの値をそのまま使用する"
+msgstr "繝医ｼ繧ｯ繝ｳ縺九ｉ縺ｮ蛟､繧偵◎縺ｮ縺ｾ縺ｾ菴ｿ逕ｨ縺吶ｋ"
 
 #: modules/pathauto/pathauto.module:113
 msgid "Change to lower case"
-msgstr "小文字に変換する"
+msgstr "蟆乗枚蟄励↓螟画鋤縺吶ｋ"
 
 #: modules/pathauto/pathauto.module:117
 msgid "Maximum alias length"
-msgstr "エイリアスの最大文字数"
+msgstr "繧ｨ繧､繝ｪ繧｢繧ｹ縺ｮ譛螟ｧ譁蟄玲焚"
 
 #: modules/pathauto/pathauto.module:119
 msgid "Maximum length of aliases to generate. 100 is recommended.  See <a href=\"@pathauto-help\">Pathauto help</a> for details."
-msgstr "自動生成するエイリアスの最大文字数です。 100 が推薦されます。 詳細は <a href=\"@pathauto-help\">ヘルプ</a> を参照してください。"
+msgstr "閾ｪ蜍慕函謌舌☆繧九お繧､繝ｪ繧｢繧ｹ縺ｮ譛螟ｧ譁蟄玲焚縺ｧ縺吶 100 縺梧耳阮ｦ縺輔ｌ縺ｾ縺吶 隧ｳ邏ｰ縺ｯ <a href=\"@pathauto-help\">繝倥Ν繝</a> 繧貞盾辣ｧ縺励※縺上□縺輔＞縲"
 
 #: modules/pathauto/pathauto.module:122
 msgid "Maximum component length"
-msgstr "コンポーネントの最大文字数"
+msgstr "繧ｳ繝ｳ繝昴ｼ繝阪Φ繝医ｮ譛螟ｧ譁蟄玲焚"
 
 #: modules/pathauto/pathauto.module:124
 msgid "Maximum text length of any component in the alias (e.g., [title]). 100 is recommended. See <a href=\"@pathauto-help\">Pathauto help</a> for details."
-msgstr "エイリアスのコンポーネント（例:[title]）の最大文字数です。 100 が推薦されます。 詳細は <a href=\"@pathauto-help\">ヘルプ</a> を参照してください。"
+msgstr "繧ｨ繧､繝ｪ繧｢繧ｹ縺ｮ繧ｳ繝ｳ繝昴ｼ繝阪Φ繝茨ｼ井ｾ:[title]ｼ峨ｮ譛螟ｧ譁蟄玲焚縺ｧ縺吶 100 縺梧耳阮ｦ縺輔ｌ縺ｾ縺吶 隧ｳ邏ｰ縺ｯ <a href=\"@pathauto-help\">繝倥Ν繝</a> 繧貞盾辣ｧ縺励※縺上□縺輔＞縲"
 
 #: modules/pathauto/pathauto.module:127
 msgid "Maximum number of objects to alias in a bulk update"
-msgstr "URL エイリアスの大量アップデートに含めるオブジェクトの最大数"
+msgstr "URL 繧ｨ繧､繝ｪ繧｢繧ｹ縺ｮ螟ｧ驥上い繝繝励ョ繝ｼ繝医↓蜷ｫ繧√ｋ繧ｪ繝悶ず繧ｧ繧ｯ繝医ｮ譛螟ｧ謨ｰ"
 
 #: modules/pathauto/pathauto.module:129
 msgid "Maximum number of objects of a given type which should be aliased during a a bulk update. The default is 50 and the recommended number depends on the speed of your server.  If bulk updates \"time out\" or result in a \"white screen\" then reduce the number."
-msgstr "1度の大量アップデートで別名に置き換えることのできるオブジェクトの最大数です。 デフォルトは 50 ですが、最適値は設置されているサーバー環境に依存します。 もし、大量アップデート時に\"タイムアウト\"や\"ホワイトスクリーン\"が発生した場合は、この値を小さくしてください。"
+msgstr "1蠎ｦ縺ｮ螟ｧ驥上い繝繝励ョ繝ｼ繝医〒蛻･蜷阪↓鄂ｮ縺肴鋤縺医ｋ縺薙→縺ｮ縺ｧ縺阪ｋ繧ｪ繝悶ず繧ｧ繧ｯ繝医ｮ譛螟ｧ謨ｰ縺ｧ縺吶 繝繝輔か繝ｫ繝医ｯ 50 縺ｧ縺吶′縲∵怙驕ｩ蛟､縺ｯ險ｭ鄂ｮ縺輔ｌ縺ｦ縺繧九し繝ｼ繝舌ｼ迺ｰ蠅縺ｫ萓晏ｭ倥＠縺ｾ縺吶 繧ゅ＠縲∝､ｧ驥上い繝繝励ョ繝ｼ繝域凾縺ｫ\"繧ｿ繧､繝繧｢繧ｦ繝\"繧Ы"繝帙Ρ繧､繝医せ繧ｯ繝ｪ繝ｼ繝ｳ\"縺檎匱逕溘＠縺溷ｴ蜷医ｯ縲√％縺ｮ蛟､繧貞ｰ上＆縺上＠縺ｦ縺上□縺輔＞縲"
 
 #: modules/pathauto/pathauto.module:132
 msgid "Do nothing. Leave the old alias intact."
-msgstr "なにもしません。 既存の URL エイリアスをそのまま使用します。"
+msgstr "縺ｪ縺ｫ繧ゅ＠縺ｾ縺帙ｓ縲 譌｢蟄倥ｮ URL 繧ｨ繧､繝ｪ繧｢繧ｹ繧偵◎縺ｮ縺ｾ縺ｾ菴ｿ逕ｨ縺励∪縺吶"
 
 #: modules/pathauto/pathauto.module:133
 msgid "Create a new alias. Leave the existing alias functioning."
-msgstr "新しい URL エイリアスを作成します。 既存の URL エイリアスもそのまま機能させておきます。"
+msgstr "譁ｰ縺励＞ URL 繧ｨ繧､繝ｪ繧｢繧ｹ繧剃ｽ懈舌＠縺ｾ縺吶 譌｢蟄倥ｮ URL 繧ｨ繧､繝ｪ繧｢繧ｹ繧ゅ◎縺ｮ縺ｾ縺ｾ讖溯ｽ縺輔○縺ｦ縺翫″縺ｾ縺吶"
 
 #: modules/pathauto/pathauto.module:134
 msgid "Create a new alias. Delete the old alias."
-msgstr "新しい URL エイリアスを作成します。 既存の URL エイリアスは削除します。"
+msgstr "譁ｰ縺励＞ URL 繧ｨ繧､繝ｪ繧｢繧ｹ繧剃ｽ懈舌＠縺ｾ縺吶 譌｢蟄倥ｮ URL 繧ｨ繧､繝ｪ繧｢繧ｹ縺ｯ蜑企勁縺励∪縺吶"
 
 #: modules/pathauto/pathauto.module:137
 msgid "Create a new alias. Redirect from old alias."
-msgstr "新しい URL エイリアスを作成します。 既存の URL エイリアスにはリダイレクトを設定します。"
+msgstr "譁ｰ縺励＞ URL 繧ｨ繧､繝ｪ繧｢繧ｹ繧剃ｽ懈舌＠縺ｾ縺吶 譌｢蟄倥ｮ URL 繧ｨ繧､繝ｪ繧｢繧ｹ縺ｫ縺ｯ繝ｪ繝繧､繝ｬ繧ｯ繝医ｒ險ｭ螳壹＠縺ｾ縺吶"
 
 #: modules/pathauto/pathauto.module:146
 msgid "Update action"
-msgstr "アップデート動作"
+msgstr "繧｢繝繝励ョ繝ｼ繝亥虚菴"
 
 #: modules/pathauto/pathauto.module:148
 msgid "What should pathauto do when updating an existing content item which already has an alias?"
-msgstr "既にエイリアスが存在するコンテンツをアップデートした時の動作を選択します。"
+msgstr "譌｢縺ｫ繧ｨ繧､繝ｪ繧｢繧ｹ縺悟ｭ伜惠縺吶ｋ繧ｳ繝ｳ繝繝ｳ繝繧偵い繝繝励ョ繝ｼ繝医＠縺滓凾縺ｮ蜍穂ｽ懊ｒ驕ｸ謚槭＠縺ｾ縺吶"
 
 #: modules/pathauto/pathauto.module:153
 msgid "When a pattern includes certain characters (such as those with accents) should Pathauto attempt to transliterate them into the ASCII-96 alphabet?  Transliteration is determined by the i18n-ascii.txt file in the Pathauto directory. <strong>This option is disabled on your site because you do not have an i18n-ascii.txt file in the Pathauto directory.</strong>"
-msgstr "パターンが特定の文字（文字にアクセント記号を含むものなど）を含む時、それらを ASCII-96 のアルファベットに翻訳しますか？ 翻訳は URL エイリアス自動生成モジュールのディレクトリ内に設置された i18n-ascii.txt に基づいて決定されます。 <strong>現在、Pathauto ディレクトリ内に i18n-ascii.txt がないため、このオプションは使用できません。</strong>"
+msgstr "繝代ち繝ｼ繝ｳ縺檎音螳壹ｮ譁蟄暦ｼ域枚蟄励↓繧｢繧ｯ繧ｻ繝ｳ繝郁ｨ伜捷繧貞性繧繧ゅｮ縺ｪ縺ｩｼ峨ｒ蜷ｫ繧譎ゅ√◎繧後ｉ繧 ASCII-96 縺ｮ繧｢繝ｫ繝輔ぃ繝吶ャ繝医↓鄙ｻ險ｳ縺励∪縺吶°ｼ 鄙ｻ險ｳ縺ｯ閾ｪ蜍輔お繧､繝ｪ繧｢繧ｹ險ｭ螳壹Δ繧ｸ繝･繝ｼ繝ｫ縺ｮ繝繧｣繝ｬ繧ｯ繝医Μ蜀縺ｫ險ｭ鄂ｮ縺輔ｌ縺 i18n-ascii.txt 縺ｫ蝓ｺ縺･縺縺ｦ豎ｺ螳壹＆繧後∪縺吶 <strong>迴ｾ蝨ｨ縲￣athauto 繝繧｣繝ｬ繧ｯ繝医Μ蜀縺ｫ i18n-ascii.txt 縺後↑縺縺溘ａ縲√％縺ｮ繧ｪ繝励す繝ｧ繝ｳ縺ｯ菴ｿ逕ｨ縺ｧ縺阪∪縺帙ｓ縲</strong>"
 
 #: modules/pathauto/pathauto.module:156
 msgid "When a pattern includes certain characters (such as those with accents) should Pathauto attempt to transliterate them into the ASCII-96 alphabet?  Transliteration is determined by the i18n-ascii.txt file in the Pathauto directory."
-msgstr "パターンが特定の文字（文字にアクセント記号を含むものなど）を含む時、それらを ASCII-96 のアルファベットに翻訳しますか？"
+msgstr "繝代ち繝ｼ繝ｳ縺檎音螳壹ｮ譁蟄暦ｼ域枚蟄励↓繧｢繧ｯ繧ｻ繝ｳ繝郁ｨ伜捷繧貞性繧繧ゅｮ縺ｪ縺ｩｼ峨ｒ蜷ｫ繧譎ゅ√◎繧後ｉ繧 ASCII-96 縺ｮ繧｢繝ｫ繝輔ぃ繝吶ャ繝医↓鄙ｻ險ｳ縺励∪縺吶°ｼ"
 
 #: modules/pathauto/pathauto.module:163
 msgid "Transliterate prior to creating alias"
-msgstr "URL エイリアスを生成する前に翻訳を行う"
+msgstr "URL 繧ｨ繧､繝ｪ繧｢繧ｹ繧堤函謌舌☆繧句燕縺ｫ鄙ｻ險ｳ繧定｡後≧"
 
 #: modules/pathauto/pathauto.module:169
 msgid "Reduce strings to letters and numbers from ASCII-96"
-msgstr "ASCII-96 の文字列や数字に置き換える"
+msgstr "ASCII-96 縺ｮ譁蟄怜励ｄ謨ｰ蟄励↓鄂ｮ縺肴鋤縺医ｋ"
 
 #: modules/pathauto/pathauto.module:171
 msgid "Filters the new alias to only letters and numbers found in the ASCII-96 set."
-msgstr "ASCII-96 セット内に存在する文字列や数字だけを抽出して新しい URL エイリアスを生成します。"
+msgstr "ASCII-96 繧ｻ繝繝亥縺ｫ蟄伜惠縺吶ｋ譁蟄怜励ｄ謨ｰ蟄励□縺代ｒ謚ｽ蜃ｺ縺励※譁ｰ縺励＞ URL 繧ｨ繧､繝ｪ繧｢繧ｹ繧堤函謌舌＠縺ｾ縺吶"
 
 #: modules/pathauto/pathauto.module:176
 msgid "Strings to Remove"
-msgstr "取り除く文字列"
+msgstr "蜿悶ｊ髯､縺乗枚蟄怜"
 
 #: modules/pathauto/pathauto.module:177
 msgid "Words to strip out of the URL alias, separated by commas.  Do not place punctuation in here and do not use WYSIWYG editors on this field."
-msgstr "URL エイリアスから取り除く文字列をコンマ（,）で区切って入力します。 このフィールドでは、句読点を入力したり WYSIWYG エディタを使用したりしないでください。"
+msgstr "URL 繧ｨ繧､繝ｪ繧｢繧ｹ縺九ｉ蜿悶ｊ髯､縺乗枚蟄怜励ｒ繧ｳ繝ｳ繝橸ｼ,ｼ峨〒蛹ｺ蛻縺｣縺ｦ蜈･蜉帙＠縺ｾ縺吶 縺薙ｮ繝輔ぅ繝ｼ繝ｫ繝峨〒縺ｯ縲∝唱隱ｭ轤ｹ繧貞･蜉帙＠縺溘ｊ WYSIWYG 繧ｨ繝繧｣繧ｿ繧剃ｽｿ逕ｨ縺励◆繧翫＠縺ｪ縺縺ｧ縺上□縺輔＞縲"
 
 #: modules/pathauto/pathauto.module:182
 msgid "Punctuation settings"
-msgstr "句読点（記号）の設定"
+msgstr "蜿･隱ｭ轤ｹｼ郁ｨ伜捷ｼ峨ｮ險ｭ螳"
 
 #: modules/pathauto/pathauto.module:191
 msgid "Remove"
-msgstr "取り外す"
+msgstr "蜿悶ｊ螟悶☆"
 
 #: modules/pathauto/pathauto.module:191
 msgid "Replace by separator"
-msgstr "セパレーターに置換"
+msgstr "繧ｻ繝代Ξ繝ｼ繧ｿ縺ｫ鄂ｮ謠"
 
 #: modules/pathauto/pathauto.module:191
 msgid "No action (do not replace)"
-msgstr "なにもしない（置換しない）"
+msgstr "縺ｪ縺ｫ繧ゅ＠縺ｪ縺ｼ育ｽｮ謠帙＠縺ｪ縺ｼ"
 
 #: modules/pathauto/pathauto.module:262
 msgid "Replacement patterns"
-msgstr "置換パターン"
+msgstr "鄂ｮ謠帙ヱ繧ｿ繝ｼ繝ｳ"
 
 #: modules/pathauto/pathauto.module:266
 msgid "Use -raw replacements for text to avoid problems with HTML entities."
-msgstr "HTML エンティティに関する問題を避けるために -raw の置換パターンを使用してください。"
+msgstr "HTML 繧ｨ繝ｳ繝繧｣繝繧｣縺ｫ髢｢縺吶ｋ蝠城｡後ｒ驕ｿ縺代ｋ縺溘ａ縺ｫ -raw 縺ｮ鄂ｮ謠帙ヱ繧ｿ繝ｼ繝ｳ繧剃ｽｿ逕ｨ縺励※縺上□縺輔＞縲"
 
 #: modules/pathauto/pathauto.module:297
 msgid "Internal feed alias text (leave blank to disable)"
-msgstr "内部フィードエイリアス（空欄の場合は無効）"
+msgstr "蜀驛ｨ繝輔ぅ繝ｼ繝峨お繧､繝ｪ繧｢繧ｹｼ育ｩｺ谺縺ｮ蝣ｴ蜷医ｯ辟｡蜉ｹｼ"
 
 #: modules/pathauto/pathauto.module:301
 msgid "The text to use for aliases for RSS feeds. Examples are \"feed\" and \"0/feed\"."
-msgstr "RSS フィードのエイリアスを示すテキストです。（例： \"feed\" や \"0/feed\" など）"
+msgstr "RSS 繝輔ぅ繝ｼ繝峨ｮ繧ｨ繧､繝ｪ繧｢繧ｹ繧堤､ｺ縺吶ユ繧ｭ繧ｹ繝医〒縺吶ゑｼ井ｾ具ｼ \"feed\" 繧 \"0/feed\" 縺ｪ縺ｩｼ"
 
 #: modules/pathauto/pathauto.module:344
 msgid "You are using the token [%token] which is not valid within the scope of tokens where you are using it."
-msgstr "有効でない範囲のトークン [%token] が使用されています。"
+msgstr "譛牙柑縺ｧ縺ｪ縺遽蝗ｲ縺ｮ繝医ｼ繧ｯ繝ｳ [%token] 縺御ｽｿ逕ｨ縺輔ｌ縺ｦ縺縺ｾ縺吶"
 
 #: modules/pathauto/pathauto.module:352
 msgid "You are using the token [%token] which has a -raw companion available [%raw_token].  For Pathauto patterns you should use the -raw version of tokens unless you really know what you are doing.  See the <a href=\"@pathauto-help\">Pathauto help</a> for more details."
-msgstr "有効なトークン [%raw_token] と類似するトークン [%token] が使用されています。 URL エイリアスで生成されるパターンに特別な書式を設定する必要がない限り -raw バージョンを利用してください。 詳細は <a href=\"@pathauto-help\">ヘルプ</a> を参照してください。"
+msgstr "譛牙柑縺ｪ繝医ｼ繧ｯ繝ｳ [%raw_token] 縺ｨ鬘樔ｼｼ縺吶ｋ繝医ｼ繧ｯ繝ｳ [%token] 縺御ｽｿ逕ｨ縺輔ｌ縺ｦ縺縺ｾ縺吶 URL 繧ｨ繧､繝ｪ繧｢繧ｹ縺ｧ逕滓舌＆繧後ｋ繝代ち繝ｼ繝ｳ縺ｫ迚ｹ蛻･縺ｪ譖ｸ蠑上ｒ險ｭ螳壹☆繧句ｿ隕√′縺ｪ縺髯舌ｊ -raw 繝舌ｼ繧ｸ繝ｧ繝ｳ繧貞茜逕ｨ縺励※縺上□縺輔＞縲 隧ｳ邏ｰ縺ｯ <a href=\"@pathauto-help\">繝倥Ν繝</a> 繧貞盾辣ｧ縺励※縺上□縺輔＞縲"
 
 #: modules/pathauto/pathauto.module:362
 msgid "NOTE: This field contains potentially incorrect patterns. "
-msgstr "注： このフィールドは不適切なパターンを含んでいる可能性があります。"
+msgstr "豕ｨｼ 縺薙ｮ繝輔ぅ繝ｼ繝ｫ繝峨ｯ荳埼←蛻縺ｪ繝代ち繝ｼ繝ｳ繧貞性繧薙〒縺繧句庄閭ｽ諤ｧ縺後≠繧翫∪縺吶"
 
 #: modules/pathauto/pathauto.module:364
 msgid "%problems"
 msgstr "%problems"
 
 #: modules/pathauto/pathauto.module:380
-msgid "You have configured the @name to be the separator and to be removed when encountered in strings.  This can cause problems with your patterns and especially with the catpath and termpath patterns."
-msgstr "文字列に @name が含まれる場合はセパレータで置き換えるように設定されました。 これは独自に設定されたパターンや特にカテゴリに関連するパターンで問題の原因となる可能性があります。"
+msgid "You have configured the @name to be the separator and to be removed when encountered in strings.  This can cause problems with your patterns and especially with the catpath and termpath patterns. You should probably set the action for @name to be \"replace by separator\""
+msgstr "譁蟄怜励↓ @name 縺悟性縺ｾ繧後ｋ蝣ｴ蜷医ｮ險ｭ螳壹→縺励※ \"蜿悶ｊ螟悶☆\" 縺碁∈謚槭＆繧後※縺縺ｾ縺吶′縲　name 縺ｯ繧ｻ繝代Ξ繝ｼ繧ｿ縺ｨ縺励※謖螳壹＆繧後◆蜿･隱ｭ轤ｹｼ郁ｨ伜捷ｼ峨〒縺吶ｮ縺ｧ縲∫峡閾ｪ縺ｫ險ｭ螳壹＆繧後◆繝代ち繝ｼ繝ｳ繧迚ｹ縺ｫ繧ｿ繧ｯ繧ｽ繝弱Α繝ｼ縺ｫ髢｢騾｣縺吶ｋ繝代ち繝ｼ繝ｳ縺ｧ蝠城｡後ｮ蜴溷屏縺ｨ縺ｪ繧句庄閭ｽ諤ｧ縺後≠繧翫∪縺吶 蜿･隱ｭ轤ｹｼ郁ｨ伜捷ｼ峨ｮ險ｭ螳壹〒縲　name 縺ｮ蜿悶ｊ謇ｱ縺繧 \"繧ｻ繝代Ξ繝ｼ繧ｿ縺ｫ鄂ｮ謠媾" 縺ｫ險ｭ螳壹＠逶ｴ縺励※縺上□縺輔＞縲"
 
 #: modules/pathauto/pathauto.module:456
 msgid "As [cat], but including its supercategories separated by /."
-msgstr "含まれる上位のカテゴリを /（スラッシュ）で区切った [cat]"
+msgstr "蜷ｫ縺ｾ繧後ｋ荳贋ｽ阪ｮ繧ｫ繝繧ｴ繝ｪ繧 /ｼ医せ繝ｩ繝繧ｷ繝･ｼ峨〒蛹ｺ蛻縺｣縺 [cat]"
 
 #: modules/pathauto/pathauto.module:457
 msgid "As [cat-raw], but including its supercategories separated by /. WARNING - raw user input."
-msgstr "含まれる上位のカテゴリを /（スラッシュ）で区切った [cat-raw] （注： ユーザが入力した RAW データ）"
+msgstr "蜷ｫ縺ｾ繧後ｋ荳贋ｽ阪ｮ繧ｫ繝繧ｴ繝ｪ繧 /ｼ医せ繝ｩ繝繧ｷ繝･ｼ峨〒蛹ｺ蛻縺｣縺 [cat-raw] ｼ域ｳｨｼ 繝ｦ繝ｼ繧ｶ縺悟･蜉帙＠縺 RAW 繝繝ｼ繧ｿｼ"
 
-#: modules/pathauto/pathauto.module:458
-msgid "URL alias for the category."
-msgstr "カテゴリの URL エイリアス"
+#: modules/pathauto/pathauto.module:458;463
+msgid "URL alias for the term."
+msgstr "繧ｿ繝ｼ繝縺ｮ URL 繧ｨ繧､繝ｪ繧｢繧ｹ"
 
 #: modules/pathauto/pathauto.module:461
 msgid "As [term], but including its supercategories separated by /."
-msgstr "含まれる上位のカテゴリを /（スラッシュ）で区切った [term]"
+msgstr "蜷ｫ縺ｾ繧後ｋ荳贋ｽ阪ｮ繧ｫ繝繧ｴ繝ｪ繧 /ｼ医せ繝ｩ繝繧ｷ繝･ｼ峨〒蛹ｺ蛻縺｣縺 [term]"
 
 #: modules/pathauto/pathauto.module:462
 msgid "As [term-raw], but including its supercategories separated by /. WARNING - raw user input."
-msgstr "含まれる上位のカテゴリを /（スラッシュ）で区切った [term-raw] （注： ユーザが入力した RAW データ）"
-
-#: modules/pathauto/pathauto.module:463
-msgid "URL alias for the term."
-msgstr "タームの URL エイリアス"
+msgstr "蜷ｫ縺ｾ繧後ｋ荳贋ｽ阪ｮ繧ｫ繝繧ｴ繝ｪ繧 /ｼ医せ繝ｩ繝繧ｷ繝･ｼ峨〒蛹ｺ蛻縺｣縺 [term-raw] ｼ域ｳｨｼ 繝ｦ繝ｼ繧ｶ縺悟･蜉帙＠縺 RAW 繝繝ｼ繧ｿｼ"
 
 #: modules/pathauto/pathauto.module:468
 msgid "URL alias for the parent book."
-msgstr "上位ブックの URL エイリアス"
+msgstr "荳贋ｽ阪ヶ繝繧ｯ縺ｮ URL 繧ｨ繧､繝ｪ繧｢繧ｹ"
 
 #: modules/pathauto/pathauto.module:492
 msgid "Choose Aliases to Delete"
-msgstr "削除する URL エイリアスの選択"
+msgstr "蜑企勁縺吶ｋ URL 繧ｨ繧､繝ｪ繧｢繧ｹ縺ｮ驕ｸ謚"
 
 #: modules/pathauto/pathauto.module:498
 msgid "all aliases"
-msgstr "すべてのエイリアス"
+msgstr "縺吶∋縺ｦ縺ｮ繧ｨ繧､繝ｪ繧｢繧ｹ"
 
 #: modules/pathauto/pathauto.module:500
 msgid "Delete all aliases.  Number of aliases which will be deleted: %count."
-msgstr "すべての URL エイリアスを削除します。 削除される URL エイリアスの数： %count"
+msgstr "縺吶∋縺ｦ縺ｮ URL 繧ｨ繧､繝ｪ繧｢繧ｹ繧貞炎髯､縺励∪縺吶 蜑企勁縺輔ｌ繧 URL 繧ｨ繧､繝ｪ繧｢繧ｹ縺ｮ謨ｰｼ %count"
 
 #: modules/pathauto/pathauto.module:509
 msgid "Delete aliases for all @label. Number of aliases which will be deleted: %count."
-msgstr "@labelページのすべての URL エイリアスを削除します。 削除される URL エイリアスの数： %count"
+msgstr "@label繝壹ｼ繧ｸ縺ｮ縺吶∋縺ｦ縺ｮ URL 繧ｨ繧､繝ｪ繧｢繧ｹ繧貞炎髯､縺励∪縺吶 蜑企勁縺輔ｌ繧 URL 繧ｨ繧､繝ｪ繧｢繧ｹ縺ｮ謨ｰｼ %count"
 
 #: modules/pathauto/pathauto.module:513
 msgid "<p><strong>Note:</strong> there is no confirmation.  Be sure of your action before clicking the \"Delete aliases now!\" button.<br />  You may want to make a backup of the database and/or the url_alias table prior to using this feature.</p>"
-msgstr "<p><strong>注意：</strong> 確認のためのメッセージは表示されません。 \"エイリアスの削除\" を実行する前に内容を十分に確認してください。<br />この機能を利用する前にデータベースもしくは url_alias テーブルをバックアップしておくことをお勧めします。</p>"
+msgstr "<p><strong>豕ｨ諢擾ｼ</strong> 遒ｺ隱阪ｮ縺溘ａ縺ｮ繝｡繝繧ｻ繝ｼ繧ｸ縺ｯ陦ｨ遉ｺ縺輔ｌ縺ｾ縺帙ｓ縲 \"繧ｨ繧､繝ｪ繧｢繧ｹ縺ｮ蜑企勁\" 繧貞ｮ溯｡後☆繧句燕縺ｫ蜀螳ｹ繧貞香蛻縺ｫ遒ｺ隱阪＠縺ｦ縺上□縺輔＞縲<br />縺薙ｮ讖溯ｽ繧貞茜逕ｨ縺吶ｋ蜑阪↓繝繝ｼ繧ｿ繝吶ｼ繧ｹ繧ゅ＠縺上ｯ url_alias 繝繝ｼ繝悶Ν繧偵ヰ繝繧ｯ繧｢繝繝励＠縺ｦ縺翫￥縺薙→繧偵♀蜍ｧ繧√＠縺ｾ縺吶</p>"
 
 #: modules/pathauto/pathauto.module:516
 msgid "Delete aliases now!"
-msgstr "エイリアスの削除"
+msgstr "繧ｨ繧､繝ｪ繧｢繧ｹ縺ｮ蜑企勁"
 
 #: modules/pathauto/pathauto.module:530
 msgid "All of your path aliases have been deleted."
-msgstr "すべての URL エイリアスが削除されました。"
+msgstr "縺吶∋縺ｦ縺ｮ URL 繧ｨ繧､繝ｪ繧｢繧ｹ縺悟炎髯､縺輔ｌ縺ｾ縺励◆縲"
 
 #: modules/pathauto/pathauto.module:535
 msgid "All of your %type path aliases have been deleted."
-msgstr "%type ページのすべての URL エイリアスが削除されました。"
+msgstr "%type 繝壹ｼ繧ｸ縺ｮ縺吶∋縺ｦ縺ｮ URL 繧ｨ繧､繝ｪ繧｢繧ｹ縺悟炎髯､縺輔ｌ縺ｾ縺励◆縲"
 
 #: modules/pathauto/pathauto.module:543
 msgid "users"
-msgstr "ユーザ"
+msgstr "繝ｦ繝ｼ繧ｶ"
 
 #: modules/pathauto/pathauto.module:543
 msgid "content"
-msgstr "コンテンツ"
+msgstr "繧ｳ繝ｳ繝繝ｳ繝"
 
 #: modules/pathauto/pathauto.module:545
 msgid "user blogs"
-msgstr "ユーザ別ブログ"
+msgstr "繝ｦ繝ｼ繧ｶ蛻･繝悶Ο繧ｰ"
 
 #: modules/pathauto/pathauto.module:548
 msgid "vocabularies and terms"
-msgstr "ボキャブラリとターム（カテゴリ）"
+msgstr "繝懊く繝｣繝悶Λ繝ｪ縺ｨ繧ｿ繝ｼ繝"
 
 #: modules/pathauto/pathauto.module:551
 msgid "user trackers"
-msgstr "ユーザ別投稿の軌跡"
+msgstr "繝ｦ繝ｼ繧ｶ蛻･謚慕ｨｿ縺ｮ霆瑚ｷ｡"
 
 #: modules/pathauto/pathauto.module:554
 msgid "forums"
-msgstr "フォーラム"
+msgstr "繝輔か繝ｼ繝ｩ繝"
 
-#: modules/pathauto/pathauto.module:614
+#: modules/pathauto/pathauto.module:639
 msgid "An alias will be generated for you. If you wish to create your own alias below, untick this option."
-msgstr "URL エイリアスを自動生成します。 下記フィールドに入力した任意のパスで URL エイリアスを作成したい場合は、このオプションのチェックを外してください。"
+msgstr "URL 繧ｨ繧､繝ｪ繧｢繧ｹ繧定ｪ蜍慕函謌舌＠縺ｾ縺吶 荳玖ｨ倥ヵ繧｣繝ｼ繝ｫ繝峨↓蜈･蜉帙＠縺滉ｻｻ諢上ｮ繝代せ縺ｧ URL 繧ｨ繧､繝ｪ繧｢繧ｹ繧剃ｽ懈舌＠縺溘＞蝣ｴ蜷医ｯ縲√％縺ｮ繧ｪ繝励す繝ｧ繝ｳ縺ｮ繝√ぉ繝繧ｯ繧貞､悶＠縺ｦ縺上□縺輔＞縲"
 
-#: modules/pathauto/pathauto.module:616
+#: modules/pathauto/pathauto.module:641
 msgid " To control the format of the generated aliases, see the <a href=\"@pathauto\">Pathauto settings</a>."
-msgstr " 自動生成される URL エイリアスのフォーマットをコントロールしたい場合は <a href=\"@pathauto\">ヘルプ</a> を参照してください。"
+msgstr " 閾ｪ蜍慕函謌舌＆繧後ｋ URL 繧ｨ繧､繝ｪ繧｢繧ｹ縺ｮ繝輔か繝ｼ繝槭ャ繝医ｒ繧ｳ繝ｳ繝医Ο繝ｼ繝ｫ縺励◆縺蝣ｴ蜷医ｯ <a href=\"@pathauto\">繝倥Ν繝</a> 繧貞盾辣ｧ縺励※縺上□縺輔＞縲"
 
-#: modules/pathauto/pathauto.module:623
+#: modules/pathauto/pathauto.module:648
 msgid "Automatic alias"
-msgstr "エイリアスの自動生成"
+msgstr "繧ｨ繧､繝ｪ繧｢繧ｹ縺ｮ閾ｪ蜍慕函謌"
 
-#: modules/pathauto/pathauto.module:638
+#: modules/pathauto/pathauto.module:667
 msgid "Update path alias"
-msgstr "URL エイリアスの更新"
+msgstr "URL 繧ｨ繧､繝ｪ繧｢繧ｹ縺ｮ譖ｴ譁ｰ"
 
 #: modules/pathauto/pathauto.module:307
 msgid "Bulk generation of index aliases completed, one alias generated."
 msgid_plural "Bulk generation of index aliases completed, @count aliases generated."
-msgstr[0] "インデックスの大量アップデートが完了しました。 1 個の URL エイリアスが生成されました。"
-msgstr[1] "インデックスの大量アップデートが完了しました。 @count 個の URL エイリアスが生成されました。"
+msgstr[0] "繧､繝ｳ繝繝繧ｯ繧ｹ縺ｮ螟ｧ驥上い繝繝励ョ繝ｼ繝医′螳御ｺ縺励∪縺励◆縲 1 蛟九ｮ URL 繧ｨ繧､繝ｪ繧｢繧ｹ縺檎函謌舌＆繧後∪縺励◆縲"
+msgstr[1] "繧､繝ｳ繝繝繧ｯ繧ｹ縺ｮ螟ｧ驥上い繝繝励ョ繝ｼ繝医′螳御ｺ縺励∪縺励◆縲 @count 蛟九ｮ URL 繧ｨ繧､繝ｪ繧｢繧ｹ縺檎函謌舌＆繧後∪縺励◆縲"
 
 #: modules/pathauto/pathauto.module:363
 msgid "Problem token: "
 msgid_plural "Problem tokens: "
-msgstr[0] "問題のトークン： "
-msgstr[1] "問題のトークン： "
+msgstr[0] "蝠城｡後ｮ繝医ｼ繧ｯ繝ｳｼ "
+msgstr[1] "蝠城｡後ｮ繝医ｼ繧ｯ繝ｳｼ "
 
 #: modules/pathauto/pathauto.module:33
 msgid "administer pathauto"
-msgstr "URL 自動生成の管理"
+msgstr "閾ｪ蜍輔お繧､繝ｪ繧｢繧ｹ險ｭ螳壹ｮ邂｡逅"
 
 #: modules/pathauto/pathauto.module:33
 msgid "notify of path changes"
-msgstr "パス変更の通知"
+msgstr "繝代せ螟画峩縺ｮ騾夂衍"
 
 #: modules/pathauto/pathauto.module:0
 msgid "pathauto"
-msgstr "URL エイリアス自動生成"
+msgstr "閾ｪ蜍輔お繧､繝ｪ繧｢繧ｹ險ｭ螳"
 
-#: modules/pathauto/pathauto.install:17
-msgid "Extra table to help Pathauto interact with the core url_alias table"
-msgstr "コアの url_alias テーブルと相互に作用する Pathauto のための追加テーブル"
+#: modules/pathauto/pathauto_node.inc:13
+msgid "Node path settings"
+msgstr "繧ｳ繝ｳ繝繝ｳ繝縺ｮ URL 險ｭ螳"
 
-#: modules/pathauto/pathauto.inc:354
-msgid "Ignoring alias %dst due to existing path conflict."
-msgstr "エイリアス %dst は、既存のパスとコンフリクトするため無視されました。"
+#: modules/pathauto/pathauto_node.inc:14
+msgid "Default path pattern (applies to all node types with blank patterns below)"
+msgstr "繝繝輔か繝ｫ繝医ｮ URL 繝代ち繝ｼ繝ｳｼ井ｸ玖ｨ倥〒險ｭ螳壹′遨ｺ逋ｽ縺ｫ縺ｪ縺｣縺ｦ縺繧九☆縺ｹ縺ｦ縺ｮ繧ｳ繝ｳ繝繝ｳ繝繧ｿ繧､繝励↓驕ｩ逕ｨｼ"
 
-#: modules/pathauto/pathauto.inc:361
-msgid "Ignoring alias %dst  because it is the same as the internal path."
-msgstr "エイリアス %dst は、内部パスと重複するため無視されました。"
+#: modules/pathauto/pathauto_node.inc:15
+msgid "content/[title-raw]"
+msgstr "content/[title-raw]"
 
-#: modules/pathauto/pathauto.inc:381
-msgid "Created new alias %dst for %src, replacing %old_alias. %old_alias now redirects to %dst"
-msgstr "%src の新しい URL エイリアス %dst を作成しました。 %old_alias は、今後 %dst へリダイレクトされます。"
+#: modules/pathauto/pathauto_node.inc:16
+msgid "Bulk generate aliases for nodes that are not aliased"
+msgstr "URL 繧ｨ繧､繝ｪ繧｢繧ｹ繧呈戟縺溘↑縺莉悶ｮ繧ｳ繝ｳ繝繝ｳ繝縺ｫ蟇ｾ縺励※縲∝､ｧ驥上い繝繝励ョ繝ｼ繝医ｒ螳溯｡後☆繧"
 
-#: modules/pathauto/pathauto.inc:384
-msgid "Created new alias %dst for %src, replacing %old_alias"
-msgstr "%src の新しい URL エイリアス %dst を作成しました。 %old_alias は新しいエイリアスに置換されます。"
+#: modules/pathauto/pathauto_node.inc:17
+msgid "Generate aliases for all existing nodes which do not already have aliases."
+msgstr "URL 繧ｨ繧､繝ｪ繧｢繧ｹ繧呈戟縺溘↑縺縺吶∋縺ｦ縺ｮ繧ｳ繝ｳ繝繝ｳ繝縺ｫ URL 繧ｨ繧､繝ｪ繧｢繧ｹ繧堤函謌舌＠縺ｾ縺吶"
 
-#: modules/pathauto/pathauto.inc:387
-msgid "Created new alias %dst for %src"
-msgstr "%src の新しい URL エイリアス %dst を作成しました。"
+#: modules/pathauto/pathauto_node.inc:31
+msgid "Pattern for all @node_type paths"
+msgstr "@node_type 繧ｿ繧､繝励ｮ縺吶∋縺ｦ縺ｮ繧ｳ繝ｳ繝繝ｳ繝縺ｮ URL 繝代ち繝ｼ繝ｳ"
 
-#: modules/pathauto/pathauto.inc:411
-msgid "It appears that you have installed Pathauto, which depends on token, but token is either not installed or not installed properly."
-msgstr "Token に依存する Pathauto がインストールされたようですが、Token がインストールされていないか、正しく動作していません。"
+#: modules/pathauto/pathauto_node.inc:34
+msgid "Pattern for all @node_type paths in @language"
+msgstr "@node_type 繧ｿ繧､繝励ｮ縺吶∋縺ｦ縺ｮ繧ｳ繝ｳ繝繝ｳ繝縺ｮ URL 繝代ち繝ｼ繝ｳｼ@languageｼ"
 
-#: modules/pathauto/pathauto.inc:447
-msgid "Double quotes \""
-msgstr "ダブルクォート（引用符） \""
+#: modules/pathauto/pathauto_node.inc:97
+msgid "Bulk generation of nodes completed, one alias generated."
+msgid_plural "Bulk generation of nodes completed, @count aliases generated."
+msgstr[0] "繧ｳ繝ｳ繝繝ｳ繝縺ｮ螟ｧ驥上い繝繝励ョ繝ｼ繝医′螳御ｺ縺励∪縺励◆縲 1 蛟九ｮ URL 繧ｨ繧､繝ｪ繧｢繧ｹ縺檎函謌舌＆繧後∪縺励◆縲"
+msgstr[1] "繧ｳ繝ｳ繝繝ｳ繝縺ｮ螟ｧ驥上い繝繝励ョ繝ｼ繝医′螳御ｺ縺励∪縺励◆縲 @count 蛟九ｮ URL 繧ｨ繧､繝ｪ繧｢繧ｹ縺檎函謌舌＆繧後∪縺励◆縲"
 
-#: modules/pathauto/pathauto.inc:448
-msgid "Single quotes (apostrophe) '"
-msgstr "シングルクォート（アポストロフィ） '"
+#: modules/pathauto/pathauto_taxonomy.inc:13
+msgid "Taxonomy term path settings"
+msgstr "繧ｿ繧ｯ繧ｽ繝弱Α繝ｼ繧ｿ繝ｼ繝縺ｮ URL 險ｭ螳"
 
-#: modules/pathauto/pathauto.inc:449
-msgid "Back tick `"
-msgstr "バッククォート `"
+#: modules/pathauto/pathauto_taxonomy.inc:14
+msgid "Default path pattern (applies to all vocabularies with blank patterns below)"
+msgstr "繝繝輔か繝ｫ繝医ｮ URL 繝代ち繝ｼ繝ｳｼ井ｸ玖ｨ倥〒險ｭ螳壹′遨ｺ逋ｽ縺ｫ縺ｪ縺｣縺ｦ縺繧九☆縺ｹ縺ｦ縺ｮ繝懊く繝｣繝悶Λ繝ｪ縺ｫ驕ｩ逕ｨｼ"
 
-#: modules/pathauto/pathauto.inc:450
-msgid "Comma ,"
-msgstr "コンマ ,"
+#: modules/pathauto/pathauto_taxonomy.inc:15
+msgid "category/[vocab-raw]/[catpath-raw]"
+msgstr "category/[vocab-raw]/[catpath-raw]"
 
-#: modules/pathauto/pathauto.inc:451
-msgid "Period ."
-msgstr "ピリオド ."
+#: modules/pathauto/pathauto_taxonomy.inc:25
+msgid "Bulk generate aliases for terms that are not aliased"
+msgstr "URL 繧ｨ繧､繝ｪ繧｢繧ｹ縺檎函謌舌＆繧後※縺縺ｪ縺繧ｿ繝ｼ繝縺ｫ蟇ｾ縺励※縲ゞRL 繧ｨ繧､繝ｪ繧｢繧ｹ縺ｮ螟ｧ驥上い繝繝励ョ繝ｼ繝医ｒ陦後≧"
 
-#: modules/pathauto/pathauto.inc:452
-msgid "Hyphen -"
-msgstr "ハイフン -"
+#: modules/pathauto/pathauto_taxonomy.inc:26
+msgid "Generate aliases for all existing terms which do not already have aliases."
+msgstr "URL 繧ｨ繧､繝ｪ繧｢繧ｹ繧呈戟縺溘↑縺縺吶∋縺ｦ縺ｮ繧ｿ繝ｼ繝縺ｫ URL 繧ｨ繧､繝ｪ繧｢繧ｹ繧堤函謌舌＠縺ｾ縺吶"
 
-#: modules/pathauto/pathauto.inc:453
-msgid "Underscore _"
-msgstr "アンダースコア（アンダーバー） _"
+#: modules/pathauto/pathauto_taxonomy.inc:35
+msgid "Pattern for all %vocab-name paths"
+msgstr "%vocab-name 繝懊く繝｣繝悶Λ繝ｪ蜀縺ｮ縺吶∋縺ｦ縺ｮ繧ｿ繝ｼ繝縺ｮ URL 繝代ち繝ｼ繝ｳ"
 
-#: modules/pathauto/pathauto.inc:454
-msgid "Colon :"
-msgstr "コロン :"
+#: modules/pathauto/pathauto_taxonomy.inc:105
+msgid "Forum path settings"
+msgstr "繝輔か繝ｼ繝ｩ繝縺ｮ URL 險ｭ螳"
 
-#: modules/pathauto/pathauto.inc:455
-msgid "Semicolon ;"
-msgstr "セミコロン ;"
+#: modules/pathauto/pathauto_taxonomy.inc:106
+msgid "Pattern for forums and forum containers"
+msgstr "繝輔か繝ｼ繝ｩ繝縺ｨ繝輔か繝ｼ繝ｩ繝繧ｳ繝ｳ繝繝翫ｮ URL 繝代ち繝ｼ繝ｳ"
 
-#: modules/pathauto/pathauto.inc:456
-msgid "Pipe |"
-msgstr "パイプ |"
+#: modules/pathauto/pathauto_taxonomy.inc:107
+msgid "[vocab-raw]/[catpath-raw]"
+msgstr "[vocab-raw]/[catpath-raw]"
 
-#: modules/pathauto/pathauto.inc:457
-msgid "Left curly bracket {"
-msgstr "左中カッコ {"
+#: modules/pathauto/pathauto_taxonomy.inc:117
+msgid "Bulk generate forum paths"
+msgstr "繝輔か繝ｼ繝ｩ繝縺ｮ URL 繧ｨ繧､繝ｪ繧｢繧ｹ縺ｫ蟇ｾ縺励※縲∝､ｧ驥上い繝繝励ョ繝ｼ繝医ｒ螳溯｡後☆繧"
 
-#: modules/pathauto/pathauto.inc:458
-msgid "Left square bracket ["
-msgstr "左大カッコ ["
+#: modules/pathauto/pathauto_taxonomy.inc:118
+msgid "Generate aliases for all existing forums and forum containers which do not already have aliases."
+msgstr "URL 繧ｨ繧､繝ｪ繧｢繧ｹ繧呈戟縺溘↑縺縺吶∋縺ｦ縺ｮ繝輔か繝ｼ繝ｩ繝縺ｨ繝輔か繝ｼ繝ｩ繝繧ｳ繝ｳ繝繝翫↓ URL 繧ｨ繧､繝ｪ繧｢繧ｹ繧堤函謌舌＠縺ｾ縺吶"
 
-#: modules/pathauto/pathauto.inc:459
-msgid "Right curly bracket }"
-msgstr "右中カッコ }"
+#: modules/pathauto/pathauto_taxonomy.inc:61
+msgid "Bulk generation of terms completed, one alias generated."
+msgid_plural "Bulk generation of terms completed, @count aliases generated."
+msgstr[0] "繧ｿ繝ｼ繝縺ｮ螟ｧ驥上い繝繝励ョ繝ｼ繝医′螳御ｺ縺励∪縺励◆縲 1 蛟九ｮ URL 繧ｨ繧､繝ｪ繧｢繧ｹ縺檎函謌舌＆繧後∪縺励◆縲"
+msgstr[1] "繧ｿ繝ｼ繝縺ｮ螟ｧ驥上い繝繝励ョ繝ｼ繝医′螳御ｺ縺励∪縺励◆縲 @count 蛟九ｮ URL 繧ｨ繧､繝ｪ繧｢繧ｹ縺檎函謌舌＆繧後∪縺励◆縲"
 
-#: modules/pathauto/pathauto.inc:460
-msgid "Right square bracket ]"
-msgstr "右大カッコ }"
+#: modules/pathauto/pathauto_taxonomy.inc:140
+msgid "Bulk update of forums and forum containers completed, one alias generated."
+msgid_plural "Bulk update of forums and forum containers completed, @count aliases generated."
+msgstr[0] "繝輔か繝ｼ繝ｩ繝縺ｨ繝輔か繝ｼ繝ｩ繝繧ｳ繝ｳ繝繝翫ｮ螟ｧ驥上い繝繝励ョ繝ｼ繝医′螳御ｺ縺励∪縺励◆縲 1 蛟九ｮ URL 繧ｨ繧､繝ｪ繧｢繧ｹ縺檎函謌舌＆繧後∪縺励◆縲"
+msgstr[1] "繝輔か繝ｼ繝ｩ繝縺ｨ繝輔か繝ｼ繝ｩ繝繧ｳ繝ｳ繝繝翫ｮ螟ｧ驥上い繝繝励ョ繝ｼ繝医′螳御ｺ縺励∪縺励◆縲 @count 蛟九ｮ URL 繧ｨ繧､繝ｪ繧｢繧ｹ縺檎函謌舌＆繧後∪縺励◆縲"
 
-#: modules/pathauto/pathauto.inc:461
-msgid "Plus +"
-msgstr "プラス +"
+#: modules/pathauto/pathauto_user.inc:13
+msgid "User path settings"
+msgstr "繝ｦ繝ｼ繧ｶ繝壹ｼ繧ｸ縺ｮ URL 險ｭ螳"
 
-#: modules/pathauto/pathauto.inc:462
-msgid "Equal ="
-msgstr "イコール ="
+#: modules/pathauto/pathauto_user.inc:14
+msgid "Pattern for user account page paths"
+msgstr "繝ｦ繝ｼ繧ｶ繧｢繧ｫ繧ｦ繝ｳ繝医壹ｼ繧ｸ縺ｮ URL 繝代ち繝ｼ繝ｳ"
 
-#: modules/pathauto/pathauto.inc:463
-msgid "Asterisk *"
-msgstr "アスタリスク *"
+#: modules/pathauto/pathauto_user.inc:15
+msgid "users/[user-raw]"
+msgstr "users/[user-raw]"
 
-#: modules/pathauto/pathauto.inc:464
-msgid "Ampersand &"
-msgstr "アンパサンド（アンド） &"
+#: modules/pathauto/pathauto_user.inc:25
+msgid "Bulk generate aliases for users that are not aliased"
+msgstr "URL 繧ｨ繧､繝ｪ繧｢繧ｹ繧呈戟縺溘↑縺莉悶ｮ繝ｦ繝ｼ繧ｶ繝壹ｼ繧ｸ縺ｫ蟇ｾ縺励※縲∝､ｧ驥上い繝繝励ョ繝ｼ繝医ｒ螳溯｡後☆繧"
 
-#: modules/pathauto/pathauto.inc:465
-msgid "Percent %"
-msgstr "パーセント %"
+#: modules/pathauto/pathauto_user.inc:26
+msgid "Generate aliases for all existing user account pages which do not already have aliases."
+msgstr "URL 繧ｨ繧､繝ｪ繧｢繧ｹ繧呈戟縺溘↑縺縺吶∋縺ｦ縺ｮ繝ｦ繝ｼ繧ｶ繧｢繧ｫ繧ｦ繝ｳ繝医壹ｼ繧ｸ縺ｫ URL 繧ｨ繧､繝ｪ繧｢繧ｹ繧堤函謌舌＠縺ｾ縺吶"
 
-#: modules/pathauto/pathauto.inc:466
-msgid "Caret ^"
-msgstr "キャレット ^"
+#: modules/pathauto/pathauto_user.inc:42
+msgid "Blog path settings"
+msgstr "繝ｦ繝ｼ繧ｶ蛻･繝悶Ο繧ｰ縺ｮ URL 險ｭ螳"
 
-#: modules/pathauto/pathauto.inc:467
-msgid "Dollar $"
-msgstr "ドルマーク（ダラー） $"
+#: modules/pathauto/pathauto_user.inc:43
+msgid "Pattern for blog page paths"
+msgstr "繝ｦ繝ｼ繧ｶ蛻･繝悶Ο繧ｰ縺ｮ URL 繝代ち繝ｼ繝ｳ"
 
-#: modules/pathauto/pathauto.inc:468
-msgid "Hash #"
-msgstr "ハッシュマーク（シャープ） #"
+#: modules/pathauto/pathauto_user.inc:44
+msgid "blogs/[user-raw]"
+msgstr "blogs/[user-raw]"
 
-#: modules/pathauto/pathauto.inc:469
-msgid "At @"
-msgstr "アットマーク @"
+#: modules/pathauto/pathauto_user.inc:50
+msgid "Bulk generate aliases for blogs that are not aliased"
+msgstr "URL 繧ｨ繧､繝ｪ繧｢繧ｹ繧呈戟縺溘↑縺莉悶ｮ繝ｦ繝ｼ繧ｶ蛻･繝悶Ο繧ｰ縺ｫ蟇ｾ縺励※縲∝､ｧ驥上い繝繝励ョ繝ｼ繝医ｒ螳溯｡後☆繧"
 
-#: modules/pathauto/pathauto.inc:470
-msgid "Exclamation !"
-msgstr "エクスクラメーションマーク（感嘆符） !"
+#: modules/pathauto/pathauto_user.inc:51
+msgid "Generate aliases for all existing blog pages which do not already have aliases."
+msgstr "URL 繧ｨ繧､繝ｪ繧｢繧ｹ繧呈戟縺溘↑縺縺吶∋縺ｦ縺ｮ繝悶Ο繧ｰ繝壹ｼ繧ｸ縺ｫ URL 繧ｨ繧､繝ｪ繧｢繧ｹ繧堤函謌舌＠縺ｾ縺吶"
 
-#: modules/pathauto/pathauto.inc:471
-msgid "Tilde ~"
-msgstr "チルダ ~"
+#: modules/pathauto/pathauto_user.inc:67
+msgid "User-tracker path settings"
+msgstr "繝ｦ繝ｼ繧ｶ繝ｼ蛻･謚慕ｨｿ縺ｮ霆瑚ｷ｡繝壹ｼ繧ｸ縺ｮ URL 險ｭ螳"
 
-#: modules/pathauto/pathauto.inc:472
-msgid "Left parenthesis ("
-msgstr "左小カッコ ("
+#: modules/pathauto/pathauto_user.inc:68
+msgid "Pattern for user-tracker page paths"
+msgstr "繝ｦ繝ｼ繧ｶ蛻･謚慕ｨｿ縺ｮ霆瑚ｷ｡繝壹ｼ繧ｸ縺ｮ URL 繝代ち繝ｼ繝ｳ"
 
-#: modules/pathauto/pathauto.inc:473
-msgid "right parenthesis )"
-msgstr "右小カッコ )"
+#: modules/pathauto/pathauto_user.inc:69
+msgid "users/[user-raw]/track"
+msgstr "users/[user-raw]/track"
 
-#: modules/pathauto/pathauto.inc:474
-msgid "Question mark ?"
-msgstr "クエスチョンマーク（疑問符） ?"
+#: modules/pathauto/pathauto_user.inc:75
+msgid "Bulk generate aliases for user-tracker paths that are not aliased"
+msgstr "URL 繧ｨ繧､繝ｪ繧｢繧ｹ繧呈戟縺溘↑縺莉悶ｮ繝ｦ繝ｼ繧ｶ蛻･謚慕ｨｿ縺ｮ霆瑚ｷ｡繝壹ｼ繧ｸ縺ｫ蟇ｾ縺励※縲∝､ｧ驥上い繝繝励ョ繝ｼ繝医ｒ螳溯｡後☆繧"
 
-#: modules/pathauto/pathauto.inc:475
-msgid "Less than <"
-msgstr "不等号（小なり） <"
+#: modules/pathauto/pathauto_user.inc:76
+msgid "Generate aliases for all existing user-tracker pages which do not already have aliases."
+msgstr "URL 繧ｨ繧､繝ｪ繧｢繧ｹ繧呈戟縺溘↑縺縺吶∋縺ｦ縺ｮ繝ｦ繝ｼ繧ｶ蛻･謚慕ｨｿ縺ｮ霆瑚ｷ｡繝壹ｼ繧ｸ縺ｫ URL 繧ｨ繧､繝ｪ繧｢繧ｹ繧堤函謌舌＠縺ｾ縺吶"
 
-#: modules/pathauto/pathauto.inc:476
-msgid "Greater than >"
-msgstr "不等号（大なり） <"
+#: modules/pathauto/pathauto_user.inc:100
+msgid "Bulk generation of users completed, one alias generated."
+msgid_plural "Bulk generation of users completed, @count aliases generated."
+msgstr[0] "繝ｦ繝ｼ繧ｶ繧｢繧ｫ繧ｦ繝ｳ繝医壹ｼ繧ｸ縺ｮ螟ｧ驥上い繝繝励ョ繝ｼ繝医′螳御ｺ縺励∪縺励◆縲 1 蛟九ｮ URL 繧ｨ繧､繝ｪ繧｢繧ｹ縺檎函謌舌＆繧後∪縺励◆縲"
+msgstr[1] "繝ｦ繝ｼ繧ｶ繧｢繧ｫ繧ｦ繝ｳ繝医壹ｼ繧ｸ縺ｮ螟ｧ驥上い繝繝励ョ繝ｼ繝医′螳御ｺ縺励∪縺励◆縲 @count 蛟九ｮ URL 繧ｨ繧､繝ｪ繧｢繧ｹ縺檎函謌舌＆繧後∪縺励◆縲"
 
-#: modules/pathauto/pathauto.inc:477
-msgid "Back slash \\"
-msgstr "バックスラッシュ（円マーク） \\"
+#: modules/pathauto/pathauto_user.inc:123
+msgid "Bulk generation of user blogs completed, one alias generated."
+msgid_plural "Bulk generation of user blogs completed, @count aliases generated."
+msgstr[0] "繝ｦ繝ｼ繧ｶ蛻･繝悶Ο繧ｰ縺ｮ螟ｧ驥上い繝繝励ョ繝ｼ繝医′螳御ｺ縺励∪縺励◆縲 1 蛟九ｮ URL 繧ｨ繧､繝ｪ繧｢繧ｹ縺檎函謌舌＆繧後∪縺励◆縲"
+msgstr[1] "繝ｦ繝ｼ繧ｶ蛻･繝悶Ο繧ｰ縺ｮ螟ｧ驥上い繝繝励ョ繝ｼ繝医′螳御ｺ縺励∪縺励◆縲 @count 蛟九ｮ URL 繧ｨ繧､繝ｪ繧｢繧ｹ縺檎函謌舌＆繧後∪縺励◆縲"
+
+#: modules/pathauto/pathauto_user.inc:147
+msgid "Bulk generation of user tracker pages completed, one alias generated."
+msgid_plural "Bulk generation of user tracker pages completed, @count aliases generated."
+msgstr[0] "繝ｦ繝ｼ繧ｶ蛻･謚慕ｨｿ縺ｮ霆瑚ｷ｡繝壹ｼ繧ｸ縺ｮ螟ｧ驥上い繝繝励ョ繝ｼ繝医′螳御ｺ縺励∪縺励◆縲 1 蛟九ｮ URL 繧ｨ繧､繝ｪ繧｢繧ｹ縺檎函謌舌＆繧後∪縺励◆縲"
+msgstr[1] "繝ｦ繝ｼ繧ｶ蛻･謚慕ｨｿ縺ｮ霆瑚ｷ｡繝壹ｼ繧ｸ縺ｮ螟ｧ驥上い繝繝励ョ繝ｼ繝医′螳御ｺ縺励∪縺励◆縲 @count 蛟九ｮ URL 繧ｨ繧､繝ｪ繧｢繧ｹ縺檎函謌舌＆繧後∪縺励◆縲"
+
