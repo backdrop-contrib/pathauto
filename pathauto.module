@@ -684,7 +684,7 @@ function pathauto_form_alter(&$form, $form_state, $form_id) {
     if ($pattern && user_access('create url aliases') && isset($form['path']['path'])) {
       $output = t('An alias will be generated for you. If you wish to create your own alias below, untick this option.');
       if (user_access('administer pathauto')) {
-        $output .= t(' To control the format of the generated aliases, see the <a href="@pathauto">Pathauto settings</a>.', array('@pathauto' => url('admin/settings/pathauto')));
+        $output .= t(' To control the format of the generated aliases, see the <a href="@pathauto">Pathauto settings</a>.', array('@pathauto' => url('admin/build/path/pathauto')));
       }
 
       drupal_add_js(drupal_get_path('module', 'pathauto') .'/pathauto.js');
