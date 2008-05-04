@@ -7,31 +7,6 @@
  * 
  */
 
-
-/**
- * Implementation of hook_schema().
- */
- 
-function pathauto_schema() {
-  $schema['url_alias_extra'] = array(
-    'description' => t('Extra table to help Pathauto interact with the core url_alias table'),
-    'fields' => array(
-      'pid'    => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
-      'dst'    => array('type' => 'varchar', 'length' => 128, 'not null' => TRUE, 'default' => ''),
-      'entity_type'    => array('type' => 'varchar', 'length' => 20, 'not null' => FALSE),
-      'entity_id' => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
-      'created_by'    => array('type' => 'varchar', 'length' => 20, 'not null' => FALSE),
-    ),
-    'indexes' => array(
-      'dst'    => array('dst'),
-    ),
-    'primary key' => array('pid'),
-  );
-
-  return $schema;
-}
-
- 
 /**
  * Implementation of hook_install().
  */
@@ -87,6 +62,11 @@ function pathauto_install() {
  * Implementation of hook_uninstall().
  */
 function pathauto_uninstall() {
+   // Delete the url_alias_extra if people have it 
+   if (db_table_exists('url_alias_extra')) { 
+     db_query("DROP TABLE {url_alias_extra}"); 
+   } 
+
   // Delete all the pathauto variables and then clear the variable cache  
   db_query("DELETE FROM {variable} WHERE name LIKE 'pathauto_%'");
   cache_clear_all('variables', 'cache');
