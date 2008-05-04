@@ -415,7 +415,7 @@ function pathauto_get_placeholders($type, $object) {
     return array('tokens' => $tokens, 'values' => $values);
   }
   // TODO at some point try removing this and see if install profiles have problems again.
-  watchdog('Pathauto', t('It appears that you have installed Pathauto, which depends on token, but token is either not installed or not installed properly.'));
+  watchdog('Pathauto', 'It appears that you have installed Pathauto, which depends on token, but token is either not installed or not installed properly.');
   return array('tokens' => array(), 'values' => array());
 }
 
