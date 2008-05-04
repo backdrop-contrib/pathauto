@@ -95,6 +95,6 @@ function node_pathauto_bulkupdate() {
   }
 
   drupal_set_message(format_plural($count,
-    "Bulk generation of nodes completed, one alias generated.",
-    "Bulk generation of nodes completed, @count aliases generated."));
+    'Bulk generation of nodes completed, one alias generated.',
+    'Bulk generation of nodes completed, @count aliases generated.'));
 }

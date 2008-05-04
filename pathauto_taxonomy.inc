@@ -51,16 +51,16 @@ function taxonomy_pathauto_bulkupdate() {
   $forum_vid = variable_get('forum_nav_vocabulary', '');
   $query = "SELECT tid, vid, name, src, dst FROM {term_data} LEFT JOIN {url_alias} ON CONCAT('taxonomy/term/', CAST(tid AS CHAR)) = src WHERE src IS NULL AND vid != %d";
   $result = db_query_range($query, $forum_vid, 0, variable_get('pathauto_max_bulk_update', 50));
-  
+
   $count = 0;
   $placeholders = array();
   while ($category = db_fetch_object($result)) {
     $count += _taxonomy_pathauto_alias($category, 'bulkupdate');
   }
-  
+
   drupal_set_message(format_plural($count,
-    "Bulk generation of terms completed, one alias generated.",
-    "Bulk generation of terms completed, @count aliases generated."));
+    'Bulk generation of terms completed, one alias generated.',
+    'Bulk generation of terms completed, @count aliases generated.'));
 }
 
 /**
@@ -74,7 +74,7 @@ function _taxonomy_pathauto_alias($category, $op) {
   $count = 0;
 
   $placeholders = pathauto_get_placeholders('taxonomy', $category);    
-  
+
   $forum_vid = variable_get('forum_nav_vocabulary', '');
   // If we're in a forum vocabulary, also create a forum container, forum, or forum topic alias.
   if (module_exists('forum') && $forum_vid == (int)$category->vid) {
@@ -124,7 +124,7 @@ function forum_pathauto($op) {
 
 
 /**
- *  Generate aliases for all forums and forum containers without aliases
+ * Generate aliases for all forums and forum containers without aliases
  */
 function forum_pathauto_bulkupdate() {
   $forum_vid = variable_get('forum_nav_vocabulary', '');
@@ -138,6 +138,6 @@ function forum_pathauto_bulkupdate() {
   }
 
   drupal_set_message(format_plural($count,
-    "Bulk update of forums and forum containers completed, one alias generated.",
-    "Bulk update of forums and forum containers completed, @count aliases generated."));
+    'Bulk update of forums and forum containers completed, one alias generated.',
+    'Bulk update of forums and forum containers completed, @count aliases generated.'));
 }

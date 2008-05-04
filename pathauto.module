@@ -1,27 +1,26 @@
 <?php
 // $Id$
 
-
 /**
  * Implementation of hook_help
- */  
+ */
 function pathauto_help($path, $arg) {
   switch ($path) {
     case 'admin/help#pathauto':
-      $output = t("<p>Provides a mechanism for modules to automatically generate aliases for the content they manage.</p>
+      $output = t('<p>Provides a mechanism for modules to automatically generate aliases for the content they manage.</p>
                   <h2>Settings</h2>
                   <p>The <strong>Maximum Alias Length</strong> and <strong>Maximum component length</strong> values
-                  default to 100 and have a limit of 128 from pathauto.  This length is limited by the length of the dst 
-                  column of the url_alias database table. The default database schema for this column is 128. If you 
-                  set a length that is equal to that of the one set in the dst column it will cause problems in situations 
+                  default to 100 and have a limit of 128 from pathauto. This length is limited by the length of the dst
+                  column of the url_alias database table. The default database schema for this column is 128. If you
+                  set a length that is equal to that of the one set in the dst column it will cause problems in situations
                   where the system needs to append additional words to the aliased URL. For example... URLs generated
-                  for feeds will have '/feed' added to the end. You should enter a value that is the length of the dst
-                  column minus the length of any strings that might get added to the end of the URL. The length of 
-                  strings that might get added to the end of your URLs depends on which modules you have enabled and 
+                  for feeds will have "/feed" added to the end. You should enter a value that is the length of the dst
+                  column minus the length of any strings that might get added to the end of the URL. The length of
+                  strings that might get added to the end of your URLs depends on which modules you have enabled and
                   on your Pathauto settings. The recommended and default value is 100.</p>
-                  <p><strong>Raw Tokens</strong> In Pathauto it is appropriate to use the -raw form of tokens.  Paths are sent through a filtering
-                  system which ensures that raw user content is filtered.  Failure to use -raw tokens can cause problems
-                  with the Pathauto punctuation filtering system.</p>");
+                  <p><strong>Raw Tokens</strong> In Pathauto it is appropriate to use the -raw form of tokens. Paths are
+                  sent through a filtering system which ensures that raw user content is filtered. Failure to use -raw
+                  tokens can cause problems with the Pathauto punctuation filtering system.</p>');
       return $output;
   }
 }
@@ -79,54 +78,77 @@ function pathauto_admin_settings() {
 
   // Make sure they have token
   if (!function_exists('token_get_list')) {
-    drupal_set_message(t('It appears that the <a href="@token_link">Token module</a> is not installed.  Please ensure that you have it installed so that Pathauto can work properly.  You may need to disable Pathauto and re-enable it to get Token enabled.', array('@token_link' => 'http://drupal.org/project/token')), 'error');
+    drupal_set_message(t('It appears that the <a href="@token_link">Token module</a> is not installed. Please ensure that you have it installed so that Pathauto can work properly. You may need to disable Pathauto and re-enable it to get Token enabled.', array('@token_link' => 'http://drupal.org/project/token')), 'error');
     return;
   }
 
   // Default words to ignore
   $ignore_words = array(
-    "a", "an", "as", "at", "before", "but", "by", "for", "from", "is", "in",
-    "into", "like", "of", "off", "on", "onto", "per", "since", "than", "the", 
-    "this", "that", "to", "up", "via", "with"
+    'a', 'an', 'as', 'at', 'before', 'but', 'by', 'for', 'from', 'is', 'in',
+    'into', 'like', 'of', 'off', 'on', 'onto', 'per', 'since', 'than', 'the', 
+    'this', 'that', 'to', 'up', 'via', 'with',
   );
 
   // Generate the form - settings applying to all patterns first
   $group_weight = -20;
-  $form["general"] = array('#type' => 'fieldset', '#weight' => $group_weight,
-    '#title' => t('General settings'), '#collapsible' => TRUE,
-    '#collapsed' => TRUE);
+  $form['general'] = array(
+    '#type' => 'fieldset',
+    '#weight' => $group_weight,
+    '#title' => t('General settings'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
   $group_weight++;
 
-  $form["general"]["pathauto_verbose"] = array('#type' => 'checkbox',
+  $form['general']['pathauto_verbose'] = array(
+    '#type' => 'checkbox',
     '#title' => t('Verbose'),
     '#default_value' => variable_get('pathauto_verbose', FALSE),
-    '#description' => t('Display alias changes (except during bulk updates).'));
+    '#description' => t('Display alias changes (except during bulk updates).'),
+  );
 
-  $form["general"]["pathauto_separator"] = array('#type' => 'textfield',
-    '#title' => t('Separator'), '#size' => 1, '#maxlength' => 1,
+  $form['general']['pathauto_separator'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Separator'),
+    '#size' => 1,
+    '#maxlength' => 1,
     '#default_value' => variable_get('pathauto_separator', '-'),
-    '#description' => t('Character used to separate words in titles. This will replace any spaces and punctuation characters. Using a space or + character can cause unexpected results.'));
+    '#description' => t('Character used to separate words in titles. This will replace any spaces and punctuation characters. Using a space or + character can cause unexpected results.'),
+  );
 
-  $form["general"]["pathauto_case"] = array('#type' => 'radios',
+  $form['general']['pathauto_case'] = array(
+    '#type' => 'radios',
     '#title' => t('Character case'),
     '#default_value' => variable_get('pathauto_case', 1),
     '#options' => array(t('Leave case the same as source token values.'), t('Change to lower case')),
-    );
+  );
     
-  $form["general"]["pathauto_max_length"] = array('#type' => 'textfield',
-    '#title' => t('Maximum alias length'), '#size' => 3, '#maxlength' => 3,
+  $form['general']['pathauto_max_length'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Maximum alias length'),
+    '#size' => 3,
+    '#maxlength' => 3,
     '#default_value' => variable_get('pathauto_max_length', 100),
-    '#description' => t('Maximum length of aliases to generate. 100 is recommended.  See <a href="@pathauto-help">Pathauto help</a> for details.', array('@pathauto-help' => url('admin/help/pathauto'))));
+    '#description' => t('Maximum length of aliases to generate. 100 is recommended. See <a href="@pathauto-help">Pathauto help</a> for details.', array('@pathauto-help' => url('admin/help/pathauto'))),
+  );
 
-  $form["general"]["pathauto_max_component_length"] = array('#type' => 'textfield',
-    '#title' => t('Maximum component length'), '#size' => 3, '#maxlength' => 3,
+  $form['general']['pathauto_max_component_length'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Maximum component length'),
+    '#size' => 3,
+    '#maxlength' => 3,
     '#default_value' => variable_get('pathauto_max_component_length', 100),
-    '#description' => t('Maximum text length of any component in the alias (e.g., [title]). 100 is recommended. See <a href="@pathauto-help">Pathauto help</a> for details.', array('@pathauto-help' => url('admin/help/pathauto'))));
+    '#description' => t('Maximum text length of any component in the alias (e.g., [title]). 100 is recommended. See <a href="@pathauto-help">Pathauto help</a> for details.', array('@pathauto-help' => url('admin/help/pathauto'))),
+  );
 
-  $form["general"]["pathauto_max_bulk_update"] = array('#type' => 'textfield',
-    '#title' => t('Maximum number of objects to alias in a bulk update'), '#size' => 4, '#maxlength' => 4,
+  $form['general']['pathauto_max_bulk_update'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Maximum number of objects to alias in a bulk update'),
+    '#size' => 4,
+    '#maxlength' => 4,
     '#default_value' => variable_get('pathauto_max_bulk_update', 50),
-    '#description' => t('Maximum number of objects of a given type which should be aliased during a a bulk update. The default is 50 and the recommended number depends on the speed of your server.  If bulk updates "time out" or result in a "white screen" then reduce the number.'));
+    '#description' => t('Maximum number of objects of a given type which should be aliased during a a bulk update. The default is 50 and the recommended number depends on the speed of your server. If bulk updates "time out" or result in a "white screen" then reduce the number.'),
+  );
 
   $actions = array(
     t('Do nothing. Leave the old alias intact.'),
@@ -142,52 +164,60 @@ function pathauto_admin_settings() {
     variable_set('pathauto_update_action', 2);
   }
 
-  $form["general"]["pathauto_update_action"] = array('#type' => 'radios',
-    '#title' => t('Update action'), '#default_value' => variable_get('pathauto_update_action', 2),
+  $form['general']['pathauto_update_action'] = array(
+    '#type' => 'radios',
+    '#title' => t('Update action'),
+    '#default_value' => variable_get('pathauto_update_action', 2),
     '#options' => $actions,
-    '#description' => t('What should pathauto do when updating an existing content item which already has an alias?'));
+    '#description' => t('What should pathauto do when updating an existing content item which already has an alias?'),
+  );
 
   $disable_transliteration = TRUE;
-  $disable_text = "";
+  $disable_text = '';
   $path = drupal_get_path('module', 'pathauto');
-  $transliteration_help = t("When a pattern includes certain characters (such as those with accents) should Pathauto attempt to transliterate them into the ASCII-96 alphabet?  Transliteration is determined by the i18n-ascii.txt file in the Pathauto directory. <strong>This option is disabled on your site because you do not have an i18n-ascii.txt file in the Pathauto directory.</strong>");
+  $transliteration_help = t('When a pattern includes certain characters (such as those with accents) should Pathauto attempt to transliterate them into the ASCII-96 alphabet? Transliteration is determined by the i18n-ascii.txt file in the Pathauto directory. <strong>This option is disabled on your site because you do not have an i18n-ascii.txt file in the Pathauto directory.</strong>');
   if (is_file($path .'/i18n-ascii.txt')) {
     $disable_transliteration = FALSE;
-    $transliteration_help = t("When a pattern includes certain characters (such as those with accents) should Pathauto attempt to transliterate them into the ASCII-96 alphabet?  Transliteration is determined by the i18n-ascii.txt file in the Pathauto directory.");
+    $transliteration_help = t('When a pattern includes certain characters (such as those with accents) should Pathauto attempt to transliterate them into the ASCII-96 alphabet? Transliteration is determined by the i18n-ascii.txt file in the Pathauto directory.');
   }
   else {
     // Perhaps they've removed the file, set the transliterate option to FALSE
     variable_set('pathauto_transliterate', FALSE);
   }
-  $form["general"]["pathauto_transliterate"] = array('#type' => 'checkbox',
+  $form['general']['pathauto_transliterate'] = array(
+    '#type' => 'checkbox',
     '#title' => t('Transliterate prior to creating alias'),
     '#default_value' => variable_get('pathauto_transliterate', FALSE),
     '#description' => $transliteration_help,
     '#disabled' => $disable_transliteration,
   );
-  $form["general"]["pathauto_reduce_ascii"] = array('#type' => 'checkbox',
+  $form['general']['pathauto_reduce_ascii'] = array(
+    '#type' => 'checkbox',
     '#title' => t('Reduce strings to letters and numbers from ASCII-96'),
     '#default_value' => variable_get('pathauto_reduce_ascii', FALSE),
-    '#description' => t("Filters the new alias to only letters and numbers found in the ASCII-96 set."),
+    '#description' => t('Filters the new alias to only letters and numbers found in the ASCII-96 set.'),
   );
 
-
-  $form["general"]["pathauto_ignore_words"] = array('#type' => 'textarea',
-    '#title' => t('Strings to Remove'), '#default_value' => variable_get('pathauto_ignore_words', implode(",", $ignore_words)),
-    '#description' => t('Words to strip out of the URL alias, separated by commas.  Do not place punctuation in here and do not use WYSIWYG editors on this field.')
+  $form['general']['pathauto_ignore_words'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Strings to Remove'), '#default_value' => variable_get('pathauto_ignore_words', implode(',', $ignore_words)),
+    '#description' => t('Words to strip out of the URL alias, separated by commas. Do not place punctuation in here and do not use WYSIWYG editors on this field.'),
   );
 
-
-  $form["punctuation"] = array('#type' => 'fieldset', '#weight' => $group_weight,
+  $form['punctuation'] = array(
+    '#type' => 'fieldset',
+    '#weight' => $group_weight,
     '#title' => t('Punctuation settings'), '#collapsible' => TRUE,
-    '#collapsed' => TRUE);
+    '#collapsed' => TRUE,
+  );
   $group_weight++;
 
   $punctuation = pathauto_punctuation_chars();
   foreach ($punctuation as $name => $details) {
-    $form["punctuation"]["pathauto_punctuation_". $name ] = array('#type' => 'select',
+    $form['punctuation']['pathauto_punctuation_'. $name ] = array(
+      '#type' => 'select',
       '#title' => $details['name'],
-      '#default_value' => variable_get("pathauto_punctuation_". $name, 0),
+      '#default_value' => variable_get('pathauto_punctuation_'. $name, 0),
       '#options' => array('0' => t('Remove'), '1' => t('Replace by separator'), '2' => t('No action (do not replace)')),
     );
   }
@@ -206,9 +236,13 @@ function pathauto_admin_settings() {
     $supportsfeeds = isset($settings->supportsfeeds) ? $settings->supportsfeeds : NULL;
     variable_set('pathauto_'. $module .'_supportsfeeds', $supportsfeeds);
 
-    $form[$module] = array('#type' => 'fieldset',
-      '#title' => $groupheader, '#weight' => $group_weight,
-      '#collapsible' => TRUE, '#collapsed' => TRUE);
+    $form[$module] = array(
+      '#type' => 'fieldset',
+      '#title' => $groupheader,
+      '#weight' => $group_weight,
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+    );
     $group_weight++;
 
     // Prompt for the default pattern for this module
@@ -278,10 +312,12 @@ function pathauto_admin_settings() {
         $function = $module .'_pathauto_bulkupdate';
         call_user_func($function);
       }
-      $form[$module][$variable] = array('#type' => 'checkbox',
+      $form[$module][$variable] = array(
+        '#type' => 'checkbox',
         '#title' => $settings->bulkname,
         '#default_value' => FALSE,
-        '#description' => $settings->bulkdescr);
+        '#description' => $settings->bulkdescr,
+      );
     }
 
     // If the module supports feeds, offer to generate aliases for them
@@ -293,20 +329,22 @@ function pathauto_admin_settings() {
         $current = $supportsfeeds;
       }
 
-      $form[$module][$variable] = array('#type' => 'textfield',
+      $form[$module][$variable] = array(
+        '#type' => 'textfield',
         '#title' => t('Internal feed alias text (leave blank to disable)'),
         '#size' => 65,
         '#maxlength' => 1280,
         '#default_value' => $current,
-        '#description' => t('The text to use for aliases for RSS feeds. Examples are "feed" and "0/feed".'));
+        '#description' => t('The text to use for aliases for RSS feeds. Examples are "feed" and "0/feed".'),
+      );
     }
 
   }
 
   if (isset($do_index_bulkupdate) && $do_index_bulkupdate) {
     drupal_set_message(format_plural($indexcount,
-      "Bulk generation of index aliases completed, one alias generated.",
-      "Bulk generation of index aliases completed, @count aliases generated."));
+      'Bulk generation of index aliases completed, one alias generated.',
+      'Bulk generation of index aliases completed, @count aliases generated.'));
   }
 
   // Keep track of which modules currently support pathauto
@@ -316,8 +354,9 @@ function pathauto_admin_settings() {
 }
 
 /**
- *  Helper function to see if they are using all -raw tokens available
- *  Returns a status flag if there is an error or not
+ * Helper function to see if they are using all -raw tokens available
+ *
+ * Returns a status flag if there is an error or not
  */
 function _pathauto_check_pattern($pattern, $type) {
   // Hold items we've warned about so we only warn once per token
@@ -360,7 +399,7 @@ function _pathauto_check_pattern($pattern, $type) {
 
   if ($return) {
     $description = t('NOTE: This field contains potentially incorrect patterns. ');
-    $description .= format_plural(count($return), "Problem token: ", "Problem tokens: ");
+    $description .= format_plural(count($return), 'Problem token: ', 'Problem tokens: ');
     $description .= t('%problems', array('%problems' => implode(', ', $return)));
     $return = $description;
   }
@@ -453,19 +492,19 @@ function pathauto_token_list($type = 'all') {
   $tokens = array();
   if (module_exists('taxonomy')) {
     if ($type == 'taxonomy' || $type == 'all') {
-      $tokens['taxonomy']['catpath'] = t("As [cat], but including its supercategories separated by /.");
-      $tokens['taxonomy']['catpath-raw'] = t("As [cat-raw], but including its supercategories separated by /. WARNING - raw user input.");
-      $tokens['taxonomy']['catalias'] = t("URL alias for the term.");
+      $tokens['taxonomy']['catpath'] = t('As [cat], but including its supercategories separated by /.');
+      $tokens['taxonomy']['catpath-raw'] = t('As [cat-raw], but including its supercategories separated by /. WARNING - raw user input.');
+      $tokens['taxonomy']['catalias'] = t('URL alias for the term.');
     }
     if ($type == 'node' || $type == 'all') {
-      $tokens['node']['termpath'] = t("As [term], but including its supercategories separated by /.");
-      $tokens['node']['termpath-raw'] = t("As [term-raw], but including its supercategories separated by /. WARNING - raw user input.");
-      $tokens['node']['termalias'] = t("URL alias for the term.");
+      $tokens['node']['termpath'] = t('As [term], but including its supercategories separated by /.');
+      $tokens['node']['termpath-raw'] = t('As [term-raw], but including its supercategories separated by /. WARNING - raw user input.');
+      $tokens['node']['termalias'] = t('URL alias for the term.');
     }
   }
   if (module_exists('book')) {
     if ($type == 'node' || $type == 'all') {
-      $tokens['node']['bookpathalias'] = t("URL alias for the parent book.");
+      $tokens['node']['bookpathalias'] = t('URL alias for the parent book.');
     }    
   }
   return $tokens;
@@ -488,29 +527,36 @@ function pathauto_admin_delete() {
   */
 
   $form = array();
-  $form["delete"] = array('#type' => 'fieldset',
-    '#title' => t('Choose Aliases to Delete'), '#collapsible' => FALSE,
-    '#collapsed' => FALSE);
+  $form['delete'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Choose Aliases to Delete'),
+    '#collapsible' => FALSE,
+    '#collapsed' => FALSE,
+  );
 
   // First we do the "all" case
-  $total_count = db_result(db_query("SELECT count(1) FROM {url_alias}"));
-  $form['delete']['all_aliases'] = array('#type' => 'checkbox',
+  $total_count = db_result(db_query('SELECT count(1) FROM {url_alias}'));
+  $form['delete']['all_aliases'] = array(
+    '#type' => 'checkbox',
     '#title' => t('all aliases'),
     '#default_value' => FALSE,
-    '#description' => t('Delete all aliases.  Number of aliases which will be deleted: %count.', array('%count' => $total_count)));
+    '#description' => t('Delete all aliases. Number of aliases which will be deleted: %count.', array('%count' => $total_count)),
+  );
 
   // Next, iterate over an array of objects/alias types which can be deleted and provide checkboxes
   $objects = module_invoke_all('path_alias_types');
   foreach ($objects as $internal_name => $label) {
     $count = db_result(db_query("SELECT count(1) FROM {url_alias} WHERE src LIKE '%s%%'", $internal_name));
-    $form['delete'][$internal_name] = array('#type' => 'checkbox',
+    $form['delete'][$internal_name] = array(
+      '#type' => 'checkbox',
       '#title' => $label, // This label is sent through t() in the hard coded function where it is defined
       '#default_value' => FALSE,
-      '#description' => t('Delete aliases for all @label. Number of aliases which will be deleted: %count.', array('@label' => $label, '%count' => $count)));
+      '#description' => t('Delete aliases for all @label. Number of aliases which will be deleted: %count.', array('@label' => $label, '%count' => $count)),
+    );
   }
 
   // Warn them and give a button that shows we mean business
-  $form["warning"] = array('#value' => t('<p><strong>Note:</strong> there is no confirmation.  Be sure of your action before clicking the "Delete aliases now!" button.<br />  You may want to make a backup of the database and/or the url_alias table prior to using this feature.</p>'));
+  $form['warning'] = array('#value' => t('<p><strong>Note:</strong> there is no confirmation. Be sure of your action before clicking the "Delete aliases now!" button.<br />You may want to make a backup of the database and/or the url_alias table prior to using this feature.</p>'));
   $form['buttons']['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Delete aliases now!'),
@@ -644,7 +690,8 @@ function pathauto_form_alter(&$form, $form_state, $form_id) {
       drupal_add_js(drupal_get_path('module', 'pathauto') .'/pathauto.js');
       $form['path']['#collapsed'] = FALSE;
 
-      $form['path']['pathauto_perform_alias'] = array('#type' => 'checkbox',
+      $form['path']['pathauto_perform_alias'] = array(
+        '#type' => 'checkbox',
         '#title' => t('Automatic alias'),
         '#default_value' => TRUE,
         '#description' => $output,
@@ -694,22 +741,20 @@ function pathauto_taxonomy($op, $type, $object = NULL) {
       switch ($op) {
         case 'insert':
         case 'update':
-          /*
-          ** Use the category info to automatically create an alias
-          */
+          // Use the category info to automatically create an alias
           $category = (object) $object;
           if ($category->name) {
             $count = _taxonomy_pathauto_alias($category, $op);
           }
 
-          //For all children generate new alias (important if [catpath] used)
+          // For all children generate new alias (important if [catpath] used)
           foreach (taxonomy_get_tree($category->vid, $category->tid) as $subcategory) {
             $count = _taxonomy_pathauto_alias($subcategory, $op);
           }
 
           break;
         case 'delete':
-          //If the category is deleted, remove the path aliases
+          // If the category is deleted, remove the path aliases
           $category = (object) $object;
           path_set_alias('taxonomy/term/'. $category->tid);
           path_set_alias(taxonomy_term_path($category));
@@ -737,9 +782,7 @@ function pathauto_user($op, &$edit, &$user, $category = FALSE) {
   switch ($op) {
     case 'insert':
     case 'update':
-      /*
-      ** Use the username to automatically create an alias
-      */
+      // Use the username to automatically create an alias
       $pathauto_user = (object) array_merge((array) $user, $edit);
       if ($user->name) {
         $placeholders = pathauto_get_placeholders('user', $pathauto_user);
@@ -766,14 +809,11 @@ function pathauto_user($op, &$edit, &$user, $category = FALSE) {
       }
       break;
     case 'delete':
-      /*
-      ** If the user is deleted, remove the path aliases
-      **
-      */
+      // If the user is deleted, remove the path aliases
       $user = (object) $user;
       path_set_alias('user/'. $user->uid);
 
-      //  They may have enabled these modules and/or feeds when the user was created, so let's try to delete all of them
+      // They may have enabled these modules and/or feeds when the user was created, so let's try to delete all of them
       path_set_alias('blog/'. $user->uid);
       path_set_alias('blog/'. $user->uid .'/feed');
       path_set_alias('user/'. $user->uid .'/track');
