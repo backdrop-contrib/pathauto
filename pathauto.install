@@ -100,7 +100,7 @@ function pathauto_update_4() {
 function pathauto_update_7() {
   $ret = array();
   if (db_table_exists('url_alias_extra')) {
-    $ret[] = db_drop_table($ret, 'url_alias_extra');
+    db_drop_table($ret, 'url_alias_extra');
   }
   return $ret;
 } 
