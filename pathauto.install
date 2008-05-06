@@ -66,9 +66,9 @@ function pathauto_uninstall() {
  * Set the weight a little heavier to allow taxonomy to do its work
  */
 function pathauto_update_1() {
-  $items = array();
-  $items[] = update_sql("UPDATE {system} SET weight = 1 WHERE name = 'pathauto'");
-  return $items;
+  $ret = array();
+  $ret[] = update_sql("UPDATE {system} SET weight = 1 WHERE name = 'pathauto'");
+  return $ret;
 }
 
 /**
@@ -94,13 +94,13 @@ function pathauto_update_4() {
   return array();
 }
 
-/** 
- * Remove the url_alias_extra table which wasn't used 
- */ 
-function pathauto_update_7() { 
-  $ret = array(); 
-  if (db_table_exists('url_alias_extra')) { 
-    db_drop_table($ret, 'url_alias_extra'); 
-  } 
-  return $ret; 
+/**
+ * Remove the url_alias_extra table which wasn't used
+ */
+function pathauto_update_7() {
+  $ret = array();
+  if (db_table_exists('url_alias_extra')) {
+    $ret[] = db_drop_table($ret, 'url_alias_extra');
+  }
+  return $ret;
 } 
