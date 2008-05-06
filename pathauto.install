@@ -57,11 +57,6 @@ function pathauto_install() {
  * Implementation of hook_uninstall().
  */
 function pathauto_uninstall() {
-  // Delete the url_alias_extra if people have it
-  if (db_table_exists('url_alias_extra')) {
-    db_query('DROP TABLE {url_alias_extra}');
-  }
-
   // Delete all the pathauto variables and then clear the variable cache
   db_query("DELETE FROM {variable} WHERE name LIKE 'pathauto_%'");
   cache_clear_all('variables', 'cache');
@@ -98,3 +93,14 @@ function pathauto_update_4() {
   variable_del('pathauto_quotes');
   return array();
 }
+
+/** 
+ * Remove the url_alias_extra table which wasn't used 
+ */ 
+function pathauto_update_7() { 
+  $ret = array(); 
+  if (db_table_exists('url_alias_extra')) { 
+    db_drop_table($ret, 'url_alias_extra'); 
+  } 
+  return $ret; 
+} 
