@@ -112,10 +112,10 @@ function _pathauto_existing_alias_data ($src) {
 function pathauto_cleanstring($string, $clean_slash = TRUE) {
   // Default words to ignore
   $ignore_words = array(
-    "a", "an", "as", "at", "before", "but", "by", "for", "from",
-    "is", "in", "into", "like", "of", "off", "on", "onto", "per",
-    "since", "than", "the", "this", "that", "to", "up", "via",
-    "with"
+    'a', 'an', 'as', 'at', 'before', 'but', 'by', 'for', 'from',
+    'is', 'in', 'into', 'like', 'of', 'off', 'on', 'onto', 'per',
+    'since', 'than', 'the', 'this', 'that', 'to', 'up', 'via',
+    'with',
   );
 
   // Replace or drop punctuation based on user settings
@@ -123,7 +123,7 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
   $output = $string;
   $punctuation = pathauto_punctuation_chars();
   foreach ($punctuation as $name => $details) {
-    $action = variable_get("pathauto_punctuation_". $name, 0);
+    $action = variable_get('pathauto_punctuation_'. $name, 0);
     // 2 is the action for "do nothing" with the punctuation
     if ($action != 2) {
       // Slightly tricky inline if which either replaces with the separator or nothing
@@ -148,7 +148,7 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
       }
       $i18n_loaded = true;
     }
-  
+
     $output = strtr($output, $translations);
   }
 
@@ -159,13 +159,13 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
   }
 
   // Get rid of words that are on the ignore list
-  $ignore_re = "\b". preg_replace("/,/", "\b|\b", variable_get('pathauto_ignore_words', $ignore_words)) ."\b";
+  $ignore_re = "\b". preg_replace('/,/', "\b|\b", variable_get('pathauto_ignore_words', $ignore_words)) ."\b";
 
   if (function_exists('mb_ereg_replace')) {
-    $output = mb_ereg_replace("/$ignore_re/i", "", $output);
+    $output = mb_ereg_replace("/$ignore_re/i", '', $output);
   }
   else {
-    $output = preg_replace("/$ignore_re/i", "", $output);
+    $output = preg_replace("/$ignore_re/i", '', $output);
   }
 
   // Always replace whitespace with the separator.
@@ -181,7 +181,7 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
       $seppattern = '\\'. $separator;
     }
     // Trim any leading or trailing separators (note the need to
-    $output = preg_replace("/^$seppattern+|$seppattern+$/", "", $output);
+    $output = preg_replace("/^$seppattern+|$seppattern+$/", '', $output);
 
     // Replace multiple separators with a single one
     $output = preg_replace("/$seppattern+/", "$separator", $output);
@@ -256,7 +256,7 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $t
       $src = $term_path;
     }
   }
-  
+
   // Special handling when updating an item which is already aliased.
   $pid = NULL;
   $old_alias = NULL;
@@ -279,10 +279,10 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $t
   }
 
   // Two or more slashes should be collapsed into one
-  $alias = preg_replace("/\/+/", "/", $alias);
-  
+  $alias = preg_replace("/\/+/", '/', $alias);
+
   // Trim any leading or trailing slashes
-  $alias = preg_replace("/^\/|\/+$/", "", $alias);
+  $alias = preg_replace("/^\/|\/+$/", '', $alias);
 
   $maxlength = min(variable_get('pathauto_max_length', 100), 128);
   $alias = drupal_substr($alias, 0, $maxlength);
@@ -305,7 +305,7 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $t
   // by the module
   if (strlen(variable_get('pathauto_'. $module .'_applytofeeds', ''))) {
     $feedappend = variable_get('pathauto_'. $module .'_applytofeeds', '');
-    
+
     // For forums and taxonomies, the src doesn't always form the base of the rss feed (ie. image galleries)
     if ($module == 'taxonomy' || $module == 'forum') {
       $update_data = _pathauto_existing_alias_data("taxonomy/term/$entity_id/$feedappend"); 
@@ -365,7 +365,7 @@ function _pathauto_set_alias($src, $dst, $entity_type, $entity_id, $pid = NULL, 
   // Alert users if they are trying to create an alias that is the same as the internal path
   if ($src == $dst) {
     if ($verbose and user_access('notify of path changes')) {
-      drupal_set_message(t('Ignoring alias %dst  because it is the same as the internal path.', array('%dst' => $dst)));
+      drupal_set_message(t('Ignoring alias %dst because it is the same as the internal path.', array('%dst' => $dst)));
     }
     return;
   }
@@ -428,7 +428,6 @@ function pathauto_get_placeholders($type, $object) {
  */
 function pathauto_clean_token_values($full) {
   foreach ($full->values as $key => $value) {
-    
     // If it's a "path" or "url friendly" token don't remove the "/" character
     if (substr($full->tokens[$key], -4, 4) === 'path' || substr($full->tokens[$key], -8, 8) === 'path-raw' || substr($full->tokens[$key], -5, 5) === 'alias') {
       $full->values[$key] = pathauto_cleanstring($value, FALSE);
@@ -436,7 +435,6 @@ function pathauto_clean_token_values($full) {
     else {
       $full->values[$key] = pathauto_cleanstring($value);
     }
-
   }
   return $full->values;
 }
@@ -453,34 +451,34 @@ function pathauto_punctuation_chars() {
   // Handle " ' , . - _ : ; | { { } ] + = * & % $ � # @ ! ~ ( ) ? < > \ � �
   $punctuation['double_quotes']      = array('value' => '"', 'name' => t('Double quotes "'));
   $punctuation['quotes']             = array('value' => "'", 'name' => t("Single quotes (apostrophe) '"));
-  $punctuation['backtick']           = array('value' => "`", 'name' => t("Back tick `"));
-  $punctuation['comma']              = array('value' => ",", 'name' => t('Comma ,'));
-  $punctuation['period']             = array('value' => ".", 'name' => t('Period .'));
-  $punctuation['hyphen']             = array('value' => "-", 'name' => t('Hyphen -'));
-  $punctuation['underscore']         = array('value' => "_", 'name' => t('Underscore _'));
-  $punctuation['colon']              = array('value' => ":", 'name' => t('Colon :'));
-  $punctuation['semicolon']          = array('value' => ";", 'name' => t('Semicolon ;'));
-  $punctuation['pipe']               = array('value' => "|", 'name' => t('Pipe |'));
-  $punctuation['left_curly']         = array('value' => "{", 'name' => t('Left curly bracket {'));
-  $punctuation['left_square']        = array('value' => "[", 'name' => t('Left square bracket ['));
-  $punctuation['right_curly']        = array('value' => "}", 'name' => t('Right curly bracket }'));
-  $punctuation['right_square']       = array('value' => "]", 'name' => t('Right square bracket ]'));
-  $punctuation['plus']               = array('value' => "+", 'name' => t('Plus +'));
-  $punctuation['equal']              = array('value' => "=", 'name' => t('Equal ='));
-  $punctuation['asterisk']           = array('value' => "*", 'name' => t('Asterisk *'));
-  $punctuation['ampersand']          = array('value' => "&", 'name' => t('Ampersand &'));
-  $punctuation['percent']            = array('value' => "%", 'name' => t('Percent %'));
-  $punctuation['caret']              = array('value' => "^", 'name' => t('Caret ^'));
-  $punctuation['dollar']             = array('value' => "$", 'name' => t('Dollar $'));
-  $punctuation['hash']               = array('value' => "#", 'name' => t('Hash #'));
-  $punctuation['at']                 = array('value' => "@", 'name' => t('At @'));
-  $punctuation['exclamation']        = array('value' => "!", 'name' => t('Exclamation !'));
-  $punctuation['tilde']              = array('value' => "~", 'name' => t('Tilde ~'));
-  $punctuation['left_parenthesis']   = array('value' => "(", 'name' => t('Left parenthesis ('));
-  $punctuation['right_parenthesis']  = array('value' => ")", 'name' => t('right parenthesis )'));
-  $punctuation['question_mark']      = array('value' => "?", 'name' => t('Question mark ?'));
-  $punctuation['less_than']          = array('value' => "<", 'name' => t('Less than <'));
-  $punctuation['greater_than']       = array('value' => ">", 'name' => t('Greater than >'));
+  $punctuation['backtick']           = array('value' => '`', 'name' => t('Back tick `'));
+  $punctuation['comma']              = array('value' => ',', 'name' => t('Comma ,'));
+  $punctuation['period']             = array('value' => '.', 'name' => t('Period .'));
+  $punctuation['hyphen']             = array('value' => '-', 'name' => t('Hyphen -'));
+  $punctuation['underscore']         = array('value' => '_', 'name' => t('Underscore _'));
+  $punctuation['colon']              = array('value' => ':', 'name' => t('Colon :'));
+  $punctuation['semicolon']          = array('value' => ';', 'name' => t('Semicolon ;'));
+  $punctuation['pipe']               = array('value' => '|', 'name' => t('Pipe |'));
+  $punctuation['left_curly']         = array('value' => '{', 'name' => t('Left curly bracket {'));
+  $punctuation['left_square']        = array('value' => '[', 'name' => t('Left square bracket ['));
+  $punctuation['right_curly']        = array('value' => '}', 'name' => t('Right curly bracket }'));
+  $punctuation['right_square']       = array('value' => ']', 'name' => t('Right square bracket ]'));
+  $punctuation['plus']               = array('value' => '+', 'name' => t('Plus +'));
+  $punctuation['equal']              = array('value' => '=', 'name' => t('Equal ='));
+  $punctuation['asterisk']           = array('value' => '*', 'name' => t('Asterisk *'));
+  $punctuation['ampersand']          = array('value' => '&', 'name' => t('Ampersand &'));
+  $punctuation['percent']            = array('value' => '%', 'name' => t('Percent %'));
+  $punctuation['caret']              = array('value' => '^', 'name' => t('Caret ^'));
+  $punctuation['dollar']             = array('value' => '$', 'name' => t('Dollar $'));
+  $punctuation['hash']               = array('value' => '#', 'name' => t('Hash #'));
+  $punctuation['at']                 = array('value' => '@', 'name' => t('At @'));
+  $punctuation['exclamation']        = array('value' => '!', 'name' => t('Exclamation !'));
+  $punctuation['tilde']              = array('value' => '~', 'name' => t('Tilde ~'));
+  $punctuation['left_parenthesis']   = array('value' => '(', 'name' => t('Left parenthesis ('));
+  $punctuation['right_parenthesis']  = array('value' => ')', 'name' => t('right parenthesis )'));
+  $punctuation['question_mark']      = array('value' => '?', 'name' => t('Question mark ?'));
+  $punctuation['less_than']          = array('value' => '<', 'name' => t('Less than <'));
+  $punctuation['greater_than']       = array('value' => '>', 'name' => t('Greater than >'));
   $punctuation['back_slash']         = array('value' => '\\', 'name' => t('Back slash \\'));
 
   return $punctuation;

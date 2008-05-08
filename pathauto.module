@@ -86,7 +86,7 @@ function pathauto_token_values($type, $object = NULL) {
           // In the realm of nodes these are terms, in the realm of Taxonomy, cats
           $label = 'term';
 
-          // We're on a node and it's a book and it has a parent?  Get the book path alias
+          // We're on a node and it's a book and it has a parent? Get the book path alias
           if (module_exists('book')) {
             if ($object->type == 'book' && $object->parent) {
               $values['bookpathalias'] = drupal_get_path_alias('node/'. $object->parent);
@@ -154,7 +154,7 @@ function pathauto_token_list($type = 'all') {
   if (module_exists('book')) {
     if ($type == 'node' || $type == 'all') {
       $tokens['node']['bookpathalias'] = t('URL alias for the parent book.');
-    }    
+    }
   }
   return $tokens;
 }

@@ -324,7 +324,7 @@ function _pathauto_check_pattern($pattern, $type) {
         $raw_token = $token .'-raw';
         if (array_key_exists($raw_token, $all_tokens)) {
           if (!isset($warned) || !array_key_exists($token, $warned)) {
-            drupal_set_message(t('You are using the token [%token] which has a -raw companion available [%raw_token].  For Pathauto patterns you should use the -raw version of tokens unless you really know what you are doing.  See the <a href="@pathauto-help">Pathauto help</a> for more details.', array('%token' => $token, '%raw_token' => $raw_token, '@pathauto-help' => url('admin/help/pathauto'))), 'error');
+            drupal_set_message(t('You are using the token [%token] which has a -raw companion available [%raw_token]. For Pathauto patterns you should use the -raw version of tokens unless you really know what you are doing. See the <a href="@pathauto-help">Pathauto help</a> for more details.', array('%token' => $token, '%raw_token' => $raw_token, '@pathauto-help' => url('admin/help/pathauto'))), 'error');
             $warned[$token] = $token;
           }
           $return[] = $token;
@@ -352,7 +352,7 @@ function pathauto_admin_settings_validate($form, &$form_state) {
     if ($details['value'] == $separator) {
       $action = $form_state['values']['pathauto_punctuation_'. $name];
       if ($action == 0) {
-        drupal_set_message(t('You have configured the @name to be the separator and to be removed when encountered in strings.  This can cause problems with your patterns and especially with the catpath and termpath patterns. You should probably set the action for @name to be "replace by separator"', array('@name' => $details['name'])), 'error');
+        drupal_set_message(t('You have configured the @name to be the separator and to be removed when encountered in strings. This can cause problems with your patterns and especially with the catpath and termpath patterns. You should probably set the action for @name to be "replace by separator"', array('@name' => $details['name'])), 'error');
       }
     }
   }
@@ -414,7 +414,7 @@ function pathauto_admin_delete() {
 }
 
 /**
- *  Submit handler for the bulk delete form
+ * Submit handler for the bulk delete form
  */
 function pathauto_admin_delete_submit($form, &$form_state) {
   foreach ($form_state['values'] as $key => $value) {
