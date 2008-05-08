@@ -59,7 +59,6 @@ function pathauto_menu() {
   return $items;
 }
 
-
 /**
  * Include all pathauto include files.
  */
@@ -95,7 +94,7 @@ function pathauto_token_values($type, $object = NULL) {
               $values['bookpathalias'] = '';
             }
           }
-          
+
         case 'taxonomy':
         default:
           if (!isset($category)) {
@@ -343,7 +342,6 @@ function pathauto_taxonomy($op, $type, $object = NULL) {
       break;
   }
 }
-
 
 //==============================================================================
 // User related functions.

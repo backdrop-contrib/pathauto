@@ -348,7 +348,7 @@ function _pathauto_path_is_callback($path) {
  * @param $pid
  *   If the item is currently aliased, the pid for that item.
  * @param $verbose
- *   If the admin has enabled verbose, should be TRUE.  Else FALSE or NULL.
+ *   If the admin has enabled verbose, should be TRUE. Else FALSE or NULL.
  * @param $old_alias
  *   If the item is currently aliased, the existing alias for that item.
  * @param $language
