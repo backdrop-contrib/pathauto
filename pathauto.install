@@ -103,4 +103,4 @@ function pathauto_update_7() {
     db_drop_table($ret, 'url_alias_extra');
   }
   return $ret;
-} 
+}

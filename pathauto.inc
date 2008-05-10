@@ -3,7 +3,7 @@
 
 /**
  * Copied from search.module's PREG_CLASS_SEARCH_EXCLUDE
- * 
+ *
  * Matches Unicode character classes to exclude from the search index.
  *
  * See: http://www.unicode.org/Public/UNIDATA/UCD.html#General_Category_Values
@@ -48,7 +48,7 @@ define('PREG_CLASS_ALNUM',
 
 /**
  * Check to see if there is already an alias pointing to a different item
- * 
+ *
  * @param $alias
  *   A string alias (i.e. dst).
  * @param $src
@@ -71,12 +71,11 @@ function _pathauto_alias_exists($alias, $src, $language = '') {
 
 /**
  * Returns old alias and pid if there is already an alias pointing to a different item
- * 
+ *
  * @param string $src
  *   A string that is the internal path
- * 
  */
-function _pathauto_existing_alias_data ($src) {
+function _pathauto_existing_alias_data($src) {
   $output = array(
     'pid' => '',
     'old_alias' => ''
@@ -105,9 +104,9 @@ function _pathauto_existing_alias_data ($src) {
 /**
  * Clean up a string value provided by a module, resulting in a
  * string containing only alphanumerics and separators
+ *
  * @param $string
  *   A string to clean.
- * 
  */
 function pathauto_cleanstring($string, $clean_slash = TRUE) {
   // Default words to ignore
@@ -137,7 +136,7 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
   }
 
   // Optionally remove accents and transliterate
-  if (variable_get('pathauto_transliterate', FALSE)) { 
+  if (variable_get('pathauto_transliterate', FALSE)) {
 
     static $i18n_loaded = false;
     static $translations = array();
@@ -153,7 +152,7 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
   }
 
   // Reduce to the subset of ASCII96 letters and numbers
-  if (variable_get('pathauto_reduce_ascii', FALSE)) { 
+  if (variable_get('pathauto_reduce_ascii', FALSE)) {
     $pattern = '/[^a-zA-Z0-9\/]+/ ';
     $output = preg_replace($pattern, $separator, $output);
   }
@@ -171,12 +170,12 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
   // Always replace whitespace with the separator.
   $output = preg_replace("/\s+/", $separator, $output);
 
-  // In preparation for pattern matching, 
-  // escape the separator if and only if it is not alphanumeric)
+  // In preparation for pattern matching,
+  // escape the separator if and only if it is not alphanumeric.
   if (isset($separator)) {
     if (preg_match('/^[^'. PREG_CLASS_ALNUM .']+$/uD', $separator)) {
       $seppattern = $separator;
-    } 
+    }
     else {
       $seppattern = '\\'. $separator;
     }
@@ -222,7 +221,7 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
 function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $type = NULL, $language = '') {
   if (($op != 'bulkupdate') and variable_get('pathauto_verbose', FALSE) && user_access('notify of path changes')) {
     $verbose = TRUE;
-  } 
+  }
   else {
     $verbose = FALSE;
   }
@@ -308,7 +307,7 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $t
 
     // For forums and taxonomies, the src doesn't always form the base of the rss feed (ie. image galleries)
     if ($module == 'taxonomy' || $module == 'forum') {
-      $update_data = _pathauto_existing_alias_data("taxonomy/term/$entity_id/$feedappend"); 
+      $update_data = _pathauto_existing_alias_data("taxonomy/term/$entity_id/$feedappend");
       _pathauto_set_alias("taxonomy/term/$entity_id/$feedappend", "$alias/feed", $module, $entity_id, $update_data['pid'], $verbose, $update_data['old_alias'], $language);
     }
     else {
@@ -340,11 +339,11 @@ function _pathauto_path_is_callback($path) {
 
 /**
  * Private function for pathauto to create an alias
- * 
+ *
  * @param $src
- *   The internal path 
+ *   The internal path.
  * @param $dst
- *   The visible externally used path. 
+ *   The visible externally used path.
  * @param $pid
  *   If the item is currently aliased, the pid for that item.
  * @param $verbose
@@ -380,7 +379,7 @@ function _pathauto_set_alias($src, $dst, $entity_type, $entity_id, $pid = NULL, 
         $save['redirect'] = $src;
         $save['type'] = 301; //moved permanently
         path_redirect_save($save);
-        $redirect = TRUE; 
+        $redirect = TRUE;
       }
     }
     if ($verbose and user_access('notify of path changes')) {
@@ -399,13 +398,12 @@ function _pathauto_set_alias($src, $dst, $entity_type, $entity_id, $pid = NULL, 
 
 /**
  * Generalized function to get tokens across all Pathauto types
- * 
+ *
  * @param $object
  *   A user, node, or category object.
- * 
+ *
  * @return
  *   tokens for that object formatted in the way that Pathauto expects to see them.
- *  
  */
 function pathauto_get_placeholders($type, $object) {
   if (function_exists('token_get_values')) {
@@ -421,10 +419,9 @@ function pathauto_get_placeholders($type, $object) {
 
 /**
  * Cleans tokens so they are URL friendly
- * 
+ *
  * @param $values
- *   An array of token values that need to be "cleaned" for use in the URL 
- * 
+ *   An array of token values that need to be "cleaned" for use in the URL.
  */
 function pathauto_clean_token_values($full) {
   foreach ($full->values as $key => $value) {
@@ -443,7 +440,6 @@ function pathauto_clean_token_values($full) {
  * Returns an array of arrays for punctuation values keyed by a name
  *   including the value and a textual description
  *   Can and should be expanded to include "all" non text punctuation values
- * 
  */
 function pathauto_punctuation_chars() {
   $punctuation = array();

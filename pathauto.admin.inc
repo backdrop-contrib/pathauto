@@ -21,7 +21,7 @@ function pathauto_admin_settings() {
   // Default words to ignore
   $ignore_words = array(
     'a', 'an', 'as', 'at', 'before', 'but', 'by', 'for', 'from', 'is', 'in',
-    'into', 'like', 'of', 'off', 'on', 'onto', 'per', 'since', 'than', 'the', 
+    'into', 'like', 'of', 'off', 'on', 'onto', 'per', 'since', 'than', 'the',
     'this', 'that', 'to', 'up', 'via', 'with',
   );
 

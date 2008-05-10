@@ -104,7 +104,7 @@ function user_pathauto_bulkupdate() {
 
 
 /**
- * Bulk generate aliases for all blogs without aliases 
+ * Bulk generate aliases for all blogs without aliases
  */
 function blog_pathauto_bulkupdate() {
   $query = "SELECT uid, name, src, dst FROM {users} LEFT JOIN {url_alias} ON CONCAT('blog/', CAST(uid AS CHAR)) = src WHERE uid > 0 AND src IS NULL";
@@ -126,7 +126,7 @@ function blog_pathauto_bulkupdate() {
 }
 
 /**
- * Bulk generate aliases for user trackers without aliases 
+ * Bulk generate aliases for user trackers without aliases
  */
 function tracker_pathauto_bulkupdate() {
   // We do the double CONCAT because Pgsql8.1 doesn't support more than three arguments to CONCAT

@@ -42,7 +42,7 @@ function node_pathauto($op) {
 }
 
 /**
- * Generate aliases for all nodes without aliases. 
+ * Generate aliases for all nodes without aliases.
  */
 function node_pathauto_bulkupdate() {
 
@@ -51,7 +51,7 @@ function node_pathauto_bulkupdate() {
   
   // If there's a default pattern we assume all types might be updated.
   if (trim(variable_get('pathauto_node_pattern', ''))) {
-    $pattern_types = array_keys(node_get_types('names')); 
+    $pattern_types = array_keys(node_get_types('names'));
   }
   else {
     // Check first for a node specific pattern...

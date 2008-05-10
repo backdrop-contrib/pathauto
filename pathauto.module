@@ -49,9 +49,9 @@ function pathauto_menu() {
   
   $items['admin/build/path/delete_bulk'] = array(
     'title' => 'Delete aliases',
-    'page callback' => 'drupal_get_form', 
+    'page callback' => 'drupal_get_form',
     'page arguments' => array('pathauto_admin_delete'),
-    'access arguments' => array('administer url aliases'), 
+    'access arguments' => array('administer url aliases'),
     'type' => MENU_LOCAL_TASK,
     'file' => 'pathauto.admin.inc',
   );
@@ -192,7 +192,7 @@ function pathauto_nodeapi(&$node, $op, $teaser, $page) {
             && $node->pathauto_perform_alias && $node->path == '' && $node->old_alias != '') {
           /**
            * There was an old alias, but when pathauto_perform_alias was checked
-           * the javascript disabled the textbox which led to an empty value being 
+           * the javascript disabled the textbox which led to an empty value being
            * submitted. Restoring the old path-value here prevents the Path module
            * from deleting any old alias before Pathauto gets control.
            */
@@ -233,7 +233,7 @@ function pathauto_nodeapi(&$node, $op, $teaser, $page) {
 
 /**
  * Implementation of hook_form_alter().
- * 
+ *
  * This allows alias creators to override Pathauto and specify their
  * own aliases (Pathauto will be invisible to other users). Inserted
  * into the path module's fieldset in the node form.
@@ -247,7 +247,7 @@ function pathauto_form_alter(&$form, $form_state, $form_id) {
       $pattern = variable_get('pathauto_node_'. $form['type']['#value'] .'_'. $language .'_pattern', FALSE);
     }
     else {
-      $pattern = variable_get('pathauto_node_'. $form['type']['#value'] .'_pattern', FALSE);	
+      $pattern = variable_get('pathauto_node_'. $form['type']['#value'] .'_pattern', FALSE);
     }
     if (!trim($pattern)) {
       $pattern = variable_get('pathauto_node_pattern', FALSE);
