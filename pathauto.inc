@@ -137,13 +137,13 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
 
   // Optionally remove accents and transliterate
   if (variable_get('pathauto_transliterate', FALSE)) {
-
     static $i18n_loaded = false;
     static $translations = array();
+
     if (!$i18n_loaded) {
       $path = drupal_get_path('module', 'pathauto');
       if (is_file($path .'/i18n-ascii.txt')) {
-        $translations = parse_ini_file($path. '/i18n-ascii.txt');
+        $translations = parse_ini_file($path .'/i18n-ascii.txt');
       }
       $i18n_loaded = true;
     }
