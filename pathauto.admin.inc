@@ -109,7 +109,6 @@ function pathauto_admin_settings() {
   );
 
   $disable_transliteration = TRUE;
-  $disable_text = '';
   $path = drupal_get_path('module', 'pathauto');
   $transliteration_help = t('When a pattern includes certain characters (such as those with accents) should Pathauto attempt to transliterate them into the ASCII-96 alphabet? Transliteration is determined by the i18n-ascii.txt file in the Pathauto directory. <strong>This option is disabled on your site because you do not have an i18n-ascii.txt file in the Pathauto directory.</strong>');
   if (is_file($path .'/i18n-ascii.txt')) {
