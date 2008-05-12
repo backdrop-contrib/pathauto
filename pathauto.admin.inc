@@ -430,5 +430,5 @@ function pathauto_admin_delete_submit($form, &$form_state) {
       }
     }
   }
-  return 'admin/build/path/delete_bulk';
+  $form_state['redirect'] = 'admin/build/path/delete_bulk';
 }
