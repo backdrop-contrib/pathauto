@@ -289,11 +289,17 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $t
   // If the alias already exists, generate a new, hopefully unique, variant
   $separator = variable_get('pathauto_separator', '-');
   if (_pathauto_alias_exists($alias, $src, $language)) {
+    $original_alias = $alias;
     for ($i = 0; _pathauto_alias_exists(drupal_substr($alias, 0, $maxlength - strlen($i)) . $separator . $i, $src, $language); $i++) {
     }
     // Make room for the sequence number
     $alias = drupal_substr($alias, 0, $maxlength - strlen($i));
     $alias = $alias . $separator . $i;
+    // If verbose is on, alert the user why this happened
+    if ($verbose) {
+      drupal_set_message(t('The automatically generated alias %original_alias conflicted with an existing alias.  Alias changed to %alias.', 
+        array('%original_alias' => $original_alias, '%alias' => $alias)));
+    }
   }
 
   // If $pid is NULL, a new alias is created - otherwise, the existing
