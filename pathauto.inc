@@ -297,7 +297,7 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $t
     $alias = $alias . $separator . $i;
     // If verbose is on, alert the user why this happened
     if ($verbose) {
-      drupal_set_message(t('The automatically generated alias %original_alias conflicted with an existing alias.  Alias changed to %alias.', 
+      drupal_set_message(t('The automatically generated alias %original_alias conflicted with an existing alias. Alias changed to %alias.',
         array('%original_alias' => $original_alias, '%alias' => $alias)));
     }
   }
