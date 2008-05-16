@@ -246,7 +246,7 @@ function pathauto_form_alter(&$form, $form_state, $form_id) {
       $language = isset($form['language']['#value']) ? $form['language']['#value'] : $form['language']['#default_value'];
       $pattern = variable_get('pathauto_node_'. $form['type']['#value'] .'_'. $language .'_pattern', FALSE);
     }
-    else {
+    if (!trim($pattern)) {
       $pattern = variable_get('pathauto_node_'. $form['type']['#value'] .'_pattern', FALSE);
     }
     if (!trim($pattern)) {
