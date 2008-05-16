@@ -47,9 +47,36 @@ function taxonomy_pathauto($op) {
  * Generate aliases for all categories without aliases
  */
 function taxonomy_pathauto_bulkupdate() {
-  $forum_vid = variable_get('forum_nav_vocabulary', '');
-  $query = "SELECT tid, vid, name, src, dst FROM {term_data} LEFT JOIN {url_alias} ON CONCAT('taxonomy/term/', CAST(tid AS CHAR)) = src WHERE src IS NULL AND vid <> %d";
-  $result = db_query_range($query, $forum_vid, 0, variable_get('pathauto_max_bulk_update', 50));
+  // From all node types, only attempt to update those with patterns
+  $pattern_vids = array();
+  $vid_where = '';
+  foreach (taxonomy_get_vocabularies() as $vid => $info) {
+    $pattern = '';
+    $pattern = variable_get('pathauto_taxonomy_'. $vid .'_pattern', '');
+
+    // If it's not set, check the default
+    // TODO - if there's a default we shouldn't do this crazy where statement because all vocabs get aliases
+    // TODO - special casing to exclude the forum vid (and the images vid and...?)
+    if (!trim($pattern)) {
+      $pattern = variable_get('pathauto_taxonomy_pattern', '');
+    }
+    if (trim($pattern)) {
+      $pattern_vids[] = $vid;
+      if (!trim($vid_where)) {
+        $vid_where = " AND (vid = '%s' ";
+      }
+      else {
+        $vid_where .= " OR vid = '%s'";
+      }
+    }
+  }
+  $vid_where .= ')';
+
+  // Exclude the forums and join all the args into one array so they can be passed to db_query
+  $forum_vid[] = variable_get('forum_nav_vocabulary', '');
+  $query_args = array_merge($forum_vid, $pattern_vids);
+  $query = "SELECT tid, vid, name, src, dst FROM {term_data} LEFT JOIN {url_alias} ON CONCAT('taxonomy/term/', CAST(tid AS CHAR)) = src WHERE src IS NULL AND vid != %d ". $vid_where;
+  $result = db_query_range($query, $query_args, 0, variable_get('pathauto_max_bulk_update', 50));
 
   $count = 0;
   $placeholders = array();
