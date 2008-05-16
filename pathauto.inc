@@ -160,8 +160,8 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
   // Get rid of words that are on the ignore list
   $ignore_re = "\b". preg_replace('/,/', "\b|\b", variable_get('pathauto_ignore_words', $ignore_words)) ."\b";
 
-  if (function_exists('mb_ereg_replace')) {
-    $output = mb_ereg_replace("/$ignore_re/i", '', $output);
+  if (function_exists('mb_eregi_replace')) {
+    $output = mb_eregi_replace("/$ignore_re/i", '', $output);
   }
   else {
     $output = preg_replace("/$ignore_re/i", '', $output);
