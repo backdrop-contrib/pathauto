@@ -205,11 +205,11 @@ function pathauto_nodeapi(&$node, $op, $teaser, $page) {
         if (!empty($node->language)) {
           $pattern = variable_get('pathauto_node_'. $node->type .'_'. $node->language .'_pattern', FALSE);
         }
-        else {
-          $pattern = variable_get('pathauto_node_'. $node->type .'_pattern', FALSE);
-        }
         if (!trim($pattern)) {
-          $pattern = variable_get('pathauto_node_pattern', FALSE);
+          $pattern = variable_get('pathauto_node_'. $node->type .'_pattern', FALSE);
+          if (!trim($pattern)) {
+            $pattern = variable_get('pathauto_node_pattern', FALSE);
+          }
         }
         // Only do work if there's a pattern
         if ($pattern) {
@@ -248,11 +248,10 @@ function pathauto_form_alter(&$form, $form_state, $form_id) {
     }
     if (!trim($pattern)) {
       $pattern = variable_get('pathauto_node_'. $form['type']['#value'] .'_pattern', FALSE);
+      if (!trim($pattern)) {
+        $pattern = variable_get('pathauto_node_pattern', FALSE);
+      }
     }
-    if (!trim($pattern)) {
-      $pattern = variable_get('pathauto_node_pattern', FALSE);
-    }
-
     // If there is a pattern AND the user is allowed to create aliases AND the path textbox is present on this form
     if ($pattern && user_access('create url aliases') && isset($form['path']['path'])) {
       $output = t('An alias will be generated for you. If you wish to create your own alias below, untick this option.');
