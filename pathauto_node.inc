@@ -48,7 +48,7 @@ function node_pathauto_bulkupdate() {
 
   // From all node types, only attempt to update those with patterns
   $pattern_types = array();
-  
+
   // If there's a default pattern we assume all types might be updated.
   if (trim(variable_get('pathauto_node_pattern', ''))) {
     $pattern_types = array_keys(node_get_types('names'));
@@ -73,7 +73,7 @@ function node_pathauto_bulkupdate() {
 
   $count = 0;
   if (count($pattern_types)) {
-    $query = "SELECT n.nid, n.vid, n.type, n.title, n.uid, n.created, alias.src, alias.dst, n.language FROM {node} n LEFT JOIN {url_alias} alias ON CONCAT('node/', n.nid) = alias.src WHERE alias.src IS NULL AND n.type IN (". db_placeholders($pattern_types, 'varchar') .')';
+    $query = "SELECT n.nid, n.vid, n.type, n.title, n.uid, n.created, n.language, alias.src, alias.dst FROM {node} n LEFT JOIN {url_alias} alias ON CONCAT('node/', CAST(n.nid AS CHAR)) = alias.src WHERE alias.src IS NULL AND n.type IN (". db_placeholders($pattern_types, 'varchar') .')';
     $result = db_query_range($query, $pattern_types, 0, variable_get('pathauto_max_bulk_update', 50));
 
     $placeholders = array();
