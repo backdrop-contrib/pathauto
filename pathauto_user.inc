@@ -2,7 +2,14 @@
 // $Id$
 
 /**
- * Implementation of hook_pathauto() for user aliases
+ * @file
+ * User hooked into Pathauto. (TODO: Better description!)
+ *
+ * @ingroup pathauto
+ */
+
+/**
+ * Implementation of hook_pathauto() for user aliases.
  */
 function user_pathauto($op) {
   switch ($op) {
@@ -31,7 +38,7 @@ function user_pathauto($op) {
 }
 
 /**
- * Implementation of hook_pathauto() for blog aliases
+ * Implementation of hook_pathauto() for blog aliases.
  */
 function blog_pathauto($op) {
   switch ($op) {
@@ -56,7 +63,7 @@ function blog_pathauto($op) {
 }
 
 /**
- * Implementation of hook_pathauto() for user-tracker aliases
+ * Implementation of hook_pathauto() for user-tracker aliases.
  */
 function tracker_pathauto($op) {
   switch ($op) {
@@ -81,7 +88,7 @@ function tracker_pathauto($op) {
 }
 
 /**
- * Bulk generate aliases for all users without aliases
+ * Bulk generate aliases for all users without aliases.
  */
 function user_pathauto_bulkupdate() {
   $query = "SELECT uid, name, src, dst FROM {users} LEFT JOIN {url_alias} ON CONCAT('user/', CAST(uid AS CHAR)) = src WHERE uid > 0 AND src IS NULL";
@@ -102,9 +109,8 @@ function user_pathauto_bulkupdate() {
     'Bulk generation of users completed, @count aliases generated.'));
 }
 
-
 /**
- * Bulk generate aliases for all blogs without aliases
+ * Bulk generate aliases for all blogs without aliases.
  */
 function blog_pathauto_bulkupdate() {
   $query = "SELECT uid, name, src, dst FROM {users} LEFT JOIN {url_alias} ON CONCAT('blog/', CAST(uid AS CHAR)) = src WHERE uid > 0 AND src IS NULL";
@@ -126,7 +132,7 @@ function blog_pathauto_bulkupdate() {
 }
 
 /**
- * Bulk generate aliases for user trackers without aliases
+ * Bulk generate aliases for user trackers without aliases.
  */
 function tracker_pathauto_bulkupdate() {
   // We do the double CONCAT because Pgsql8.1 doesn't support more than three arguments to CONCAT

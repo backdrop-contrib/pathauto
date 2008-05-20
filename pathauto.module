@@ -2,7 +2,24 @@
 // $Id$
 
 /**
- * Implementation of hook_help
+ * @defgroup pathauto Pathauto: Automatically generates aliases for content
+ *
+ * The Pathauto module automatically generates path aliases for various kinds of
+ * content (nodes, categories, users) without requiring the user to manually
+ * specify the path alias. This allows you to get aliases like
+ * /category/my-node-title.html instead of /node/123. The aliases are based upon
+ * a "pattern" system which the administrator can control.
+ */
+
+/**
+ * @file
+ * TODO: Describe this the main file of Pathauto.
+ *
+ * @ingroup pathauto
+ */
+
+/**
+ * Implementation of hook_help().
  */
 function pathauto_help($path, $arg) {
   switch ($path) {
@@ -26,14 +43,14 @@ function pathauto_help($path, $arg) {
 }
 
 /**
- * Implementation of hook_perm
+ * Implementation of hook_perm().
  */
 function pathauto_perm() {
   return array('administer pathauto', 'notify of path changes');
 }
 
-/*
- * Implementation of hook_menu
+/**
+ * Implementation of hook_menu().
  */
 function pathauto_menu() {
   $items['admin/build/path/pathauto'] = array(
@@ -158,6 +175,9 @@ function pathauto_token_list($type = 'all') {
   return $tokens;
 }
 
+/**
+ * TODO: What does this do? One-line description.
+ */
 function pathauto_path_alias_types() {
   $objects = array('user/' => t('users'), 'node/' => t('content'));
   if (module_exists('blog')) {
@@ -292,6 +312,9 @@ function pathauto_node_operations() {
 
 /**
  * Callback function for updating node aliases.
+ *
+ * @param $nodes
+ *   TODO: What exactly is this and what is being done with it?
  */
 function pathauto_node_operations_update($nodes) {
   foreach ($nodes as $nid) {

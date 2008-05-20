@@ -1,8 +1,15 @@
 <?php
 // $Id$
 
-/*
- * Implementation of hook_pathauto()
+/**
+ * @file
+ * Node hooked into Pathauto. (TODO: Better description!)
+ *
+ * @ingroup pathauto
+ */
+
+/**
+ * Implementation of hook_pathauto().
  */
 function node_pathauto($op) {
   switch ($op) {

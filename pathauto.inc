@@ -2,6 +2,13 @@
 // $Id$
 
 /**
+ * @file
+ * Miscellaneous functions for Pathauto
+ *
+ * @ingroup pathauto
+ */
+
+/**
  * Copied from search.module's PREG_CLASS_SEARCH_EXCLUDE
  *
  * Matches Unicode character classes to exclude from the search index.
@@ -45,16 +52,17 @@ define('PREG_CLASS_ALNUM',
 '\x{fdfc}-\x{fe6b}\x{feff}-\x{ff0f}\x{ff1a}-\x{ff20}\x{ff3b}-\x{ff40}\x{ff5b}-'.
 '\x{ff65}\x{ff70}\x{ff9e}\x{ff9f}\x{ffe0}-\x{fffd}');
 
-
 /**
- * Check to see if there is already an alias pointing to a different item
+ * Check to see if there is already an alias pointing to a different item.
  *
  * @param $alias
  *   A string alias (i.e. dst).
  * @param $src
  *   A string that is the internal path.
- * @param $lang
+ * @param $language
  *   A string indicating the path's language.
+ * @return
+ *   TRUE if an alias exists, FALSE if not.
  */
 function _pathauto_alias_exists($alias, $src, $language = '') {
   $alias_pid = db_result(db_query_range("SELECT pid FROM {url_alias} WHERE dst = '%s' AND src <> '%s' AND language = '%s'", array($alias, $src, $language), 0, 1));
@@ -74,6 +82,9 @@ function _pathauto_alias_exists($alias, $src, $language = '') {
  *
  * @param string $src
  *   A string that is the internal path
+ * @return
+ *    An array with the keys "pid" and "old_alias" containing the "pid" and old
+ *    "alias", respectively, of the old alias.
  */
 function _pathauto_existing_alias_data($src) {
   $output = array(
@@ -107,6 +118,10 @@ function _pathauto_existing_alias_data($src) {
  *
  * @param $string
  *   A string to clean.
+ * @param $clean_slash
+ *   Whether to clean slashes from the given string.
+ * @return
+ *   The cleaned string.
  */
 function pathauto_cleanstring($string, $clean_slash = TRUE) {
   // Default words to ignore
@@ -196,7 +211,7 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
 }
 
 /**
- * Apply patterns to create an alias
+ * Apply patterns to create an alias.
  *
  * @param $module
  *   The name of your module (e.g., 'node')
@@ -216,7 +231,7 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
  * @param $language
  *   A string specify the path's language.
  * @return
- *   The alias that was created
+ *   The alias that was created.
  */
 function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $type = NULL, $language = '') {
   if (($op != 'bulkupdate') and variable_get('pathauto_verbose', FALSE) && user_access('notify of path changes')) {
@@ -426,8 +441,10 @@ function pathauto_get_placeholders($type, $object) {
 /**
  * Cleans tokens so they are URL friendly
  *
- * @param $values
+ * @param $full
  *   An array of token values that need to be "cleaned" for use in the URL.
+ * @return
+ *   TODO: $full->values == ?
  */
 function pathauto_clean_token_values($full) {
   foreach ($full->values as $key => $value) {
@@ -443,9 +460,15 @@ function pathauto_clean_token_values($full) {
 }
 
 /**
- * Returns an array of arrays for punctuation values keyed by a name
- *   including the value and a textual description
- *   Can and should be expanded to include "all" non text punctuation values
+ * Returns an array of arrays for punctuation values.
+ * 
+ * Returns an array of arrays for punctuation values keyed by a name, including
+ * the value and a textual description.
+ * Can and should be expanded to include "all" non text punctuation values.
+ *
+ * @return
+ *   An array of arrays for punctuation values keyed by a name, including the
+ *   value and a textual description.
  */
 function pathauto_punctuation_chars() {
   $punctuation = array();

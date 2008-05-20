@@ -2,7 +2,10 @@
 // $Id$
 
 /**
- * @file Provides install, updated, and uninstall functions for pathauto.
+ * @file
+ * Provides install, update, and uninstall functions for Pathauto.
+ *
+ * @ingroup pathauto
  */
 
 /**

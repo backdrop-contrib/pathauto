@@ -4,6 +4,8 @@
 /**
  * @file
  * Functions for Pathauto's admin pages.
+ *
+ * @ingroup pathauto
  */
 
 /**
@@ -291,7 +293,13 @@ function pathauto_admin_settings() {
 /**
  * Helper function to see if they are using all -raw tokens available
  *
- * Returns a status flag if there is an error or not
+ * @param $pattern
+ *   TODO: What does this do?
+ * @param $type
+ *   A flag indicating the class of substitution tokens to use.
+ * @return
+ *   A status flag, telling whether there is an error or not.
+ * @see function token_get_list for more information on the $type parameter.
  */
 function _pathauto_check_pattern($pattern, $type) {
   // Hold items we've warned about so we only warn once per token
@@ -342,6 +350,9 @@ function _pathauto_check_pattern($pattern, $type) {
   return $return;
 }
 
+/**
+ * Validate Pathauto's admin settings form data.
+ */
 function pathauto_admin_settings_validate($form, &$form_state) {
   // Validate that the separator is not set to be removed per http://drupal.org/node/184119
   // This isn't really all that bad so warn, but still allow them to save the value.
