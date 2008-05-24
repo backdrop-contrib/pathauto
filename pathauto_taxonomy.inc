@@ -75,7 +75,7 @@ function taxonomy_pathauto_bulkupdate() {
   // Exclude the forums and join all the args into one array so they can be passed to db_query
   $forum_vid[] = variable_get('forum_nav_vocabulary', '');
   $query_args = array_merge($forum_vid, $pattern_vids);
-  $query = "SELECT tid, vid, name, src, dst FROM {term_data} LEFT JOIN {url_alias} ON CONCAT('taxonomy/term/', CAST(tid AS CHAR)) = src WHERE src IS NULL AND vid != %d ". $vid_where;
+  $query = "SELECT tid, vid, name, src, dst FROM {term_data} LEFT JOIN {url_alias} ON CONCAT('taxonomy/term/', CAST(tid AS CHAR)) = src WHERE src IS NULL AND vid <> %d ". $vid_where;
   $result = db_query_range($query, $query_args, 0, variable_get('pathauto_max_bulk_update', 50));
 
   $count = 0;
