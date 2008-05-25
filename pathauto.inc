@@ -305,7 +305,7 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $t
   $separator = variable_get('pathauto_separator', '-');
   if (_pathauto_alias_exists($alias, $src, $language)) {
     $original_alias = $alias;
-    for ($i = 0; _pathauto_alias_exists(drupal_substr($alias, 0, $maxlength - drupal_strlen($i)) . $separator . $i, $src, $language); $i++) {
+    for ($i = 0; _pathauto_alias_exists(drupal_substr($alias, 0, $maxlength - strlen($i)) . $separator . $i, $src, $language); $i++) {
     }
     // Make room for the sequence number
     $alias = drupal_substr($alias, 0, $maxlength - drupal_strlen($i));
