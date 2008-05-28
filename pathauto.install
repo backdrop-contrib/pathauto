@@ -3,7 +3,7 @@
 
 /**
  * @file
- * Provides install, update, and uninstall functions for Pathauto.
+ * Install, update, and uninstall functions for Pathauto.
  *
  * @ingroup pathauto
  */
@@ -45,7 +45,7 @@ function pathauto_install() {
   variable_set('pathauto_user_pattern', 'users/[user-raw]');
   variable_set('pathauto_user_supportsfeeds', NULL);
   variable_set('pathauto_verbose', FALSE);
-  
+
   // Make sure we "replace hyphen with separator" by default
   variable_set('pathauto_punctuation_hyphen', 1); // 1 is replace
 
@@ -55,7 +55,7 @@ function pathauto_install() {
   // Clear the cache to get these to take effect.
   cache_clear_all();
 }
- 
+
 /**
  * Implementation of hook_uninstall().
  */
@@ -66,7 +66,7 @@ function pathauto_uninstall() {
 }
 
 /**
- * Set the weight a little heavier to allow taxonomy to do its work
+ * Set the weight a little heavier to allow taxonomy to do its work.
  */
 function pathauto_update_1() {
   $ret = array();
@@ -77,11 +77,11 @@ function pathauto_update_1() {
 /**
  * pathauto_update_4 was a backport of a feature which is in core of Drupal 6
  * hence it is removed from the 6.x branch even though the goal is to support
- * Pathauto 5.x-1.x -> 6.x-2.x upgrades
+ * Pathauto 5.x-1.x -> 6.x-2.x upgrades.
  */
 
 /**
- * Delete the pathauto_node_supportsfeeds
+ * Delete the pathauto_node_supportsfeeds.
  */
 function pathauto_update_3() {
   // Do nothing, this update was a mistake
@@ -89,7 +89,7 @@ function pathauto_update_3() {
 }
 
 /**
- * New style naming for the punctuation chars
+ * New style naming for the punctuation chars.
  */
 function pathauto_update_4() {
   variable_set('pathauto_punctuation_quotes', variable_get('pathauto_quotes', 0));
@@ -98,7 +98,7 @@ function pathauto_update_4() {
 }
 
 /**
- * Remove the url_alias_extra table which wasn't used
+ * Remove the url_alias_extra table which wasn't used.
  */
 function pathauto_update_7() {
   $ret = array();

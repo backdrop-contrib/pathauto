@@ -3,7 +3,7 @@
 
 /**
  * @file
- * User hooked into Pathauto. (TODO: Better description!)
+ * Hook implementations for user module integration.
  *
  * @ingroup pathauto
  */

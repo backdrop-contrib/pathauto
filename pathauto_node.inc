@@ -3,7 +3,7 @@
 
 /**
  * @file
- * Node hooked into Pathauto. (TODO: Better description!)
+ * Hook implementations for node module integration.
  *
  * @ingroup pathauto
  */

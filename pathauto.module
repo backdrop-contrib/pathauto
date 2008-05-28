@@ -13,7 +13,7 @@
 
 /**
  * @file
- * TODO: Describe this the main file of Pathauto.
+ * Main file for the Pathauto module, which automatically generates aliases for content.
  *
  * @ingroup pathauto
  */
@@ -63,7 +63,7 @@ function pathauto_menu() {
     'weight' => 10,
     'file' => 'pathauto.admin.inc',
   );
-  
+
   $items['admin/build/path/delete_bulk'] = array(
     'title' => 'Delete aliases',
     'page callback' => 'drupal_get_form',
@@ -77,7 +77,7 @@ function pathauto_menu() {
 }
 
 /**
- * Include all pathauto include files.
+ * Include all Pathauto include files.
  */
 function _pathauto_include() {
   $pathauto_path = drupal_get_path('module', 'pathauto');
@@ -88,7 +88,7 @@ function _pathauto_include() {
 }
 
 /**
- * Implementation of hook_token_values() for Pathauto specific tokens
+ * Implementation of hook_token_values() for Pathauto specific tokens.
  */
 function pathauto_token_values($type, $object = NULL) {
   if (module_exists('taxonomy')) {
@@ -133,7 +133,6 @@ function pathauto_token_values($type, $object = NULL) {
             }
             $values[$label .'path'] = $catpath .'/'. check_plain($category->name);
             $values[$label .'path-raw'] = $catpath_raw .'/'. $category->name;
-            
             $values[$label .'alias'] = drupal_get_path_alias('taxonomy/term/'. $category->tid);
             if (!strncasecmp($values[$label .'alias'], 'taxonomy', 8)) {
               $values[$label .'alias'] = check_plain($category->name);
@@ -151,7 +150,7 @@ function pathauto_token_values($type, $object = NULL) {
 }
 
 /**
- * Implementation of hook_token_list() for Pathauto specific tokens
+ * Implementation of hook_token_list() for Pathauto specific tokens.
  */
 function pathauto_token_list($type = 'all') {
   $tokens = array();
@@ -176,7 +175,9 @@ function pathauto_token_list($type = 'all') {
 }
 
 /**
- * TODO: What does this do? One-line description.
+ * Implementation of hook_path_alias_types().
+ *
+ * Used primarily by the bulk delete form.
  */
 function pathauto_path_alias_types() {
   $objects = array('user/' => t('users'), 'node/' => t('content'));
@@ -314,7 +315,7 @@ function pathauto_node_operations() {
  * Callback function for updating node aliases.
  *
  * @param $nodes
- *   TODO: What exactly is this and what is being done with it?
+ *   Array of node nid's.
  */
 function pathauto_node_operations_update($nodes) {
   foreach ($nodes as $nid) {
@@ -326,6 +327,7 @@ function pathauto_node_operations_update($nodes) {
 
 //==============================================================================
 // Taxonomy related functions.
+
 /**
  * Implementation of hook_taxonomy().
  */
@@ -369,7 +371,7 @@ function pathauto_taxonomy($op, $type, $object = NULL) {
 // User related functions.
 
 /**
- * Implementation of hook_user() for users, trackers, and blogs
+ * Implementation of hook_user() for users, trackers, and blogs.
  */
 function pathauto_user($op, &$edit, &$user, $category = FALSE) {
   _pathauto_include();

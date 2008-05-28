@@ -1,8 +1,15 @@
 <?php
 // $Id$
 
-/*
- * Implementation of hook_pathauto() for taxonomy module
+/**
+ * @file
+ * Hook implementations for taxonomy module integration.
+ *
+ * @ingroup pathauto
+ */
+
+/**
+ * Implementation of hook_pathauto() for taxonomy module.
  */
 function taxonomy_pathauto($op) {
   switch ($op) {
@@ -44,7 +51,7 @@ function taxonomy_pathauto($op) {
 }
 
 /**
- * Generate aliases for all categories without aliases
+ * Generate aliases for all categories without aliases.
  */
 function taxonomy_pathauto_bulkupdate() {
   // From all node types, only attempt to update those with patterns
@@ -90,9 +97,10 @@ function taxonomy_pathauto_bulkupdate() {
 }
 
 /**
- * Function to create aliases for taxonomy objects
+ * Create aliases for taxonomy objects.
  *
- * @param object $category a taxonomy object
+ * @param $category
+ *   A taxonomy object.
  */
 function _taxonomy_pathauto_alias($category, $op) {
   $count = 0;
@@ -117,8 +125,8 @@ function _taxonomy_pathauto_alias($category, $op) {
 }
 
 
-/*
- * Implementation of hook_pathauto() for forum module
+/**
+ * Implementation of hook_pathauto() for forum module.
  */
 function forum_pathauto($op) {
   switch ($op) {
@@ -148,7 +156,7 @@ function forum_pathauto($op) {
 
 
 /**
- * Generate aliases for all forums and forum containers without aliases
+ * Generate aliases for all forums and forum containers without aliases.
  */
 function forum_pathauto_bulkupdate() {
   $forum_vid = variable_get('forum_nav_vocabulary', '');

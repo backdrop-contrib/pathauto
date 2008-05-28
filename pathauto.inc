@@ -3,25 +3,25 @@
 
 /**
  * @file
- * Miscellaneous functions for Pathauto
+ * Miscellaneous functions for Pathauto.
  *
  * @ingroup pathauto
  */
 
 /**
- * Copied from search.module's PREG_CLASS_SEARCH_EXCLUDE
- *
- * Matches Unicode character classes to exclude from the search index.
+ * Matches Unicode character classes.
  *
  * See: http://www.unicode.org/Public/UNIDATA/UCD.html#General_Category_Values
  *
  * The index only contains the following character classes:
- * Lu     Letter, Uppercase
- * Ll     Letter, Lowercase
- * Lt     Letter, Titlecase
- * Lo     Letter, Other
- * Nd     Number, Decimal Digit
- * No     Number, Other
+ *   Lu  Letter, Uppercase
+ *   Ll  Letter, Lowercase
+ *   Lt  Letter, Titlecase
+ *   Lo  Letter, Other
+ *   Nd  Number, Decimal Digit
+ *   No  Number, Other
+ *
+ * Copied from search.module's PREG_CLASS_SEARCH_EXCLUDE.
  */
 define('PREG_CLASS_ALNUM',
 '\x{0}-\x{2f}\x{3a}-\x{40}\x{5b}-\x{60}\x{7b}-\x{bf}\x{d7}\x{f7}\x{2b0}-'.
@@ -78,13 +78,14 @@ function _pathauto_alias_exists($alias, $src, $language = '') {
 }
 
 /**
- * Returns old alias and pid if there is already an alias pointing to a different item
+ * Returns old alias and pid if there is already an alias
+ * pointing to a different item.
  *
- * @param string $src
- *   A string that is the internal path
+ * @param $src
+ *   A string that is the internal path.
  * @return
- *    An array with the keys "pid" and "old_alias" containing the "pid" and old
- *    "alias", respectively, of the old alias.
+ *   An array with the keys "pid" and "old_alias" containing
+ *   the "pid" and old "alias", respectively, of the old alias.
  */
 function _pathauto_existing_alias_data($src) {
   $output = array(
@@ -113,8 +114,9 @@ function _pathauto_existing_alias_data($src) {
 }
 
 /**
- * Clean up a string value provided by a module, resulting in a
- * string containing only alphanumerics and separators
+ * Clean up a string value provided by a module.
+ *
+ * Resulting string contains only alphanumerics and separators.
  *
  * @param $string
  *   A string to clean.
@@ -202,7 +204,6 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
 
   }
 
-
   // Enforce the maximum component length
   $maxlength = min(variable_get('pathauto_max_component_length', 100), 128);
   $output = drupal_substr($output, 0, $maxlength);
@@ -214,20 +215,20 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
  * Apply patterns to create an alias.
  *
  * @param $module
- *   The name of your module (e.g., 'node')
+ *   The name of your module (e.g., 'node').
  * @param $op
- *   Operation being performed on the content being aliased ('insert',
- *   'update', or 'bulkupdate')
+ *   Operation being performed on the content being aliased
+ *   ('insert', 'update', or 'bulkupdate').
  * @param $placeholders
  *   An array whose keys consist of the translated placeholders
  *   which appear in patterns (e.g., t('[title]')) and values are the
- *   actual values to be substituted into the pattern (e.g., $node->title)
+ *   actual values to be substituted into the pattern (e.g., $node->title).
  * @param $src
- *   The "real" URI of the content to be aliased (e.g., "node/$node->nid")
+ *   The "real" URI of the content to be aliased (e.g., "node/$node->nid").
  * @param $type
- *   For modules which provided patternitems in hook_pathauto(),
- *   the relevant identifier for the specific item to be aliased (e.g.,
- *   $node->type)
+ *   For modules which provided pattern items in hook_pathauto(),
+ *   the relevant identifier for the specific item to be aliased
+ *   (e.g., $node->type).
  * @param $language
  *   A string specify the path's language.
  * @return
@@ -341,12 +342,12 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $t
 }
 
 /**
- * Verifies if the given path is a valid menu callback.
+ * Verify if the given path is a valid menu callback.
+ *
  * Taken from menu_execute_active_handler().
  *
  * @param $path
  *   A string containing a relative path.
- *
  * @return
  *   TRUE if the path already exists.
  */
@@ -359,7 +360,7 @@ function _pathauto_path_is_callback($path) {
 }
 
 /**
- * Private function for pathauto to create an alias
+ * Private function for Pathauto to create an alias.
  *
  * @param $src
  *   The internal path.
@@ -418,13 +419,13 @@ function _pathauto_set_alias($src, $dst, $entity_type, $entity_id, $pid = NULL, 
 }
 
 /**
- * Generalized function to get tokens across all Pathauto types
+ * Generalized function to get tokens across all Pathauto types.
  *
  * @param $object
  *   A user, node, or category object.
- *
  * @return
- *   tokens for that object formatted in the way that Pathauto expects to see them.
+ *   Tokens for that object formatted in the way that
+ *   Pathauto expects to see them.
  */
 function pathauto_get_placeholders($type, $object) {
   if (function_exists('token_get_values')) {
@@ -439,12 +440,12 @@ function pathauto_get_placeholders($type, $object) {
 }
 
 /**
- * Cleans tokens so they are URL friendly
+ * Clean tokens so they are URL friendly.
  *
  * @param $full
  *   An array of token values that need to be "cleaned" for use in the URL.
  * @return
- *   TODO: $full->values == ?
+ *   An array of the cleaned tokens.
  */
 function pathauto_clean_token_values($full) {
   foreach ($full->values as $key => $value) {
@@ -460,8 +461,8 @@ function pathauto_clean_token_values($full) {
 }
 
 /**
- * Returns an array of arrays for punctuation values.
- * 
+ * Return an array of arrays for punctuation values.
+ *
  * Returns an array of arrays for punctuation values keyed by a name, including
  * the value and a textual description.
  * Can and should be expanded to include "all" non text punctuation values.

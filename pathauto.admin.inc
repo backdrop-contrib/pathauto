@@ -3,13 +3,16 @@
 
 /**
  * @file
- * Functions for Pathauto's admin pages.
+ * Admin page callbacks for the Pathauto module.
  *
  * @ingroup pathauto
  */
 
 /**
- * Callback for admin settings page.
+ * Form builder; Configure the Pathauto system.
+ *
+ * @ingroup forms
+ * @see system_settings_form()
  */
 function pathauto_admin_settings() {
   _pathauto_include();
@@ -60,7 +63,7 @@ function pathauto_admin_settings() {
     '#default_value' => variable_get('pathauto_case', 1),
     '#options' => array(t('Leave case the same as source token values.'), t('Change to lower case')),
   );
-    
+
   $form['general']['pathauto_max_length'] = array(
     '#type' => 'textfield',
     '#title' => t('Maximum alias length'),
@@ -291,15 +294,19 @@ function pathauto_admin_settings() {
 }
 
 /**
- * Helper function to see if they are using all -raw tokens available
+ * Helper function for pathauto_admin_settings().
+ *
+ * See if they are using all -raw tokens available
+ * and if all the tokens are valid in the given context.
  *
  * @param $pattern
- *   TODO: What does this do?
+ *   A string containing the pattern to be tested.
  * @param $type
  *   A flag indicating the class of substitution tokens to use.
  * @return
  *   A status flag, telling whether there is an error or not.
- * @see function token_get_list for more information on the $type parameter.
+ * @see token_get_list()
+ *   For more information on the $type parameter.
  */
 function _pathauto_check_pattern($pattern, $type) {
   // Hold items we've warned about so we only warn once per token
@@ -351,7 +358,7 @@ function _pathauto_check_pattern($pattern, $type) {
 }
 
 /**
- * Validate Pathauto's admin settings form data.
+ * Validate pathauto_admin_settings form submissions.
  */
 function pathauto_admin_settings_validate($form, &$form_state) {
   // Validate that the separator is not set to be removed per http://drupal.org/node/184119
@@ -369,7 +376,7 @@ function pathauto_admin_settings_validate($form, &$form_state) {
 }
 
 /**
- * Menu callback: select certain alias types to delete
+ * Menu callback; select certain alias types to delete.
  */
 function pathauto_admin_delete() {
   /* TODO:
@@ -424,7 +431,7 @@ function pathauto_admin_delete() {
 }
 
 /**
- * Submit handler for the bulk delete form
+ * Process pathauto_admin_delete form submissions.
  */
 function pathauto_admin_delete_submit($form, &$form_state) {
   foreach ($form_state['values'] as $key => $value) {
