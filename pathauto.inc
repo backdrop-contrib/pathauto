@@ -178,7 +178,7 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
   $ignore_re = "\b". preg_replace('/,/', "\b|\b", variable_get('pathauto_ignore_words', $ignore_words)) ."\b";
 
   if (function_exists('mb_eregi_replace')) {
-    $output = mb_eregi_replace("/$ignore_re/i", '', $output);
+    $output = mb_eregi_replace($ignore_re, '', $output);
   }
   else {
     $output = preg_replace("/$ignore_re/i", '', $output);
