@@ -124,7 +124,6 @@ function _taxonomy_pathauto_alias($category, $op) {
   return $count;
 }
 
-
 /**
  * Implementation of hook_pathauto() for forum module.
  */
@@ -153,7 +152,6 @@ function forum_pathauto($op) {
       break;
   }
 }
-
 
 /**
  * Generate aliases for all forums and forum containers without aliases.

@@ -243,7 +243,6 @@ function pathauto_admin_settings() {
       '#value' => $doc,
     );
 
-
     // If the module supports bulk updates, offer the update action here
     if ($settings->bulkname) {
       $variable = 'pathauto_'. $module .'_bulkupdate';
