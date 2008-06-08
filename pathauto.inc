@@ -245,9 +245,7 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $t
   // Retrieve and apply the pattern for this content type
   $pattern = '';
   if (!empty($type)) {
-    if (!empty($language)) {
-      $pattern = trim(variable_get('pathauto_'. $module .'_'. $type .'_'. $language .'_pattern', ''));
-    }
+    $pattern = trim(variable_get('pathauto_'. $module .'_'. $type .'_'. $language .'_pattern', ''));
     if (!$pattern) {
       $pattern = trim(variable_get('pathauto_'. $module .'_'. $type .'_pattern', ''));
     }

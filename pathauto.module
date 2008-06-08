@@ -223,7 +223,8 @@ function pathauto_nodeapi(&$node, $op, $teaser, $page) {
       case 'insert':
       case 'update':
         // Get the specific pattern or the default
-        if (!empty($node->language)) {
+        $pattern = FALSE;
+        if (variable_get('language_content_type_'. $node->type, 0)) {
           $pattern = variable_get('pathauto_node_'. $node->type .'_'. $node->language .'_pattern', FALSE);
         }
         if (!trim($pattern)) {

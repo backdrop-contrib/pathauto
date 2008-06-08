@@ -33,13 +33,26 @@ function node_pathauto($op) {
       }
       $settings['supportsfeeds'] = 'feed';
 
-      $languages = module_exists('locale') ? locale_language_list() : array();
+      if (module_exists('locale')) {
+        $languages = array('' => t('Language neutral')) + locale_language_list('name');
+      }
+      else {
+        $languages = array();
+      }
       foreach (node_get_types('names') as $node_type => $node_name) {
-        $fieldlabel = t('Pattern for all @node_type paths', array('@node_type' => $node_name));
-        $settings['patternitems'][$node_type] = $fieldlabel;
-        foreach ($languages as $lang_code => $lang_name) {
-          $fieldlabel = t('Pattern for all @node_type paths in @language', array('@node_type' => $node_name, '@language' => $lang_name));
-          $settings['patternitems'][$node_type .'_'. $lang_code] = $fieldlabel;
+        if (variable_get('language_content_type_'. $node_type, 0) && count($languages)) {
+          $settings['patternitems'][$node_type] = t('Default path pattern for @node_type (applies to all @node_type node types with blank patterns below)', array('@node_type' => $node_name));
+          foreach ($languages as $lang_code => $lang_name) {
+            if (!empty($lang_code)) {
+              $settings['patternitems'][$node_type .'_'. $lang_code] = t('Pattern for all @node_type paths in @language', array('@node_type' => $node_name, '@language' => $lang_name));
+            }
+            else {
+              $settings['patternitems'][$node_type .'_'. $lang_code] = t('Pattern for all language neutral @node_type paths', array('@node_type' => $node_name));
+            }
+          }
+        }
+        else {
+          $settings['patternitems'][$node_type] = t('Pattern for all @node_type paths', array('@node_type' => $node_name));
         }
       }
       return (object) $settings;
@@ -62,17 +75,22 @@ function node_pathauto_bulkupdate() {
   }
   else {
     // Check first for a node specific pattern...
-    $languages = module_exists('locale') ? locale_language_list() : array();
+    $languages = array();
+    if (module_exists('locale')) {
+      $languages = array('' => t('Language neutral')) + locale_language_list('name');
+    }
     foreach (array_keys(node_get_types('names')) as $type) {
       if (trim(variable_get('pathauto_node_'. $type .'_pattern', ''))) {
         $pattern_types[$type] = $type;
         continue;
       }
       // ...then for a node-language pattern.
-      foreach ($languages as $lang_code => $lang_name) {
-        if (trim(variable_get('pathauto_node_'. $type .'_'. $lang_code .'_pattern', ''))) {
-          $pattern_types[$type] = $type;
-          continue 2;
+      if (variable_get('language_content_type_'. $type, 0) && $languages) {
+        foreach ($languages as $lang_code => $lang_name) {
+          if (trim(variable_get('pathauto_node_'. $type .'_'. $lang_code .'_pattern', ''))) {
+            $pattern_types[$type] = $type;
+            continue 2;
+          }
         }
       }
     }
