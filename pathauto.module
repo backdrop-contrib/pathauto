@@ -263,6 +263,8 @@ function pathauto_nodeapi(&$node, $op, $teaser, $page) {
 function pathauto_form_alter(&$form, $form_state, $form_id) {
   // Only do this for node forms
   if (isset($form['#id']) && ($form['#id'] == 'node-form') && arg(0) == 'node') {
+    $node = $form['#node'];
+
     // See if there is a pathauto pattern or default applicable
     if (isset($form['language'])) {
       $language = isset($form['language']['#value']) ? $form['language']['#value'] : $form['language']['#default_value'];
@@ -287,14 +289,19 @@ function pathauto_form_alter(&$form, $form_state, $form_id) {
       $form['path']['pathauto_perform_alias'] = array(
         '#type' => 'checkbox',
         '#title' => t('Automatic alias'),
-        '#default_value' => TRUE,
+        '#default_value' => isset($node->pathauto_perform_alias) ? $node->pathauto_perform_alias : TRUE,
         '#description' => $output,
         '#weight' => -1,
       );
 
+      if (isset($node->pathauto_perform_alias) && isset($node->old_alias) 
+          && $node->pathauto_perform_alias && $node->path == '' && $node->old_alias != '') { 
+        $form['path']['path']['#default_value'] = $node->old_alias; 
+        $node->path = $node->old_alias; 
+      } 
+
       //For Pathauto to remember the old alias and prevent the Path-module from deleteing it when Pathauto wants to preserve it
-      $old_alias = $form['path']['path']['#default_value'];
-      $form['path']['old_alias'] = array('#type' => 'value', '#value' => $old_alias);
+      $form['path']['old_alias'] = array('#type' => 'value', '#value' => $node->path);
     }
   }
 }
