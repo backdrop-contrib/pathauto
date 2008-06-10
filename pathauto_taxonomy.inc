@@ -56,20 +56,18 @@ function taxonomy_pathauto($op) {
 function taxonomy_pathauto_bulkupdate() {
   // From all node types, only attempt to update those with patterns
   $pattern_vids = array();
-  $vid_where = '';
   foreach (taxonomy_get_vocabularies() as $vid => $info) {
-    $pattern = '';
-    $pattern = variable_get('pathauto_taxonomy_'. $vid .'_pattern', '');
+    $pattern = trim(variable_get('pathauto_taxonomy_'. $vid .'_pattern', ''));
 
     // If it's not set, check the default
     // TODO - if there's a default we shouldn't do this crazy where statement because all vocabs get aliases
     // TODO - special casing to exclude the forum vid (and the images vid and...?)
-    if (!trim($pattern)) {
-      $pattern = variable_get('pathauto_taxonomy_pattern', '');
+    if (empty($pattern)) {
+      $pattern = trim(variable_get('pathauto_taxonomy_pattern', ''));
     }
-    if (trim($pattern)) {
+    if (!empty($pattern)) {
       $pattern_vids[] = $vid;
-      if (!trim($vid_where)) {
+      if (empty($vid_where)) {
         $vid_where = " AND (vid = '%s' ";
       }
       else {

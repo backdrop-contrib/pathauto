@@ -195,12 +195,14 @@ function pathauto_admin_settings() {
         $description = $error;
       }
     }
-    $form[$module][$variable] = array('#type' => 'textfield',
+    $form[$module][$variable] = array(
+      '#type' => 'textfield',
       '#title' => $patterndescr,
       '#default_value' => variable_get($variable, $patterndefault),
       '#description' => $description,
       '#size' => 65,
-      '#maxlength' => 1280);
+      '#maxlength' => 1280,
+    );
 
     // If the module supports a set of specialized patterns, set
     // them up here

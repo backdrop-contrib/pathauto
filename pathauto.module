@@ -193,7 +193,6 @@ function pathauto_path_alias_types() {
   if (module_exists('forum')) {
     $objects['forum/%'] = t('forums');
   }
-
   return $objects;
 }
 
@@ -209,8 +208,8 @@ function pathauto_nodeapi(&$node, $op, $teaser, $page) {
     switch ($op) {
       case 'presave':
         // About to be saved (before insert/update)
-        if (isset($node->pathauto_perform_alias) && isset($node->old_alias)
-            && $node->pathauto_perform_alias && $node->path == '' && $node->old_alias != '') {
+        if (!empty($node->pathauto_perform_alias) && isset($node->old_alias)
+            && $node->path == '' && $node->old_alias != '') {
           /**
            * There was an old alias, but when pathauto_perform_alias was checked
            * the javascript disabled the textbox which led to an empty value being
@@ -223,14 +222,13 @@ function pathauto_nodeapi(&$node, $op, $teaser, $page) {
       case 'insert':
       case 'update':
         // Get the specific pattern or the default
-        $pattern = FALSE;
         if (variable_get('language_content_type_'. $node->type, 0)) {
-          $pattern = variable_get('pathauto_node_'. $node->type .'_'. $node->language .'_pattern', FALSE);
+          $pattern = trim(variable_get('pathauto_node_'. $node->type .'_'. $node->language .'_pattern', FALSE));
         }
-        if (!trim($pattern)) {
-          $pattern = variable_get('pathauto_node_'. $node->type .'_pattern', FALSE);
-          if (!trim($pattern)) {
-            $pattern = variable_get('pathauto_node_pattern', FALSE);
+        if (empty($pattern)) {
+          $pattern = trim(variable_get('pathauto_node_'. $node->type .'_pattern', FALSE));
+          if (empty($pattern)) {
+            $pattern = trim(variable_get('pathauto_node_pattern', FALSE));
           }
         }
         // Only do work if there's a pattern
@@ -268,16 +266,16 @@ function pathauto_form_alter(&$form, $form_state, $form_id) {
     // See if there is a pathauto pattern or default applicable
     if (isset($form['language'])) {
       $language = isset($form['language']['#value']) ? $form['language']['#value'] : $form['language']['#default_value'];
-      $pattern = variable_get('pathauto_node_'. $form['type']['#value'] .'_'. $language .'_pattern', FALSE);
+      $pattern = trim(variable_get('pathauto_node_'. $form['type']['#value'] .'_'. $language .'_pattern', ''));
     }
-    if (!trim($pattern)) {
-      $pattern = variable_get('pathauto_node_'. $form['type']['#value'] .'_pattern', FALSE);
-      if (!trim($pattern)) {
-        $pattern = variable_get('pathauto_node_pattern', FALSE);
+    if (empty($pattern)) {
+      $pattern = trim(variable_get('pathauto_node_'. $form['type']['#value'] .'_pattern', ''));
+      if (empty($pattern)) {
+        $pattern = trim(variable_get('pathauto_node_pattern', ''));
       }
     }
     // If there is a pattern AND the user is allowed to create aliases AND the path textbox is present on this form
-    if ($pattern && user_access('create url aliases') && isset($form['path']['path'])) {
+    if (!empty($pattern) && user_access('create url aliases') && isset($form['path']['path'])) {
       $output = t('An alias will be generated for you. If you wish to create your own alias below, untick this option.');
       if (user_access('administer pathauto')) {
         $output .= t(' To control the format of the generated aliases, see the <a href="@pathauto">Pathauto settings</a>.', array('@pathauto' => url('admin/build/path/pathauto')));
@@ -294,8 +292,7 @@ function pathauto_form_alter(&$form, $form_state, $form_id) {
         '#weight' => -1,
       );
 
-      if (isset($node->pathauto_perform_alias) && isset($node->old_alias)
-          && $node->pathauto_perform_alias && $node->path == '' && $node->old_alias != '') {
+      if (!empty($node->pathauto_perform_alias) && !empty($node->old_alias) && $node->path == '') {
         $form['path']['path']['#default_value'] = $node->old_alias;
         $node->path = $node->old_alias;
       }
@@ -396,7 +393,7 @@ function pathauto_user($op, &$edit, &$user, $category = FALSE) {
         if (module_exists('blog')) {
           $new_user = $user;
           if ($category == 'account') {
-            $new_user->roles = isset($edit['roles']) ? $edit['roles']: array();
+            $new_user->roles = isset($edit['roles']) ? $edit['roles'] : array();
             $new_user->roles[DRUPAL_AUTHENTICATED_RID] = 'authenticated user'; // Add this back
           }
           if (user_access('create blog entries', $new_user)) {
@@ -424,7 +421,6 @@ function pathauto_user($op, &$edit, &$user, $category = FALSE) {
       path_set_alias('blog/'. $user->uid .'/feed');
       path_set_alias('user/'. $user->uid .'/track');
       path_set_alias('user/'. $user->uid .'/track/feed');
-
       break;
     default:
       break;

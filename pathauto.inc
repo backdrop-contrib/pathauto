@@ -69,7 +69,7 @@ function _pathauto_alias_exists($alias, $src, $language = '') {
   if (db_table_exists('path_redirect')) {
     $redirect_rid = db_result(db_query_range("SELECT rid FROM {path_redirect} WHERE path = '%s'", $alias, 0, 1));
   }
-  if ($alias_pid || (isset($redirect_rid) && $redirect_rid)) {
+  if ($alias_pid || !empty($redirect_rid)) {
     return TRUE;
   }
   else {
@@ -128,10 +128,9 @@ function _pathauto_existing_alias_data($src) {
 function pathauto_cleanstring($string, $clean_slash = TRUE) {
   // Default words to ignore
   $ignore_words = array(
-    'a', 'an', 'as', 'at', 'before', 'but', 'by', 'for', 'from',
-    'is', 'in', 'into', 'like', 'of', 'off', 'on', 'onto', 'per',
-    'since', 'than', 'the', 'this', 'that', 'to', 'up', 'via',
-    'with',
+    'a', 'an', 'as', 'at', 'before', 'but', 'by', 'for', 'from', 'is', 'in',
+    'into', 'like', 'of', 'off', 'on', 'onto', 'per', 'since', 'than', 'the',
+    'this', 'that', 'to', 'up', 'via', 'with',
   );
 
   // Replace or drop punctuation based on user settings
@@ -175,7 +174,7 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
   }
 
   // Get rid of words that are on the ignore list
-  $ignore_re = "\b". preg_replace('/,/', "\b|\b", variable_get('pathauto_ignore_words', $ignore_words)) ."\b";
+  $ignore_re = '\b'. preg_replace('/,/', '\b|\b', variable_get('pathauto_ignore_words', $ignore_words)) .'\b';
 
   if (function_exists('mb_eregi_replace')) {
     $output = mb_eregi_replace($ignore_re, '', $output);
@@ -185,7 +184,7 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
   }
 
   // Always replace whitespace with the separator.
-  $output = preg_replace("/\s+/", $separator, $output);
+  $output = preg_replace('/\s+/', $separator, $output);
 
   // In preparation for pattern matching,
   // escape the separator if and only if it is not alphanumeric.
@@ -201,7 +200,6 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
 
     // Replace multiple separators with a single one
     $output = preg_replace("/$seppattern+/", "$separator", $output);
-
   }
 
   // Enforce the maximum component length
@@ -243,18 +241,17 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $t
   }
 
   // Retrieve and apply the pattern for this content type
-  $pattern = '';
   if (!empty($type)) {
     $pattern = trim(variable_get('pathauto_'. $module .'_'. $type .'_'. $language .'_pattern', ''));
-    if (!$pattern) {
+    if (empty($pattern)) {
       $pattern = trim(variable_get('pathauto_'. $module .'_'. $type .'_pattern', ''));
     }
   }
-  if (!$pattern) {
+  if (empty($pattern)) {
     $pattern = trim(variable_get('pathauto_'. $module .'_pattern', ''));
   }
   // No pattern? Do nothing (otherwise we may blow away existing aliases...)
-  if (!$pattern) {
+  if (empty($pattern)) {
     return '';
   }
 
@@ -292,10 +289,10 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $t
   }
 
   // Two or more slashes should be collapsed into one
-  $alias = preg_replace("/\/+/", '/', $alias);
+  $alias = preg_replace('/\/+/', '/', $alias);
 
   // Trim any leading or trailing slashes
-  $alias = preg_replace("/^\/|\/+$/", '', $alias);
+  $alias = preg_replace('/^\/|\/+$/', '', $alias);
 
   $maxlength = min(variable_get('pathauto_max_length', 100), 128);
   $alias = drupal_substr($alias, 0, $maxlength);
@@ -376,14 +373,14 @@ function _pathauto_path_is_callback($path) {
 function _pathauto_set_alias($src, $dst, $entity_type, $entity_id, $pid = NULL, $verbose = FALSE, $old_alias = NULL, $language = '') {
   // Alert users that an existing callback cannot be overridden automatically
   if (_pathauto_path_is_callback($dst)) {
-    if ($verbose and user_access('notify of path changes')) {
+    if ($verbose && user_access('notify of path changes')) {
       drupal_set_message(t('Ignoring alias %dst due to existing path conflict.', array('%dst' => $dst)));
     }
     return;
   }
   // Alert users if they are trying to create an alias that is the same as the internal path
   if ($src == $dst) {
-    if ($verbose and user_access('notify of path changes')) {
+    if ($verbose && user_access('notify of path changes')) {
       drupal_set_message(t('Ignoring alias %dst because it is the same as the internal path.', array('%dst' => $dst)));
     }
     return;
@@ -394,7 +391,7 @@ function _pathauto_set_alias($src, $dst, $entity_type, $entity_id, $pid = NULL, 
     path_set_alias($src, $dst, $pid, $language);
 
     if (variable_get('pathauto_update_action', 2) == 3 && function_exists('path_redirect_save')) {
-      if (isset($old_alias) && drupal_strlen($old_alias)) {
+      if (!empty($old_alias)) {
         $save['path'] = $old_alias;
         $save['redirect'] = $src;
         $save['type'] = 301; //moved permanently
@@ -402,8 +399,8 @@ function _pathauto_set_alias($src, $dst, $entity_type, $entity_id, $pid = NULL, 
         $redirect = TRUE;
       }
     }
-    if ($verbose and user_access('notify of path changes')) {
-      if (isset($redirect) && $redirect) {
+    if ($verbose && user_access('notify of path changes')) {
+      if (!empty($redirect)) {
         drupal_set_message(t('Created new alias %dst for %src, replacing %old_alias. %old_alias now redirects to %dst', array('%dst' => $dst, '%src' => $src, '%old_alias' => $old_alias)));
       }
       elseif ($pid) {
@@ -472,7 +469,7 @@ function pathauto_clean_token_values($full) {
 function pathauto_punctuation_chars() {
   $punctuation = array();
 
-  // Handle " ' , . - _ : ; | { { } ] + = * & % $ � # @ ! ~ ( ) ? < > \ � �
+  // Handle " ' ` , . - _ : ; | { [ } ] + = * & % ^ $ # @ ! ~ ( ) ? < > \
   $punctuation['double_quotes']      = array('value' => '"', 'name' => t('Double quotes "'));
   $punctuation['quotes']             = array('value' => "'", 'name' => t("Single quotes (apostrophe) '"));
   $punctuation['backtick']           = array('value' => '`', 'name' => t('Back tick `'));
