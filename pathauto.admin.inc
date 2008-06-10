@@ -207,6 +207,7 @@ function pathauto_admin_settings() {
     if (isset($settings->patternitems)) {
       foreach ($settings->patternitems as $itemname => $itemlabel) {
         $variable = 'pathauto_'. $module .'_'. $itemname .'_pattern';
+        $description = '';
         if (!count($_POST)) {
           $error = _pathauto_check_pattern(variable_get($variable, $patterndefault), $settings->token_type);
           if ($error) {
