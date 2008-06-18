@@ -3,19 +3,19 @@
 # LANGUAGE translation of Drupal (general)
 # Copyright YEAR NAME <EMAIL@ADDRESS>
 # Generated from files:
-#  pathauto.admin.inc,v 1.8 2008/05/31 07:03:06 freso
-#  pathauto.inc,v 1.43 2008/06/08 23:58:58 freso
+#  pathauto.admin.inc,v 1.10 2008/06/10 21:41:53 freso
+#  pathauto.inc,v 1.45 2008/06/18 20:02:40 greggles
 #  pathauto.info,v 1.4 2007/10/28 21:06:13 greggles
-#  pathauto_node.inc,v 1.46 2008/06/08 23:58:58 freso
-#  pathauto_taxonomy.inc,v 1.38 2008/05/31 07:03:06 freso
+#  pathauto_node.inc,v 1.47 2008/06/10 21:41:53 freso
+#  pathauto_taxonomy.inc,v 1.39 2008/06/10 21:41:53 freso
 #  pathauto_user.inc,v 1.28 2008/05/28 16:04:35 freso
-#  pathauto.module,v 1.113 2008/06/08 23:58:58 freso
+#  pathauto.module,v 1.116 2008/06/10 21:41:53 freso
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2008-06-09 02:19+0200\n"
+"POT-Creation-Date: 2008-06-19 00:22+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -152,239 +152,239 @@ msgstr ""
 msgid "No action (do not replace)"
 msgstr ""
 
-#: pathauto.admin.inc:236
+#: pathauto.admin.inc:239
 msgid "Replacement patterns"
 msgstr ""
 
-#: pathauto.admin.inc:240
+#: pathauto.admin.inc:243
 msgid "Use -raw replacements for text to avoid problems with HTML entities."
 msgstr ""
 
-#: pathauto.admin.inc:273
+#: pathauto.admin.inc:276
 msgid "Internal feed alias text (leave blank to disable)"
 msgstr ""
 
-#: pathauto.admin.inc:277
+#: pathauto.admin.inc:280
 msgid "The text to use for aliases for RSS feeds. Examples are \"feed\" and \"0/feed\"."
 msgstr ""
 
-#: pathauto.admin.inc:332
+#: pathauto.admin.inc:335
 msgid "You are using the token [%token] which is not valid within the scope of tokens where you are using it."
 msgstr ""
 
-#: pathauto.admin.inc:340
+#: pathauto.admin.inc:343
 msgid "You are using the token [%token] which has a -raw companion available [%raw_token]. For Pathauto patterns you should use the -raw version of tokens unless you really know what you are doing. See the <a href=\"@pathauto-help\">Pathauto help</a> for more details."
 msgstr ""
 
-#: pathauto.admin.inc:350
+#: pathauto.admin.inc:353
 msgid "NOTE: This field contains potentially incorrect patterns. "
 msgstr ""
 
-#: pathauto.admin.inc:352
+#: pathauto.admin.inc:355
 msgid "%problems"
 msgstr ""
 
-#: pathauto.admin.inc:371
+#: pathauto.admin.inc:374
 msgid "You have configured the @name to be the separator and to be removed when encountered in strings. This can cause problems with your patterns and especially with the catpath and termpath patterns. You should probably set the action for @name to be \"replace by separator\""
 msgstr ""
 
-#: pathauto.admin.inc:396
+#: pathauto.admin.inc:399
 msgid "Choose Aliases to Delete"
 msgstr ""
 
-#: pathauto.admin.inc:405
+#: pathauto.admin.inc:408
 msgid "all aliases"
 msgstr ""
 
-#: pathauto.admin.inc:407
+#: pathauto.admin.inc:410
 msgid "Delete all aliases. Number of aliases which will be deleted: %count."
 msgstr ""
 
-#: pathauto.admin.inc:418
+#: pathauto.admin.inc:421
 msgid "Delete aliases for all @label. Number of aliases which will be deleted: %count."
 msgstr ""
 
-#: pathauto.admin.inc:423
+#: pathauto.admin.inc:426
 msgid "<p><strong>Note:</strong> there is no confirmation. Be sure of your action before clicking the \"Delete aliases now!\" button.<br />You may want to make a backup of the database and/or the url_alias table prior to using this feature.</p>"
 msgstr ""
 
-#: pathauto.admin.inc:426
+#: pathauto.admin.inc:429
 msgid "Delete aliases now!"
 msgstr ""
 
-#: pathauto.admin.inc:440
+#: pathauto.admin.inc:443
 msgid "All of your path aliases have been deleted."
 msgstr ""
 
-#: pathauto.admin.inc:445
+#: pathauto.admin.inc:448
 msgid "All of your %type path aliases have been deleted."
 msgstr ""
 
-#: pathauto.admin.inc:284
+#: pathauto.admin.inc:287
 msgid "Bulk generation of index aliases completed, one alias generated."
 msgid_plural "Bulk generation of index aliases completed, @count aliases generated."
 msgstr[0] ""
 msgstr[1] ""
 
-#: pathauto.admin.inc:351
+#: pathauto.admin.inc:354
 msgid "Problem token: "
 msgid_plural "Problem tokens: "
 msgstr[0] ""
 msgstr[1] ""
 
-#: pathauto.inc:312
+#: pathauto.inc:315
 msgid "The automatically generated alias %original_alias conflicted with an existing alias. Alias changed to %alias."
 msgstr ""
 
-#: pathauto.inc:378
+#: pathauto.inc:381
 msgid "Ignoring alias %dst due to existing path conflict."
 msgstr ""
 
-#: pathauto.inc:385
+#: pathauto.inc:388
 msgid "Ignoring alias %dst because it is the same as the internal path."
 msgstr ""
 
-#: pathauto.inc:405
+#: pathauto.inc:408
 msgid "Created new alias %dst for %src, replacing %old_alias. %old_alias now redirects to %dst"
 msgstr ""
 
-#: pathauto.inc:408
+#: pathauto.inc:411
 msgid "Created new alias %dst for %src, replacing %old_alias"
 msgstr ""
 
-#: pathauto.inc:411
+#: pathauto.inc:414
 msgid "Created new alias %dst for %src"
 msgstr ""
 
-#: pathauto.inc:474
+#: pathauto.inc:477
 msgid "Double quotes \""
 msgstr ""
 
-#: pathauto.inc:475
+#: pathauto.inc:478
 msgid "Single quotes (apostrophe) '"
 msgstr ""
 
-#: pathauto.inc:476
+#: pathauto.inc:479
 msgid "Back tick `"
 msgstr ""
 
-#: pathauto.inc:477
+#: pathauto.inc:480
 msgid "Comma ,"
 msgstr ""
 
-#: pathauto.inc:478
+#: pathauto.inc:481
 msgid "Period ."
 msgstr ""
 
-#: pathauto.inc:479
+#: pathauto.inc:482
 msgid "Hyphen -"
 msgstr ""
 
-#: pathauto.inc:480
+#: pathauto.inc:483
 msgid "Underscore _"
 msgstr ""
 
-#: pathauto.inc:481
+#: pathauto.inc:484
 msgid "Colon :"
 msgstr ""
 
-#: pathauto.inc:482
+#: pathauto.inc:485
 msgid "Semicolon ;"
 msgstr ""
 
-#: pathauto.inc:483
+#: pathauto.inc:486
 msgid "Pipe |"
 msgstr ""
 
-#: pathauto.inc:484
+#: pathauto.inc:487
 msgid "Left curly bracket {"
 msgstr ""
 
-#: pathauto.inc:485
+#: pathauto.inc:488
 msgid "Left square bracket ["
 msgstr ""
 
-#: pathauto.inc:486
+#: pathauto.inc:489
 msgid "Right curly bracket }"
 msgstr ""
 
-#: pathauto.inc:487
+#: pathauto.inc:490
 msgid "Right square bracket ]"
 msgstr ""
 
-#: pathauto.inc:488
+#: pathauto.inc:491
 msgid "Plus +"
 msgstr ""
 
-#: pathauto.inc:489
+#: pathauto.inc:492
 msgid "Equal ="
 msgstr ""
 
-#: pathauto.inc:490
+#: pathauto.inc:493
 msgid "Asterisk *"
 msgstr ""
 
-#: pathauto.inc:491
+#: pathauto.inc:494
 msgid "Ampersand &"
 msgstr ""
 
-#: pathauto.inc:492
+#: pathauto.inc:495
 msgid "Percent %"
 msgstr ""
 
-#: pathauto.inc:493
+#: pathauto.inc:496
 msgid "Caret ^"
 msgstr ""
 
-#: pathauto.inc:494
+#: pathauto.inc:497
 msgid "Dollar $"
 msgstr ""
 
-#: pathauto.inc:495
+#: pathauto.inc:498
 msgid "Hash #"
 msgstr ""
 
-#: pathauto.inc:496
+#: pathauto.inc:499
 msgid "At @"
 msgstr ""
 
-#: pathauto.inc:497
+#: pathauto.inc:500
 msgid "Exclamation !"
 msgstr ""
 
-#: pathauto.inc:498
+#: pathauto.inc:501
 msgid "Tilde ~"
 msgstr ""
 
-#: pathauto.inc:499
+#: pathauto.inc:502
 msgid "Left parenthesis ("
 msgstr ""
 
-#: pathauto.inc:500
+#: pathauto.inc:503
 msgid "right parenthesis )"
 msgstr ""
 
-#: pathauto.inc:501
+#: pathauto.inc:504
 msgid "Question mark ?"
 msgstr ""
 
-#: pathauto.inc:502
+#: pathauto.inc:505
 msgid "Less than <"
 msgstr ""
 
-#: pathauto.inc:503
+#: pathauto.inc:506
 msgid "Greater than >"
 msgstr ""
 
-#: pathauto.inc:504
+#: pathauto.inc:507
 msgid "Back slash \\"
 msgstr ""
 
-#: pathauto.inc:434 pathauto.info:0
+#: pathauto.inc:437 pathauto.info:0
 msgid "Pathauto"
 msgstr ""
 
-#: pathauto.inc:434
+#: pathauto.inc:437
 msgid "It appears that you have installed Pathauto, which depends on token, but token is either not installed or not installed properly."
 msgstr ""
 
@@ -620,19 +620,19 @@ msgstr ""
 msgid "forums"
 msgstr ""
 
-#: pathauto.module:278
+#: pathauto.module:279
 msgid "An alias will be generated for you. If you wish to create your own alias below, untick this option."
 msgstr ""
 
-#: pathauto.module:280
+#: pathauto.module:281
 msgid " To control the format of the generated aliases, see the <a href=\"@pathauto\">Pathauto settings</a>."
 msgstr ""
 
-#: pathauto.module:288
+#: pathauto.module:289
 msgid "Automatic alias"
 msgstr ""
 
-#: pathauto.module:307
+#: pathauto.module:312
 msgid "Update path alias"
 msgstr ""
 
