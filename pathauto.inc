@@ -66,7 +66,11 @@ define('PREG_CLASS_ALNUM',
  */
 function _pathauto_alias_exists($alias, $src, $language = '') {
   $alias_pid = db_result(db_query_range("SELECT pid FROM {url_alias} WHERE dst = '%s' AND src <> '%s' AND language = '%s'", array($alias, $src, $language), 0, 1));
-  if (db_table_exists('path_redirect')) {
+  if (function_exists('path_redirect_delete')) {
+    // Delete from path_redirect the exact same alias to the same node.
+    path_redirect_delete($alias, $src);
+
+    // If there still is this alias used in path_redirect, then create a different alias
     $redirect_rid = db_result(db_query_range("SELECT rid FROM {path_redirect} WHERE path = '%s'", $alias, 0, 1));
   }
   if ($alias_pid || !empty($redirect_rid)) {
