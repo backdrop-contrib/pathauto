@@ -96,21 +96,26 @@ function pathauto_token_values($type, $object = NULL) {
       _pathauto_include();
       switch ($type) {
         case 'node':
+          // Get the bookpathalias token
+          $values['bookpathalias'] = '';
+          // We're on a node and it's a book and it has a parent? Get the book path alias.
+          if (module_exists('book') && !empty($object->book['menu_name'])) {
+            for ($i = 1; $i < 10; $i++) {
+              $second_child = $i + 2;
+              if ($object->book["p$second_child"] === 0) {
+                $parent_node = db_result(db_query('SELECT link_path FROM {menu_links} WHERE mlid = %d', $object->book["p$i"]));
+                break;
+              }
+            }
+            $values['bookpathalias'] = drupal_get_path_alias($parent_node);
+          }
+
+          // Get taxonomy related data.
           $vid = db_result(db_query_range("SELECT t.vid FROM {term_node} r INNER JOIN {term_data} t ON r.tid = t.tid INNER JOIN {vocabulary} v ON t.vid = v.vid WHERE r.nid = %d ORDER BY v.weight, t.weight, t.name", $object->nid, 0, 1));
           $category = db_fetch_object(db_query_range("SELECT t.tid, t.name FROM {term_data} t INNER JOIN {term_node} r ON r.tid = t.tid WHERE t.vid = %d AND r.nid = %d ORDER BY weight", $vid, $object->nid, 0, 1));
           $category->vid = $vid;
           // In the realm of nodes these are terms, in the realm of Taxonomy, cats
           $label = 'term';
-
-          // We're on a node and it's a book and it has a parent? Get the book path alias
-          if (module_exists('book')) {
-            if ($object->type == 'book' && $object->parent) {
-              $values['bookpathalias'] = drupal_get_path_alias('node/'. $object->parent);
-            }
-            else {
-              $values['bookpathalias'] = '';
-            }
-          }
 
         case 'taxonomy':
         default:
