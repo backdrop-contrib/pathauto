@@ -298,7 +298,9 @@ function pathauto_form_alter(&$form, $form_state, $form_id) {
       }
 
       //For Pathauto to remember the old alias and prevent the Path-module from deleteing it when Pathauto wants to preserve it
-      $form['path']['old_alias'] = array('#type' => 'value', '#value' => $node->path);
+      if (isset($node->path)) {
+        $form['path']['old_alias'] = array('#type' => 'value', '#value' => $node->path);
+      }
     }
   }
 }
