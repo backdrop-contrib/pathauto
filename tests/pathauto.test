@@ -52,10 +52,10 @@ class PathautoTestCase extends DrupalTestCase {
   function testPathAuto() {
     $this->drupalGet('logout');
     $this->drupalLoginUser($this->web_user);
-    
+
     $this->drupalGet('admin/build/path/pathauto');
     $this->assertWantedRaw(t('General settings'), '[testPathAuto]: Settings page displayed');
-    
+
     // Set pathauto settings we assume to be as-is in this test.
     $this->drupalVariableSet('pathauto_node_'. $this->content_type->type .'_pattern', 'content/[title-raw]');
     $this->drupalVariableSet('pathauto_separator', '-');
@@ -63,7 +63,7 @@ class PathautoTestCase extends DrupalTestCase {
     $this->drupalVariableSet('pathauto_max_length', '100');
     $this->drupalVariableSet('pathauto_max_component_length', '100');
     $this->drupalVariableSet('pathauto_punctuation_underscore', '2'); // no action
-    
+
     // Create node for testing.
     $random_title = $this->randomName(10); // this contains _
     $edit['title'] = 'Simpletest title '. $random_title;
