@@ -155,20 +155,14 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
     $output = str_replace('/', '', $output);
   }
 
-  // Optionally remove accents and transliterate
+  // Optionally transliterate (by running through the Transliteration module)
   if (variable_get('pathauto_transliterate', FALSE)) {
-    static $i18n_loaded = false;
-    static $translations = array();
-
-    if (!$i18n_loaded) {
-      $path = drupal_get_path('module', 'pathauto');
-      if (is_file($path .'/i18n-ascii.txt')) {
-        $translations = parse_ini_file($path .'/i18n-ascii.txt');
-      }
-      $i18n_loaded = true;
+    if (module_exists('transliteration')) {
+      $output = transliteration_get($output);
     }
-
-    $output = strtr($output, $translations);
+    else {
+      drupal_set_message(t('Pathauto could not transliterate the path, as the Transliteration module has been disabled.'), 'error');
+    }
   }
 
   // Reduce to the subset of ASCII96 letters and numbers
