@@ -335,7 +335,7 @@ msgid "Maximum number of objects to alias in a bulk update"
 msgstr "URL エイリアスの大量アップデートに含めるオブジェクトの最大数"
 
 #: modules/pathauto/pathauto.module:129
-msgid "Maximum number of objects of a given type which should be aliased during a a bulk update. The default is 50 and the recommended number depends on the speed of your server.  If bulk updates \"time out\" or result in a \"white screen\" then reduce the number."
+msgid "Maximum number of objects of a given type which should be aliased during a bulk update. The default is 50 and the recommended number depends on the speed of your server.  If bulk updates \"time out\" or result in a \"white screen\" then reduce the number."
 msgstr "1度の大量アップデートで別名に置き換えることのできるオブジェクトの最大数です。 デフォルトは 50 ですが、最適値は設置されているサーバー環境に依存します。 もし、大量アップデート時に\"タイムアウト\"や\"ホワイトスクリーン\"が発生した場合は、この値を小さくしてください。"
 
 #: modules/pathauto/pathauto.module:132

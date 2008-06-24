@@ -71,7 +71,7 @@ msgid "Maximum number of objects to alias in a bulk update"
 msgstr "Maksimalt antal aliser ved masseopdatering"
 
 #: pathauto.admin.inc:91
-msgid "Maximum number of objects of a given type which should be aliased during a a bulk update. The default is 50 and the recommended number depends on the speed of your server. If bulk updates \"time out\" or result in a \"white screen\" then reduce the number."
+msgid "Maximum number of objects of a given type which should be aliased during a bulk update. The default is 50 and the recommended number depends on the speed of your server. If bulk updates \"time out\" or result in a \"white screen\" then reduce the number."
 msgstr "Maksimalt antal objekter der laves aliaser for ved en masseopdatering. Standardværdien er 50 og den anbefalede værdi afhænger af din servers hastighed. Hvis masseopdateringer resulterer i timeouts eller \"hvid skærm\" skal du vælge en lavere værdi."
 
 #: pathauto.admin.inc:95
