@@ -416,6 +416,10 @@ function pathauto_user($op, &$edit, &$user, $category = FALSE) {
           $src = 'user/'. $user->uid .'/track';
           $alias = pathauto_create_alias('tracker', $op, $placeholders, $src, $user->uid);
         }
+        if (module_exists('contact')) {
+          $src = 'user/'. $user->uid .'/contact';
+          $alias = pathauto_create_alias('contact', $op, $placeholders, $src, $user->uid);
+        }
       }
       break;
     case 'delete':
@@ -428,6 +432,7 @@ function pathauto_user($op, &$edit, &$user, $category = FALSE) {
       path_set_alias('blog/'. $user->uid .'/feed');
       path_set_alias('user/'. $user->uid .'/track');
       path_set_alias('user/'. $user->uid .'/track/feed');
+      path_set_alias('user/'. $user->uid .'/contact');
       break;
     default:
       break;

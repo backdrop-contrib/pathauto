@@ -88,6 +88,30 @@ function tracker_pathauto($op) {
 }
 
 /**
+ * Implementation of hook_pathauto() for contact form aliases.
+ */
+function contact_pathauto($op) {
+  switch ($op) {
+    case 'settings':
+      $settings = array();
+      $settings['module'] = 'contact';
+      $settings['token_type'] = 'user';
+      $settings['groupheader'] = t('User contact form path settings');
+      $settings['patterndescr'] = t('Pattern for the user contact form paths');
+      $settings['patterndefault'] = t('users/[user-raw]/contact');
+      $patterns = module_invoke_all('token_list', 'user');
+      foreach ($patterns['user'] as $pattern => $description) {
+        $settings['placeholders']['['. $pattern .']'] = $description;
+      }
+      $settings['bulkname'] = t('Bulk generate aliases for user contact form paths that are not aliased');
+      $settings['bulkdescr'] = t('Generate aliases for all existing user contact form pages which do not already have aliases.');
+      return (object) $settings;
+    default:
+      break;
+  }
+}
+
+/**
  * Bulk generate aliases for all users without aliases.
  */
 function user_pathauto_bulkupdate() {
@@ -153,4 +177,26 @@ function tracker_pathauto_bulkupdate() {
   drupal_set_message(format_plural($count,
     'Bulk generation of user tracker pages completed, one alias generated.',
     'Bulk generation of user tracker pages completed, @count aliases generated.'));
+}
+
+/**
+ * Bulk generate aliases for all users without aliases
+ */
+function contact_pathauto_bulkupdate() {
+  $query = "SELECT uid, name, src, dst FROM {users} LEFT JOIN {url_alias} ON CONCAT(CONCAT('user/', CAST(uid AS CHAR)), '/contact') = src WHERE uid > 0 AND src IS NULL";
+  $result = db_query_range($query, 0, variable_get('pathauto_max_bulk_update', 50));
+
+  $count = 0;
+  $placeholders = array();
+  while ($user = db_fetch_object($result)) {
+    $placeholders = pathauto_get_placeholders('user', $user);
+    $src = 'user/'. $user->uid .'/contact';
+    if ($alias = pathauto_create_alias('contact', 'bulkupdate', $placeholders, $src, $user->uid)) {
+      $count++;
+    }
+  }
+
+  drupal_set_message(format_plural($count,
+    'Bulk generation of contact pages completed, one alias generated.',
+    'Bulk generation of contact pages completed, @count aliases generated.'));
 }
