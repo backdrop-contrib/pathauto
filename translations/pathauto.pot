@@ -3,19 +3,19 @@
 # LANGUAGE translation of Drupal (general)
 # Copyright YEAR NAME <EMAIL@ADDRESS>
 # Generated from files:
-#  pathauto.admin.inc,v 1.10 2008/06/10 21:41:53 freso
-#  pathauto.inc,v 1.45 2008/06/18 20:02:40 greggles
+#  pathauto.admin.inc,v 1.12 2008/06/24 16:52:32 greggles
+#  pathauto.inc,v 1.46 2008/06/24 11:20:36 freso
 #  pathauto.info,v 1.4 2007/10/28 21:06:13 greggles
 #  pathauto_node.inc,v 1.47 2008/06/10 21:41:53 freso
 #  pathauto_taxonomy.inc,v 1.39 2008/06/10 21:41:53 freso
-#  pathauto_user.inc,v 1.28 2008/05/28 16:04:35 freso
-#  pathauto.module,v 1.116 2008/06/10 21:41:53 freso
+#  pathauto_user.inc,v 1.29 2008/06/24 17:13:51 greggles
+#  pathauto.module,v 1.119 2008/06/24 17:13:51 greggles
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2008-06-19 00:22+0200\n"
+"POT-Creation-Date: 2008-06-24 19:36+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -81,7 +81,7 @@ msgid "Maximum number of objects to alias in a bulk update"
 msgstr ""
 
 #: pathauto.admin.inc:91
-msgid "Maximum number of objects of a given type which should be aliased during a a bulk update. The default is 50 and the recommended number depends on the speed of your server. If bulk updates \"time out\" or result in a \"white screen\" then reduce the number."
+msgid "Maximum number of objects of a given type which should be aliased during a bulk update. The default is 50 and the recommended number depends on the speed of your server. If bulk updates \"time out\" or result in a \"white screen\" then reduce the number."
 msgstr ""
 
 #: pathauto.admin.inc:95
@@ -109,11 +109,11 @@ msgid "What should pathauto do when updating an existing content item which alre
 msgstr ""
 
 #: pathauto.admin.inc:118
-msgid "When a pattern includes certain characters (such as those with accents) should Pathauto attempt to transliterate them into the ASCII-96 alphabet? Transliteration is determined by the i18n-ascii.txt file in the Pathauto directory. <strong>This option is disabled on your site because you do not have an i18n-ascii.txt file in the Pathauto directory.</strong>"
+msgid "When a pattern includes certain characters (such as those with accents) should Pathauto attempt to transliterate them into the ASCII-96 alphabet? Transliteration is handled by the Transliteration module. <strong>This option is disabled on your site because the Translation module either isn't installed, or isn't installed properly.</strong>"
 msgstr ""
 
 #: pathauto.admin.inc:121
-msgid "When a pattern includes certain characters (such as those with accents) should Pathauto attempt to transliterate them into the ASCII-96 alphabet? Transliteration is determined by the i18n-ascii.txt file in the Pathauto directory."
+msgid "When a pattern includes certain characters (such as those with accents) should Pathauto attempt to transliterate them into the ASCII-96 alphabet? Transliteration is handled by the Transliteration module."
 msgstr ""
 
 #: pathauto.admin.inc:129
@@ -232,159 +232,163 @@ msgid_plural "Problem tokens: "
 msgstr[0] ""
 msgstr[1] ""
 
-#: pathauto.inc:315
+#: pathauto.inc:164
+msgid "Pathauto could not transliterate the path, as the Transliteration module has been disabled."
+msgstr ""
+
+#: pathauto.inc:309
 msgid "The automatically generated alias %original_alias conflicted with an existing alias. Alias changed to %alias."
 msgstr ""
 
-#: pathauto.inc:381
+#: pathauto.inc:375
 msgid "Ignoring alias %dst due to existing path conflict."
 msgstr ""
 
-#: pathauto.inc:388
+#: pathauto.inc:382
 msgid "Ignoring alias %dst because it is the same as the internal path."
 msgstr ""
 
-#: pathauto.inc:408
+#: pathauto.inc:402
 msgid "Created new alias %dst for %src, replacing %old_alias. %old_alias now redirects to %dst"
 msgstr ""
 
-#: pathauto.inc:411
+#: pathauto.inc:405
 msgid "Created new alias %dst for %src, replacing %old_alias"
 msgstr ""
 
-#: pathauto.inc:414
+#: pathauto.inc:408
 msgid "Created new alias %dst for %src"
 msgstr ""
 
-#: pathauto.inc:477
+#: pathauto.inc:471
 msgid "Double quotes \""
 msgstr ""
 
-#: pathauto.inc:478
+#: pathauto.inc:472
 msgid "Single quotes (apostrophe) '"
 msgstr ""
 
-#: pathauto.inc:479
+#: pathauto.inc:473
 msgid "Back tick `"
 msgstr ""
 
-#: pathauto.inc:480
+#: pathauto.inc:474
 msgid "Comma ,"
 msgstr ""
 
-#: pathauto.inc:481
+#: pathauto.inc:475
 msgid "Period ."
 msgstr ""
 
-#: pathauto.inc:482
+#: pathauto.inc:476
 msgid "Hyphen -"
 msgstr ""
 
-#: pathauto.inc:483
+#: pathauto.inc:477
 msgid "Underscore _"
 msgstr ""
 
-#: pathauto.inc:484
+#: pathauto.inc:478
 msgid "Colon :"
 msgstr ""
 
-#: pathauto.inc:485
+#: pathauto.inc:479
 msgid "Semicolon ;"
 msgstr ""
 
-#: pathauto.inc:486
+#: pathauto.inc:480
 msgid "Pipe |"
 msgstr ""
 
-#: pathauto.inc:487
+#: pathauto.inc:481
 msgid "Left curly bracket {"
 msgstr ""
 
-#: pathauto.inc:488
+#: pathauto.inc:482
 msgid "Left square bracket ["
 msgstr ""
 
-#: pathauto.inc:489
+#: pathauto.inc:483
 msgid "Right curly bracket }"
 msgstr ""
 
-#: pathauto.inc:490
+#: pathauto.inc:484
 msgid "Right square bracket ]"
 msgstr ""
 
-#: pathauto.inc:491
+#: pathauto.inc:485
 msgid "Plus +"
 msgstr ""
 
-#: pathauto.inc:492
+#: pathauto.inc:486
 msgid "Equal ="
 msgstr ""
 
-#: pathauto.inc:493
+#: pathauto.inc:487
 msgid "Asterisk *"
 msgstr ""
 
-#: pathauto.inc:494
+#: pathauto.inc:488
 msgid "Ampersand &"
 msgstr ""
 
-#: pathauto.inc:495
+#: pathauto.inc:489
 msgid "Percent %"
 msgstr ""
 
-#: pathauto.inc:496
+#: pathauto.inc:490
 msgid "Caret ^"
 msgstr ""
 
-#: pathauto.inc:497
+#: pathauto.inc:491
 msgid "Dollar $"
 msgstr ""
 
-#: pathauto.inc:498
+#: pathauto.inc:492
 msgid "Hash #"
 msgstr ""
 
-#: pathauto.inc:499
+#: pathauto.inc:493
 msgid "At @"
 msgstr ""
 
-#: pathauto.inc:500
+#: pathauto.inc:494
 msgid "Exclamation !"
 msgstr ""
 
-#: pathauto.inc:501
+#: pathauto.inc:495
 msgid "Tilde ~"
 msgstr ""
 
-#: pathauto.inc:502
+#: pathauto.inc:496
 msgid "Left parenthesis ("
 msgstr ""
 
-#: pathauto.inc:503
+#: pathauto.inc:497
 msgid "right parenthesis )"
 msgstr ""
 
-#: pathauto.inc:504
+#: pathauto.inc:498
 msgid "Question mark ?"
 msgstr ""
 
-#: pathauto.inc:505
+#: pathauto.inc:499
 msgid "Less than <"
 msgstr ""
 
-#: pathauto.inc:506
+#: pathauto.inc:500
 msgid "Greater than >"
 msgstr ""
 
-#: pathauto.inc:507
+#: pathauto.inc:501
 msgid "Back slash \\"
 msgstr ""
 
-#: pathauto.inc:437 pathauto.info:0
+#: pathauto.inc:431 pathauto.info:0
 msgid "Pathauto"
 msgstr ""
 
-#: pathauto.inc:437
+#: pathauto.inc:431
 msgid "It appears that you have installed Pathauto, which depends on token, but token is either not installed or not installed properly."
 msgstr ""
 
@@ -550,21 +554,47 @@ msgstr ""
 msgid "Generate aliases for all existing user-tracker pages which do not already have aliases."
 msgstr ""
 
+#: pathauto_user.inc:99
+msgid "User contact form path settings"
+msgstr ""
+
+#: pathauto_user.inc:100
+msgid "Pattern for the user contact form paths"
+msgstr ""
+
+#: pathauto_user.inc:101
+msgid "users/[user-raw]/contact"
+msgstr ""
+
+#: pathauto_user.inc:106
+msgid "Bulk generate aliases for user contact form paths that are not aliased"
+msgstr ""
+
 #: pathauto_user.inc:107
+msgid "Generate aliases for all existing user contact form pages which do not already have aliases."
+msgstr ""
+
+#: pathauto_user.inc:131
 msgid "Bulk generation of users completed, one alias generated."
 msgid_plural "Bulk generation of users completed, @count aliases generated."
 msgstr[0] ""
 msgstr[1] ""
 
-#: pathauto_user.inc:129
+#: pathauto_user.inc:153
 msgid "Bulk generation of user blogs completed, one alias generated."
 msgid_plural "Bulk generation of user blogs completed, @count aliases generated."
 msgstr[0] ""
 msgstr[1] ""
 
-#: pathauto_user.inc:153
+#: pathauto_user.inc:177
 msgid "Bulk generation of user tracker pages completed, one alias generated."
 msgid_plural "Bulk generation of user tracker pages completed, @count aliases generated."
+msgstr[0] ""
+msgstr[1] ""
+
+#: pathauto_user.inc:199
+msgid "Bulk generation of contact pages completed, one alias generated."
+msgid_plural "Bulk generation of contact pages completed, @count aliases generated."
 msgstr[0] ""
 msgstr[1] ""
 
@@ -572,67 +602,67 @@ msgstr[1] ""
 msgid "<p>Provides a mechanism for modules to automatically generate aliases for the content they manage.</p>\n                  <h2>Settings</h2>\n                  <p>The <strong>Maximum Alias Length</strong> and <strong>Maximum component length</strong> values\n                  default to 100 and have a limit of 128 from pathauto. This length is limited by the length of the dst\n                  column of the url_alias database table. The default database schema for this column is 128. If you\n                  set a length that is equal to that of the one set in the dst column it will cause problems in situations\n                  where the system needs to append additional words to the aliased URL. For example... URLs generated\n                  for feeds will have \"/feed\" added to the end. You should enter a value that is the length of the dst\n                  column minus the length of any strings that might get added to the end of the URL. The length of\n                  strings that might get added to the end of your URLs depends on which modules you have enabled and\n                  on your Pathauto settings. The recommended and default value is 100.</p>\n                  <p><strong>Raw Tokens</strong> In Pathauto it is appropriate to use the -raw form of tokens. Paths are\n                  sent through a filtering system which ensures that raw user content is filtered. Failure to use -raw\n                  tokens can cause problems with the Pathauto punctuation filtering system.</p>"
 msgstr ""
 
-#: pathauto.module:159
+#: pathauto.module:164
 msgid "As [cat], but including its supercategories separated by /."
 msgstr ""
 
-#: pathauto.module:160
+#: pathauto.module:165
 msgid "As [cat-raw], but including its supercategories separated by /. WARNING - raw user input."
 msgstr ""
 
-#: pathauto.module:161;166
+#: pathauto.module:166;171
 msgid "URL alias for the term."
 msgstr ""
 
-#: pathauto.module:164
+#: pathauto.module:169
 msgid "As [term], but including its supercategories separated by /."
 msgstr ""
 
-#: pathauto.module:165
+#: pathauto.module:170
 msgid "As [term-raw], but including its supercategories separated by /. WARNING - raw user input."
 msgstr ""
 
-#: pathauto.module:171
+#: pathauto.module:176
 msgid "URL alias for the parent book."
 msgstr ""
 
-#: pathauto.module:183
+#: pathauto.module:188
 msgid "users"
 msgstr ""
 
-#: pathauto.module:183
+#: pathauto.module:188
 msgid "content"
 msgstr ""
 
-#: pathauto.module:185
+#: pathauto.module:190
 msgid "user blogs"
 msgstr ""
 
-#: pathauto.module:188
+#: pathauto.module:193
 msgid "vocabularies and terms"
 msgstr ""
 
-#: pathauto.module:191
+#: pathauto.module:196
 msgid "user trackers"
 msgstr ""
 
-#: pathauto.module:194
+#: pathauto.module:199
 msgid "forums"
 msgstr ""
 
-#: pathauto.module:279
+#: pathauto.module:284
 msgid "An alias will be generated for you. If you wish to create your own alias below, untick this option."
 msgstr ""
 
-#: pathauto.module:281
+#: pathauto.module:286
 msgid " To control the format of the generated aliases, see the <a href=\"@pathauto\">Pathauto settings</a>."
 msgstr ""
 
-#: pathauto.module:289
+#: pathauto.module:294
 msgid "Automatic alias"
 msgstr ""
 
-#: pathauto.module:312
+#: pathauto.module:319
 msgid "Update path alias"
 msgstr ""
 
