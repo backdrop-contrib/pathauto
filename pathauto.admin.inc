@@ -88,7 +88,7 @@ function pathauto_admin_settings() {
     '#size' => 4,
     '#maxlength' => 4,
     '#default_value' => variable_get('pathauto_max_bulk_update', 50),
-    '#description' => t('Maximum number of objects of a given type which should be aliased during a a bulk update. The default is 50 and the recommended number depends on the speed of your server. If bulk updates "time out" or result in a "white screen" then reduce the number.'),
+    '#description' => t('Maximum number of objects of a given type which should be aliased during a bulk update. The default is 50 and the recommended number depends on the speed of your server. If bulk updates "time out" or result in a "white screen" then reduce the number.'),
   );
 
   $actions = array(
