@@ -112,7 +112,7 @@ function node_pathauto_bulkupdate() {
       }
       $placeholders = pathauto_get_placeholders('node', $node);
       $src = "node/$node->nid";
-      if ($alias = pathauto_create_alias('node', 'bulkupdate', $placeholders, $src, $node->nid, $node->type, $node->language)) {
+      if (pathauto_create_alias('node', 'bulkupdate', $placeholders, $src, $node->nid, $node->type, $node->language)) {
         $count++;
       }
     }
