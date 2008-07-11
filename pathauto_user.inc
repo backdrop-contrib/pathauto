@@ -74,7 +74,7 @@ function tracker_pathauto($op) {
       $settings['groupheader'] = t('User-tracker path settings');
       $settings['patterndescr'] = t('Pattern for user-tracker page paths');
       $settings['patterndefault'] = t('users/[user-raw]/track');
-      $patterns = module_invoke_all('token_list', 'user');
+      $patterns = token_get_list('user');
       foreach ($patterns['user'] as $pattern => $description) {
         $settings['placeholders']['['. $pattern .']'] = $description;
       }
@@ -99,7 +99,7 @@ function contact_pathauto($op) {
       $settings['groupheader'] = t('User contact form path settings');
       $settings['patterndescr'] = t('Pattern for the user contact form paths');
       $settings['patterndefault'] = t('users/[user-raw]/contact');
-      $patterns = module_invoke_all('token_list', 'user');
+      $patterns = token_get_list('user');
       foreach ($patterns['user'] as $pattern => $description) {
         $settings['placeholders']['['. $pattern .']'] = $description;
       }
