@@ -138,10 +138,12 @@ function pathauto_admin_settings() {
     '#description' => t('Filters the new alias to only letters and numbers found in the ASCII-96 set.'),
   );
 
+  $wysiwyg_warn = _pathauto_warn_wysiwygs();
+
   $form['general']['pathauto_ignore_words'] = array(
     '#type' => 'textarea',
     '#title' => t('Strings to Remove'), '#default_value' => variable_get('pathauto_ignore_words', implode(',', $ignore_words)),
-    '#description' => t('Words to strip out of the URL alias, separated by commas. Do not place punctuation in here and do not use WYSIWYG editors on this field.'),
+    '#description' => t('Words to strip out of the URL alias, separated by commas. Do not use this to remove punctuation.') . $wysiwyg_warn,
   );
 
   $form['punctuation'] = array(
@@ -450,4 +452,30 @@ function pathauto_admin_delete_submit($form, &$form_state) {
     }
   }
   $form_state['redirect'] = 'admin/build/path/delete_bulk';
+}
+
+/**
+ * Helper function for pathauto_admin_settings().
+ *
+ * Checks to see if they are using a known WYSIWYG editor and, if so, returns a
+ * a warning string.
+ *
+ * @return
+ *   A warning message if appropriate.
+ */
+function _pathauto_warn_wysiwygs() {
+  $wysiwygs = array(
+    'bueditor', 'fckeditor', 'htmlarea', 'htmlbox', 'tinymce', 'whizzywig',
+    'widgeditor', 'wymeditor', 'wysiwyg', 'xstandard', 'yui_editor',
+  );
+
+  $wysiwyg_problem = FALSE;
+  foreach ($wysiwygs as $key => $wysiwyg) {
+    if (module_exists($wysiwyg)) {
+      $wysiwyg_problem = TRUE;
+    }
+  }
+  if ($wysiwyg_problem) {
+    return '<strong> '. t('You appear to be using a "WYSIWYG" editor which can cause problems if that editor runs on the Pathauto administrative settings page. Please be sure to disable these editors for all text boxes on this page. See the "WYSIWYG Conflicts" section of the README.txt file for more information.') .'</strong>';
+  }
 }
