@@ -292,11 +292,20 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $t
   // Trim any leading or trailing slashes
   $alias = preg_replace('/^\/|\/+$/', '', $alias);
 
+  // Shorten to a logical place based on the last separator.
+  $separator = variable_get('pathauto_separator', '-');
   $maxlength = min(variable_get('pathauto_max_length', 100), 128);
-  $alias = drupal_substr($alias, 0, $maxlength);
+
+  // Make sure we're not ending the alias in the middle of a word.
+  $alias = drupal_substr($alias, 0, $maxlength + 1); // leave one more character
+  if ($last_break = strrpos($alias, $separator)) { // space exists AND is not on position 0
+    $alias = substr($alias, 0, $last_break);
+  }
+  else {
+    $alias = drupal_substr($alias, 0, $maxlength);
+  }
 
   // If the alias already exists, generate a new, hopefully unique, variant
-  $separator = variable_get('pathauto_separator', '-');
   if (_pathauto_alias_exists($alias, $src, $language)) {
     $original_alias = $alias;
     for ($i = 0; _pathauto_alias_exists(drupal_substr($alias, 0, $maxlength - strlen($i)) . $separator . $i, $src, $language); $i++) {
