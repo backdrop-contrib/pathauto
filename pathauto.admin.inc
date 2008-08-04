@@ -279,7 +279,7 @@ function pathauto_admin_settings() {
         '#size' => 65,
         '#maxlength' => 1280,
         '#default_value' => $current,
-        '#description' => t('The text to use for aliases for RSS feeds. Examples are "feed" and "0/feed".'),
+        '#description' => t('The text to use for aliases for RSS feeds. Examples are "0/feed" (used throughout Drupal core) and "feed" (used by some contributed Drupal modules, like Views).'),
       );
     }
 
