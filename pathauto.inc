@@ -202,7 +202,7 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
 
   // Enforce the maximum component length
   $maxlength = min(variable_get('pathauto_max_component_length', 100), 128);
-  $output = drupal_substr($output, 0, $maxlength);
+  $output = _pathauto_truncate_chars($output, $maxlength, $separator);
 
   return $output;
 }
@@ -297,13 +297,7 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $t
   $maxlength = min(variable_get('pathauto_max_length', 100), 128);
 
   // Make sure we're not ending the alias in the middle of a word.
-  $alias = drupal_substr($alias, 0, $maxlength + 1); // leave one more character
-  if ($last_break = strrpos($alias, $separator)) { // space exists AND is not on position 0
-    $alias = substr($alias, 0, $last_break);
-  }
-  else {
-    $alias = drupal_substr($alias, 0, $maxlength);
-  }
+  $alias = _pathauto_truncate_chars($alias, $maxlength, $separator);
 
   // If the alias already exists, generate a new, hopefully unique, variant
   if (_pathauto_alias_exists($alias, $src, $language)) {
@@ -510,4 +504,30 @@ function pathauto_punctuation_chars() {
   $punctuation['back_slash']         = array('value' => '\\', 'name' => t('Back slash \\'));
 
   return $punctuation;
+}
+
+/**
+ * A Pathauto friendly version of truncate_utf8.
+ *
+ * @param $string
+ *   The string to be truncated.
+ * @param $length
+ *   An integer for the maximum desired length.
+ * @param $separator
+ *   A string which contains the word boundary such as - or _.
+ *
+ * @return
+ *  The string truncated below the maxlength.
+ */
+function _pathauto_truncate_chars($string, $length, $separator) {
+  if (drupal_strlen($string) > $length) {
+    $string = drupal_substr($string, 0, $length + 1); // leave one more character
+    if ($last_break = strrpos($string, $separator)) { // space exists AND is not on position 0
+      $string = substr($string, 0, $last_break);
+    }
+    else {
+      $string = drupal_substr($string, 0, $length);
+    }
+  }
+  return $string;
 }
