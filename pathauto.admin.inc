@@ -94,7 +94,8 @@ function pathauto_admin_settings() {
   $actions = array(
     t('Do nothing. Leave the old alias intact.'),
     t('Create a new alias. Leave the existing alias functioning.'),
-    t('Create a new alias. Delete the old alias.'));
+    t('Create a new alias. Delete the old alias.'),
+  );
 
   if (function_exists('path_redirect_save')) {
     $actions[] = t('Create a new alias. Redirect from old alias.');
