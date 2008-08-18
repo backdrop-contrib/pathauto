@@ -61,7 +61,10 @@ function pathauto_admin_settings() {
     '#type' => 'radios',
     '#title' => t('Character case'),
     '#default_value' => variable_get('pathauto_case', PATHAUTO_CASE_LOWER),
-    '#options' => array(t('Leave case the same as source token values.'), t('Change to lower case')),
+    '#options' => array(
+      t('Leave case the same as source token values.'),
+      t('Change to lower case'),
+    ),
   );
 
   $form['general']['pathauto_max_length'] = array(
@@ -143,14 +146,16 @@ function pathauto_admin_settings() {
 
   $form['general']['pathauto_ignore_words'] = array(
     '#type' => 'textarea',
-    '#title' => t('Strings to Remove'), '#default_value' => variable_get('pathauto_ignore_words', implode(',', $ignore_words)),
+    '#title' => t('Strings to Remove'),
+    '#default_value' => variable_get('pathauto_ignore_words', implode(',', $ignore_words)),
     '#description' => t('Words to strip out of the URL alias, separated by commas. Do not use this to remove punctuation.') . $wysiwyg_warn,
   );
 
   $form['punctuation'] = array(
     '#type' => 'fieldset',
     '#weight' => $group_weight,
-    '#title' => t('Punctuation settings'), '#collapsible' => TRUE,
+    '#title' => t('Punctuation settings'),
+    '#collapsible' => TRUE,
     '#collapsed' => TRUE,
   );
   $group_weight++;
