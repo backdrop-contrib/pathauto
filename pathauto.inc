@@ -5,8 +5,59 @@
  * @file
  * Miscellaneous functions for Pathauto.
  *
+ * This also contains some constants giving human readable names to some numeric
+ * settings; they're included here as they're only rarely used outside this file
+ * anyway. Use _pathauto_include() if the constants need to be available.
+ *
  * @ingroup pathauto
  */
+
+/**
+ * Case should be left as is in the generated path.
+ */
+define('PATHAUTO_CASE_LEAVE_ASIS', 0);
+
+/**
+ * Case should be lowercased in the generated path.
+ */
+define('PATHAUTO_CASE_LOWER', 1);
+
+/**
+ * "Do nothing. Leave the old alias intact."
+ */
+define('PATHAUTO_UPDATE_ACTION_NO_NEW', 0);
+
+/**
+ * "Create a new alias. Leave the existing alias functioning."
+ */
+define('PATHAUTO_UPDATE_ACTION_LEAVE', 1);
+
+/**
+ * "Create a new alias. Delete the old alias."
+ */
+define('PATHAUTO_UPDATE_ACTION_DELETE', 2);
+
+/**
+ * "Create a new alias. Redirect from old alias."
+ *
+ * This is only available when the Path Redirect module is.
+ */
+define('PATHAUTO_UPDATE_ACTION_REDIRECT', 3);
+
+/**
+ * Remove the punctuation from the alias.
+ */
+define('PATHAUTO_PUNCTUATION_REMOVE', 0);
+
+/**
+ * Replace the punctuation with the separator in the alias.
+ */
+define('PATHAUTO_PUNCTUATION_REPLACE', 1);
+
+/**
+ * Leave the punctuation as it is in the alias.
+ */
+define('PATHAUTO_PUNCTUATION_DO_NOTHING', 2);
 
 /**
  * Matches Unicode character classes.
@@ -99,17 +150,17 @@ function _pathauto_existing_alias_data($src) {
   $result = db_query("SELECT pid, dst FROM {url_alias} WHERE src='%s'", $src);
   if ($data = db_fetch_object($result)) {
     // The item is already aliased, check what to do...
-    switch (variable_get('pathauto_update_action', 2)) {
+    switch (variable_get('pathauto_update_action', PATHAUTO_UPDATE_ACTION_DELETE)) {
       // Replace old alias - remember the pid to update
-      case 2:
-      case 3:
+      case PATHAUTO_UPDATE_ACTION_DELETE:
+      case PATHAUTO_UPDATE_ACTION_REDIRECT:
         $output['pid'] = $data->pid;
       // Add new alias in addition to old one
-      case 1:
+      case PATHAUTO_UPDATE_ACTION_LEAVE:
         $output['old_alias'] = $data->dst;
         break;
       // Do nothing
-      case 0:
+      case PATHAUTO_UPDATE_ACTION_NO_NEW:
       default:
         break;
     }
@@ -142,9 +193,8 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
   $output = $string;
   $punctuation = pathauto_punctuation_chars();
   foreach ($punctuation as $name => $details) {
-    $action = variable_get('pathauto_punctuation_'. $name, 0);
-    // 2 is the action for "do nothing" with the punctuation
-    if ($action != 2) {
+    $action = variable_get('pathauto_punctuation_'. $name, PATHAUTO_PUNCTUATION_REMOVE);
+    if ($action != PATHAUTO_PUNCTUATION_DO_NOTHING) {
       // Slightly tricky inline if which either replaces with the separator or nothing
       $output = str_replace($details['value'], ($action ? $separator : ''), $output);
     }
@@ -269,7 +319,7 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $t
   $pid = NULL;
   $old_alias = NULL;
   if ($op == 'update' or $op == 'bulkupdate') {
-    if (variable_get('pathauto_update_action', 2) == 0) {
+    if (variable_get('pathauto_update_action', PATHAUTO_UPDATE_ACTION_DELETE) == PATHAUTO_UPDATE_ACTION_NO_NEW) {
       // Do nothing
       return '';
     }
@@ -282,7 +332,7 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $t
   // and optionally lower-case the result
   $alias = str_replace($placeholders['tokens'], $placeholders['values'], $pattern);
 
-  if (variable_get('pathauto_case', 1)) {
+  if (variable_get('pathauto_case', PATHAUTO_CASE_LOWER)) {
     $alias = drupal_strtolower($alias);
   }
 
@@ -391,7 +441,8 @@ function _pathauto_set_alias($src, $dst, $entity_type, $entity_id, $pid = NULL, 
   if ($old_alias != $dst) {
     path_set_alias($src, $dst, $pid, $language);
 
-    if (variable_get('pathauto_update_action', 2) == 3 && function_exists('path_redirect_save')) {
+    if (variable_get('pathauto_update_action', PATHAUTO_UPDATE_ACTION_DELETE) == PATHAUTO_UPDATE_ACTION_REDIRECT
+        && function_exists('path_redirect_save')) {
       if (!empty($old_alias)) {
         $save['path'] = $old_alias;
         $save['redirect'] = $src;

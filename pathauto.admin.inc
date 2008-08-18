@@ -60,7 +60,7 @@ function pathauto_admin_settings() {
   $form['general']['pathauto_case'] = array(
     '#type' => 'radios',
     '#title' => t('Character case'),
-    '#default_value' => variable_get('pathauto_case', 1),
+    '#default_value' => variable_get('pathauto_case', PATHAUTO_CASE_LOWER),
     '#options' => array(t('Leave case the same as source token values.'), t('Change to lower case')),
   );
 
@@ -100,16 +100,16 @@ function pathauto_admin_settings() {
   if (function_exists('path_redirect_save')) {
     $actions[] = t('Create a new alias. Redirect from old alias.');
   }
-  elseif (variable_get('pathauto_update_action', 2) == 3) {
+  elseif (variable_get('pathauto_update_action', PATHAUTO_UPDATE_ACTION_DELETE) == PATHAUTO_UPDATE_ACTION_REDIRECT) {
     // the redirect action is selected, but path_redirect is not enabled
     // let's set the variable back to the default
-    variable_set('pathauto_update_action', 2);
+    variable_set('pathauto_update_action', PATHAUTO_UPDATE_ACTION_DELETE);
   }
 
   $form['general']['pathauto_update_action'] = array(
     '#type' => 'radios',
     '#title' => t('Update action'),
-    '#default_value' => variable_get('pathauto_update_action', 2),
+    '#default_value' => variable_get('pathauto_update_action', PATHAUTO_UPDATE_ACTION_DELETE),
     '#options' => $actions,
     '#description' => t('What should pathauto do when updating an existing content item which already has an alias?'),
   );
@@ -160,8 +160,12 @@ function pathauto_admin_settings() {
     $form['punctuation']['pathauto_punctuation_'. $name ] = array(
       '#type' => 'select',
       '#title' => $details['name'],
-      '#default_value' => variable_get('pathauto_punctuation_'. $name, 0),
-      '#options' => array('0' => t('Remove'), '1' => t('Replace by separator'), '2' => t('No action (do not replace)')),
+      '#default_value' => variable_get('pathauto_punctuation_'. $name, PATHAUTO_PUNCTUATION_REMOVE),
+      '#options' => array(
+        PATHAUTO_PUNCTUATION_REMOVE => t('Remove'),
+        PATHAUTO_PUNCTUATION_REPLACE => t('Replace by separator'),
+        PATHAUTO_PUNCTUATION_DO_NOTHING => t('No action (do not replace)'),
+      ),
     );
   }
 
@@ -366,6 +370,8 @@ function _pathauto_check_pattern($pattern, $type) {
  * Validate pathauto_admin_settings form submissions.
  */
 function pathauto_admin_settings_validate($form, &$form_state) {
+  _pathauto_include();
+
   // Validate that the separator is not set to be removed per http://drupal.org/node/184119
   // This isn't really all that bad so warn, but still allow them to save the value.
   $separator = $form_state['values']['pathauto_separator'];
@@ -373,7 +379,7 @@ function pathauto_admin_settings_validate($form, &$form_state) {
   foreach ($punctuation as $name => $details) {
     if ($details['value'] == $separator) {
       $action = $form_state['values']['pathauto_punctuation_'. $name];
-      if ($action == 0) {
+      if ($action == PATHAUTO_PUNCTUATION_REMOVE) {
         drupal_set_message(t('You have configured the @name to be the separator and to be removed when encountered in strings. This can cause problems with your patterns and especially with the catpath and termpath patterns. You should probably set the action for @name to be "replace by separator"', array('@name' => $details['name'])), 'error');
       }
     }
