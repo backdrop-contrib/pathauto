@@ -453,13 +453,13 @@ function _pathauto_set_alias($src, $dst, $entity_type, $entity_id, $pid = NULL, 
     }
     if ($verbose && user_access('notify of path changes')) {
       if (!empty($redirect)) {
-        drupal_set_message(t('Created new alias %dst for %src, replacing %old_alias. %old_alias now redirects to %dst', array('%dst' => $dst, '%src' => $src, '%old_alias' => $old_alias)));
+        drupal_set_message(t('Created new alias %dst for %src, replacing %old_alias. %old_alias now redirects to %dst.', array('%dst' => $dst, '%src' => $src, '%old_alias' => $old_alias)));
       }
       elseif ($pid) {
-        drupal_set_message(t('Created new alias %dst for %src, replacing %old_alias', array('%dst' => $dst, '%src' => $src, '%old_alias' => $old_alias)));
+        drupal_set_message(t('Created new alias %dst for %src, replacing %old_alias.', array('%dst' => $dst, '%src' => $src, '%old_alias' => $old_alias)));
       }
       else {
-        drupal_set_message(t('Created new alias %dst for %src', array('%dst' => $dst, '%src' => $src)));
+        drupal_set_message(t('Created new alias %dst for %src.', array('%dst' => $dst, '%src' => $src)));
       }
     }
   }
@@ -482,7 +482,7 @@ function pathauto_get_placeholders($type, $object) {
     return array('tokens' => $tokens, 'values' => $values);
   }
   // TODO at some point try removing this and see if install profiles have problems again.
-  watchdog('Pathauto', 'It appears that you have installed Pathauto, which depends on token, but token is either not installed or not installed properly.');
+  watchdog('Pathauto', 'It appears that you have installed Pathauto, which depends on Token, but Token is either not installed or not installed properly.');
   return array('tokens' => array(), 'values' => array());
 }
 

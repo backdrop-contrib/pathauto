@@ -114,18 +114,16 @@ function pathauto_admin_settings() {
     '#title' => t('Update action'),
     '#default_value' => variable_get('pathauto_update_action', PATHAUTO_UPDATE_ACTION_DELETE),
     '#options' => $actions,
-    '#description' => t('What should pathauto do when updating an existing content item which already has an alias?'),
+    '#description' => t('What should Pathauto do when updating an existing content item which already has an alias?'),
   );
 
-  $disable_transliteration = TRUE;
+  $disable_transliteration = FALSE;
   $path = drupal_get_path('module', 'pathauto');
-  $transliteration_help = t("When a pattern includes certain characters (such as those with accents) should Pathauto attempt to transliterate them into the ASCII-96 alphabet? Transliteration is handled by the Transliteration module. <strong>This option is disabled on your site because the Translation module either isn't installed, or isn't installed properly.</strong>");
-  if (module_exists('transliteration')) {
-    $disable_transliteration = FALSE;
-    $transliteration_help = t('When a pattern includes certain characters (such as those with accents) should Pathauto attempt to transliterate them into the ASCII-96 alphabet? Transliteration is handled by the Transliteration module.');
-  }
-  else {
-    // Perhaps they've removed the file, set the transliterate option to FALSE
+  $transliteration_help = t('When a pattern includes certain characters (such as those with accents) should Pathauto attempt to transliterate them into the ASCII-96 alphabet? Transliteration is handled by the Transliteration module.');
+  if (!module_exists('transliteration')) {
+    $disable_transliteration = TRUE;
+    $transliteration_help .= ' <strong>'. t("This option is disabled on your site because the Translation module either isn't installed, or isn't installed properly.") .'</strong>';
+    // Make sure we don't try to use Transliteration if it isn't available
     variable_set('pathauto_transliterate', FALSE);
   }
   $form['general']['pathauto_transliterate'] = array(
@@ -362,10 +360,10 @@ function _pathauto_check_pattern($pattern, $type) {
   }
 
   if ($return) {
-    $description = t('NOTE: This field contains potentially incorrect patterns. ');
-    $description .= format_plural(count($return), 'Problem token: ', 'Problem tokens: ');
-    $description .= t('%problems', array('%problems' => implode(', ', $return)));
-    $return = $description;
+    $return = t('NOTE: This field contains potentially incorrect patterns. %name %problems.', array(
+      '%name' => format_plural(count($return), 'Problem token:', 'Problem tokens:'),
+      '%problems' => implode(', ', $return),
+    );
   }
 
   return $return;
@@ -385,7 +383,7 @@ function pathauto_admin_settings_validate($form, &$form_state) {
     if ($details['value'] == $separator) {
       $action = $form_state['values']['pathauto_punctuation_'. $name];
       if ($action == PATHAUTO_PUNCTUATION_REMOVE) {
-        drupal_set_message(t('You have configured the @name to be the separator and to be removed when encountered in strings. This can cause problems with your patterns and especially with the catpath and termpath patterns. You should probably set the action for @name to be "replace by separator"', array('@name' => $details['name'])), 'error');
+        drupal_set_message(t('You have configured the @name to be the separator and to be removed when encountered in strings. This can cause problems with your patterns and especially with the catpath and termpath patterns. You should probably set the action for @name to be "replace by separator".', array('@name' => $details['name'])), 'error');
       }
     }
   }
@@ -410,7 +408,7 @@ function pathauto_admin_delete() {
   $form = array();
   $form['delete'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Choose Aliases to Delete'),
+    '#title' => t('Choose aliases to delete'),
     '#collapsible' => FALSE,
     '#collapsed' => FALSE,
   );
@@ -419,7 +417,7 @@ function pathauto_admin_delete() {
   $total_count = db_result(db_query('SELECT count(1) FROM {url_alias}'));
   $form['delete']['all_aliases'] = array(
     '#type' => 'checkbox',
-    '#title' => t('all aliases'),
+    '#title' => t('All aliases'),
     '#default_value' => FALSE,
     '#description' => t('Delete all aliases. Number of aliases which will be deleted: %count.', array('%count' => $total_count)),
   );
@@ -437,7 +435,7 @@ function pathauto_admin_delete() {
   }
 
   // Warn them and give a button that shows we mean business
-  $form['warning'] = array('#value' => t('<p><strong>Note:</strong> there is no confirmation. Be sure of your action before clicking the "Delete aliases now!" button.<br />You may want to make a backup of the database and/or the url_alias table prior to using this feature.</p>'));
+  $form['warning'] = array('#value' => '<p>'. t('<strong>Note:</strong> there is no confirmation. Be sure of your action before clicking the "Delete aliases now!" button.<br />You may want to make a backup of the database and/or the url_alias table prior to using this feature.') .'</p>');
   $form['buttons']['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Delete aliases now!'),
