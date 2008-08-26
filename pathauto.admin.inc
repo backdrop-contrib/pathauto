@@ -363,7 +363,7 @@ function _pathauto_check_pattern($pattern, $type) {
     $return = t('NOTE: This field contains potentially incorrect patterns. %name %problems.', array(
       '%name' => format_plural(count($return), 'Problem token:', 'Problem tokens:'),
       '%problems' => implode(', ', $return),
-    );
+    ));
   }
 
   return $return;
