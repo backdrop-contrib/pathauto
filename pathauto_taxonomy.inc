@@ -114,7 +114,7 @@ function _taxonomy_pathauto_alias($category, $op) {
     }
   }
   else {
-    $src = taxonomy_term_path($category->tid);
+    $src = taxonomy_term_path($category);
     if (pathauto_create_alias('taxonomy', $op, $placeholders, $src, $category->tid, $category->vid)) {
       $count++;
     }
