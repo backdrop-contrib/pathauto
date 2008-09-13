@@ -122,7 +122,7 @@ function pathauto_admin_settings() {
   $transliteration_help = t('When a pattern includes certain characters (such as those with accents) should Pathauto attempt to transliterate them into the ASCII-96 alphabet? Transliteration is handled by the Transliteration module.');
   if (!module_exists('transliteration')) {
     $disable_transliteration = TRUE;
-    $transliteration_help .= ' <strong>'. t("This option is disabled on your site because the Translation module either isn't installed, or isn't installed properly.") .'</strong>';
+    $transliteration_help .= ' <strong>'. t("This option is disabled on your site because the Transliteration module either isn't installed, or isn't installed properly.") .'</strong>';
     // Make sure we don't try to use Transliteration if it isn't available
     variable_set('pathauto_transliterate', FALSE);
   }
