@@ -1,5 +1,5 @@
 # Hungarian translation of pathauto (6.x-2.x-dev)
-# Copyright (c) 2008 by the Hungarian translation team
+# Copyright (c) 2009 by the Hungarian translation team
 # Generated from files:
 #  pathauto.module,v 1.120 2008/08/26 04:55:19 freso
 #  pathauto.admin.inc,v 1.20 2008/09/13 08:54:06 freso
@@ -12,9 +12,10 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: pathauto (6.x-2.x-dev)\n"
-"POT-Creation-Date: 2008-11-19 09:56-0600\n"
-"PO-Revision-Date: 2008-11-09 12:59-0600\n"
-"Language-Team: Hungarian\n"
+"POT-Creation-Date: 2009-02-16 18:03-0600\n"
+"PO-Revision-Date: 2009-02-13 13:52-0600\n"
+"Last-Translator: Balogh Zoltán\n"
+"Language-Team: Hungarian http://forditas.mindworks.hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -28,23 +29,15 @@ msgstr "Beállítások"
 msgid "content"
 msgstr "tartalom"
 
-#: pathauto.admin.inc:168
+#: pathauto.admin.inc:168,161
 msgid "Remove"
-msgstr "Törlés"
-
-#: pathauto.admin.inc:161,161
-msgid "Remove"
-msgstr "Törlés"
+msgstr "Eltávolítás"
 
 #: pathauto.module:189
 msgid "Forums"
 msgstr "Fórum"
 
-#: pathauto_node.inc:37
-msgid "Language neutral"
-msgstr "Nyelvfüggetlen"
-
-#: pathauto_node.inc:79,79
+#: pathauto_node.inc:37,79
 msgid "Language neutral"
 msgstr "Nyelvfüggetlen"
 
@@ -68,11 +61,7 @@ msgstr "azonosított felhasználó"
 msgid "Separator"
 msgstr "Elválasztó"
 
-#: pathauto.admin.inc:249
-msgid "Replacement patterns"
-msgstr "Helyettesítési minták"
-
-#: pathauto.admin.inc:239,239
+#: pathauto.admin.inc:249,239
 msgid "Replacement patterns"
 msgstr "Helyettesítési minták"
 
@@ -113,31 +102,19 @@ msgstr ""
 msgid "Character case"
 msgstr "Kisbetű-Nagybetű"
 
-#: pathauto.admin.inc:65
+#: pathauto.admin.inc:65,64
 msgid "Leave case the same as source token values."
 msgstr "Hagyja úgy, mint a forrás vezérjel értékek."
 
-#: pathauto.admin.inc:64,64
-msgid "Leave case the same as source token values."
-msgstr "Hagyja úgy, mint a forrás vezérjel értékek."
-
-#: pathauto.admin.inc:66
+#: pathauto.admin.inc:66,64
 msgid "Change to lower case"
 msgstr "Alakítsa kisbetűssé"
 
-#: pathauto.admin.inc:64,64
-msgid "Change to lower case"
-msgstr "Alakítsa kisbetűssé"
-
-#: pathauto.admin.inc:72
+#: pathauto.admin.inc:72,69
 msgid "Maximum alias length"
 msgstr "Az álnév maximális hossza"
 
-#: pathauto.admin.inc:69,69
-msgid "Maximum alias length"
-msgstr "Az álnév maximális hossza"
-
-#: pathauto.admin.inc:76
+#: pathauto.admin.inc:76,73
 msgid ""
 "Maximum length of aliases to generate. 100 is recommended. See <a "
 "href=\"@pathauto-help\">Pathauto help</a> for details."
@@ -146,24 +123,11 @@ msgstr ""
 "További információk a <a href=\"@pathauto-help\"><em>Pathauto</em> "
 "súgóban</a>."
 
-#: pathauto.admin.inc:73,73
-msgid ""
-"Maximum length of aliases to generate. 100 is recommended. See <a "
-"href=\"@pathauto-help\">Pathauto help</a> for details."
-msgstr ""
-"A létrehozott álnevek maximális hossza. Ajánlott értéke 100. "
-"További információk a <a href=\"@pathauto-help\"><em>Pathauto</em> "
-"súgóban</a>."
-
-#: pathauto.admin.inc:81
+#: pathauto.admin.inc:81,78
 msgid "Maximum component length"
 msgstr "Maximális összetevő hossz"
 
-#: pathauto.admin.inc:78,78
-msgid "Maximum component length"
-msgstr "Maximális összetevő hossz"
-
-#: pathauto.admin.inc:85
+#: pathauto.admin.inc:85,82
 msgid ""
 "Maximum text length of any component in the alias (e.g., [title]). 100 "
 "is recommended. See <a href=\"@pathauto-help\">Pathauto help</a> for "
@@ -173,29 +137,13 @@ msgstr ""
 "(például [title]). Az ajánlott érték 100. További információk "
 "a <a href=\"@pathauto-help\"><em>Pathauto</em> súgóban</a>."
 
-#: pathauto.admin.inc:82,82
-msgid ""
-"Maximum text length of any component in the alias (e.g., [title]). 100 "
-"is recommended. See <a href=\"@pathauto-help\">Pathauto help</a> for "
-"details."
-msgstr ""
-"Bármilyen összetevő maximális szöveghosszúsága az álnévben "
-"(például [title]). Az ajánlott érték 100. További információk "
-"a <a href=\"@pathauto-help\"><em>Pathauto</em> súgóban</a>."
-
-#: pathauto.admin.inc:90
+#: pathauto.admin.inc:90,87
 msgid "Maximum number of objects to alias in a bulk update"
 msgstr ""
 "Egy tömeges módosítás közben érintett objektumok maximális "
 "száma"
 
-#: pathauto.admin.inc:87,87
-msgid "Maximum number of objects to alias in a bulk update"
-msgstr ""
-"Egy tömeges módosítás közben érintett objektumok maximális "
-"száma"
-
-#: pathauto.admin.inc:94
+#: pathauto.admin.inc:94,91
 msgid ""
 "Maximum number of objects of a given type which should be aliased "
 "during a bulk update. The default is 50 and the recommended number "
@@ -209,61 +157,25 @@ msgstr ""
 "„fehér képernyő” az eredmény, akkor az értéket csökkenteni "
 "kell."
 
-#: pathauto.admin.inc:91,91
-msgid ""
-"Maximum number of objects of a given type which should be aliased "
-"during a bulk update. The default is 50 and the recommended number "
-"depends on the speed of your server. If bulk updates \"time out\" or "
-"result in a \"white screen\" then reduce the number."
-msgstr ""
-"A tömeges álnév előállítás közben álnévvel ellátott, adott "
-"típusú objektumok maximális száma. Alapértelmezése 50, az "
-"ajánlott érték függ a kiszolgáló sebességétől. Ha a tömeges "
-"álnév előállítás „idő túllépésre fut”, vagy üres, "
-"„fehér képernyő” az eredmény, akkor az értéket csökkenteni "
-"kell."
-
-#: pathauto.admin.inc:98
+#: pathauto.admin.inc:98,95
 msgid "Do nothing. Leave the old alias intact."
 msgstr "Nem csinál semmit, hagyja a régi álnevet érintetlenül."
 
-#: pathauto.admin.inc:95,95
-msgid "Do nothing. Leave the old alias intact."
-msgstr "Nem csinál semmit, hagyja a régi álnevet érintetlenül."
-
-#: pathauto.admin.inc:99
+#: pathauto.admin.inc:99,96
 msgid "Create a new alias. Leave the existing alias functioning."
 msgstr ""
 "Új álnevet hoz létre, de meghagyja a létező álnevet is "
 "működni."
 
-#: pathauto.admin.inc:96,96
-msgid "Create a new alias. Leave the existing alias functioning."
-msgstr ""
-"Új álnevet hoz létre, de meghagyja a létező álnevet is "
-"működni."
-
-#: pathauto.admin.inc:100
+#: pathauto.admin.inc:100,97
 msgid "Create a new alias. Delete the old alias."
 msgstr "Új álnevet hoz létre, a létező álnevet törli."
 
-#: pathauto.admin.inc:97,97
-msgid "Create a new alias. Delete the old alias."
-msgstr "Új álnevet hoz létre, a létező álnevet törli."
-
-#: pathauto.admin.inc:104
+#: pathauto.admin.inc:104,100
 msgid "Create a new alias. Redirect from old alias."
 msgstr "Új álnevet hoz létre, és átirányít a régi álnévről."
 
-#: pathauto.admin.inc:100,100
-msgid "Create a new alias. Redirect from old alias."
-msgstr "Új álnevet hoz létre, és átirányít a régi álnévről."
-
-#: pathauto.admin.inc:114
-msgid "Update action"
-msgstr "Frissítési művelet"
-
-#: pathauto.admin.inc:110,110
+#: pathauto.admin.inc:114,110
 msgid "Update action"
 msgstr "Frissítési művelet"
 
@@ -305,27 +217,17 @@ msgstr ""
 "i18n-ascii.txt nevű állomány határozza meg a <em>Pathauto</em> "
 "modul könyvtárában."
 
-#: pathauto.admin.inc:131
+#: pathauto.admin.inc:131,129
 msgid "Transliterate prior to creating alias"
 msgstr "Átírási elsőbbség az álnév létrehozásnak"
 
-#: pathauto.admin.inc:129,129
-msgid "Transliterate prior to creating alias"
-msgstr "Átírási elsőbbség az álnév létrehozásnak"
-
-#: pathauto.admin.inc:138
+#: pathauto.admin.inc:138,136
 msgid "Reduce strings to letters and numbers from ASCII-96"
 msgstr ""
 "A karaktersorozatok az ASCII-96 szerinti betűkre és számokra "
 "csökkentése"
 
-#: pathauto.admin.inc:136,136
-msgid "Reduce strings to letters and numbers from ASCII-96"
-msgstr ""
-"A karaktersorozatok az ASCII-96 szerinti betűkre és számokra "
-"csökkentése"
-
-#: pathauto.admin.inc:140
+#: pathauto.admin.inc:140,138
 msgid ""
 "Filters the new alias to only letters and numbers found in the "
 "ASCII-96 set."
@@ -333,19 +235,7 @@ msgstr ""
 "Az új álnevek szűrése, hogy azok csak az ASCII-96 készletben "
 "megtalálható betűket és számokat tartalmazzanak."
 
-#: pathauto.admin.inc:138,138
-msgid ""
-"Filters the new alias to only letters and numbers found in the "
-"ASCII-96 set."
-msgstr ""
-"Az új álnevek szűrése, hogy azok csak az ASCII-96 készletben "
-"megtalálható betűket és számokat tartalmazzanak."
-
-#: pathauto.admin.inc:147
-msgid "Strings to Remove"
-msgstr "Eltávolítandó karaktersorozatok"
-
-#: pathauto.admin.inc:143,143
+#: pathauto.admin.inc:147,143
 msgid "Strings to Remove"
 msgstr "Eltávolítandó karaktersorozatok"
 
@@ -358,47 +248,25 @@ msgstr ""
 "webcím álnévből. Nem szabad itt írásjeleket elhelyezni, és nem "
 "szabad WYSIWYG szerkesztőt használni ezen a mezőn."
 
-#: pathauto.admin.inc:155
+#: pathauto.admin.inc:155,150
 msgid "Punctuation settings"
 msgstr "Írásjelek beállításai"
 
-#: pathauto.admin.inc:150,150
-msgid "Punctuation settings"
-msgstr "Írásjelek beállításai"
-
-#: pathauto.admin.inc:169
+#: pathauto.admin.inc:169,161
 msgid "Replace by separator"
 msgstr "Helyettesíti az elválasztóval"
 
-#: pathauto.admin.inc:161,161
-msgid "Replace by separator"
-msgstr "Helyettesíti az elválasztóval"
-
-#: pathauto.admin.inc:170
+#: pathauto.admin.inc:170,161
 msgid "No action (do not replace)"
 msgstr "Nincs művelet (nincs helyettesítés)"
 
-#: pathauto.admin.inc:161,161
-msgid "No action (do not replace)"
-msgstr "Nincs művelet (nincs helyettesítés)"
-
-#: pathauto.admin.inc:253
+#: pathauto.admin.inc:253,243
 msgid "Use -raw replacements for text to avoid problems with HTML entities."
 msgstr ""
 "A HTML entitásokkal való problémák elkerülésének érdekében "
 "-raw helyettesítők használata javasolt a szövegben."
 
-#: pathauto.admin.inc:243,243
-msgid "Use -raw replacements for text to avoid problems with HTML entities."
-msgstr ""
-"A HTML entitásokkal való problémák elkerülésének érdekében "
-"-raw helyettesítők használata javasolt a szövegben."
-
-#: pathauto.admin.inc:286
-msgid "Internal feed alias text (leave blank to disable)"
-msgstr "Belső csatorna álnév (a letiltáshoz üresen kell hagyni)"
-
-#: pathauto.admin.inc:276,276
+#: pathauto.admin.inc:286,276
 msgid "Internal feed alias text (leave blank to disable)"
 msgstr "Belső csatorna álnév (a letiltáshoz üresen kell hagyni)"
 
@@ -410,7 +278,7 @@ msgstr ""
 "Az RSS csatornák álnevéhez használt szöveg. Példák: „feed” "
 "és „0/feed”."
 
-#: pathauto.admin.inc:345
+#: pathauto.admin.inc:345,335
 msgid ""
 "You are using the token [%token] which is not valid within the scope "
 "of tokens where you are using it."
@@ -418,28 +286,7 @@ msgstr ""
 "Olyan vezérjel van megadva [%token], amely nem érvényes az adott "
 "láthatósági tartományban."
 
-#: pathauto.admin.inc:335,335
-msgid ""
-"You are using the token [%token] which is not valid within the scope "
-"of tokens where you are using it."
-msgstr ""
-"Olyan vezérjel van megadva [%token], amely nem érvényes az adott "
-"láthatósági tartományban."
-
-#: pathauto.admin.inc:353
-msgid ""
-"You are using the token [%token] which has a -raw companion available "
-"[%raw_token]. For Pathauto patterns you should use the -raw version of "
-"tokens unless you really know what you are doing. See the <a "
-"href=\"@pathauto-help\">Pathauto help</a> for more details."
-msgstr ""
-"Olyan token van megadva  [%token], melynek elérhető a -raw párja is "
-"[%raw_token]. A <em>Pathauto</em> mintáiból a -raw verziókat "
-"célszerű használni, kivéve, ha pontosan ismertek a "
-"következmények. További információk a <a "
-"href=\"@pathauto-help\"><em>Pathauto</em> súgóban</a>."
-
-#: pathauto.admin.inc:343,343
+#: pathauto.admin.inc:353,343
 msgid ""
 "You are using the token [%token] which has a -raw companion available "
 "[%raw_token]. For Pathauto patterns you should use the -raw version of "
@@ -482,27 +329,13 @@ msgstr "A törlendő álnevek kiválasztása"
 msgid "all aliases"
 msgstr "minden álnév"
 
-#: pathauto.admin.inc:422
+#: pathauto.admin.inc:422,410
 msgid "Delete all aliases. Number of aliases which will be deleted: %count."
 msgstr ""
 "Minden álnév törlése. A törlésre kerülő álnevek száma: "
 "%count."
 
-#: pathauto.admin.inc:410,410
-msgid "Delete all aliases. Number of aliases which will be deleted: %count."
-msgstr ""
-"Minden álnév törlése. A törlésre kerülő álnevek száma: "
-"%count."
-
-#: pathauto.admin.inc:433
-msgid ""
-"Delete aliases for all @label. Number of aliases which will be "
-"deleted: %count."
-msgstr ""
-"Minden @label álnév törlése. A törlésre kerülő álnevek "
-"száma: @count."
-
-#: pathauto.admin.inc:421,421
+#: pathauto.admin.inc:433,421
 msgid ""
 "Delete aliases for all @label. Number of aliases which will be "
 "deleted: %count."
@@ -522,41 +355,19 @@ msgstr ""
 "használatához.<br />Célszerű az adatbázis vagy az url_alias "
 "tábla mentése a művelet használata előtt.</p>"
 
-#: pathauto.admin.inc:441
+#: pathauto.admin.inc:441,429
 msgid "Delete aliases now!"
 msgstr "Álnevek törlése most!"
 
-#: pathauto.admin.inc:429,429
-msgid "Delete aliases now!"
-msgstr "Álnevek törlése most!"
-
-#: pathauto.admin.inc:455
+#: pathauto.admin.inc:455,443
 msgid "All of your path aliases have been deleted."
 msgstr "Minden útvonal álnév törlésre került."
 
-#: pathauto.admin.inc:443,443
-msgid "All of your path aliases have been deleted."
-msgstr "Minden útvonal álnév törlésre került."
-
-#: pathauto.admin.inc:460
+#: pathauto.admin.inc:460,448
 msgid "All of your %type path aliases have been deleted."
 msgstr "Minden %type útvonal álnév törlésre került."
 
-#: pathauto.admin.inc:448,448
-msgid "All of your %type path aliases have been deleted."
-msgstr "Minden %type útvonal álnév törlésre került."
-
-#: pathauto.admin.inc:297
-msgid "Bulk generation of index aliases completed, one alias generated."
-msgid_plural "Bulk generation of index aliases completed, @count aliases generated."
-msgstr[0] ""
-"A tárgymutató álnevek tömeges előállítása megtörtént, egy "
-"álnév lett generálva."
-msgstr[1] ""
-"A tárgymutató álnevek tömeges előállítása megtörtént, @count "
-"álnév lett generálva."
-
-#: pathauto.admin.inc:287,287
+#: pathauto.admin.inc:297,287
 msgid "Bulk generation of index aliases completed, one alias generated."
 msgid_plural "Bulk generation of index aliases completed, @count aliases generated."
 msgstr[0] ""
@@ -572,7 +383,7 @@ msgid_plural "Problem tokens: "
 msgstr[0] "Hibás vezérjel: "
 msgstr[1] "Hibás vezérjelek: "
 
-#: pathauto.inc:362
+#: pathauto.inc:362,315
 msgid ""
 "The automatically generated alias %original_alias conflicted with an "
 "existing alias. Alias changed to %alias."
@@ -580,27 +391,11 @@ msgstr ""
 "Az automatikusan létrehozott %original_alias álnév megegyezik egy "
 "már létezővel. Az új álnév: %alias."
 
-#: pathauto.inc:315,315
-msgid ""
-"The automatically generated alias %original_alias conflicted with an "
-"existing alias. Alias changed to %alias."
-msgstr ""
-"Az automatikusan létrehozott %original_alias álnév megegyezik egy "
-"már létezővel. Az új álnév: %alias."
-
-#: pathauto.inc:428
+#: pathauto.inc:428,381
 msgid "Ignoring alias %dst due to existing path conflict."
 msgstr "%dst álnév mellőzve, mivel egy létező útvonallal ütközik."
 
-#: pathauto.inc:381,381
-msgid "Ignoring alias %dst due to existing path conflict."
-msgstr "%dst álnév mellőzve, mivel egy létező útvonallal ütközik."
-
-#: pathauto.inc:435
-msgid "Ignoring alias %dst because it is the same as the internal path."
-msgstr "%dst álnév mellőzve, mivel megegyezik egy belső útvonallal."
-
-#: pathauto.inc:388,388
+#: pathauto.inc:435,388
 msgid "Ignoring alias %dst because it is the same as the internal path."
 msgstr "%dst álnév mellőzve, mivel megegyezik egy belső útvonallal."
 
@@ -622,263 +417,131 @@ msgstr ""
 msgid "Created new alias %dst for %src"
 msgstr "%src számára új %dst álnév készült"
 
-#: pathauto.inc:525
+#: pathauto.inc:525,477
 msgid "Double quotes \""
 msgstr "Idézőjel \""
 
-#: pathauto.inc:477,477
-msgid "Double quotes \""
-msgstr "Idézőjel \""
-
-#: pathauto.inc:526
+#: pathauto.inc:526,478
 msgid "Single quotes (apostrophe) '"
 msgstr "Aposztróf '"
 
-#: pathauto.inc:478,478
-msgid "Single quotes (apostrophe) '"
-msgstr "Aposztróf '"
-
-#: pathauto.inc:527
+#: pathauto.inc:527,479
 msgid "Back tick `"
 msgstr "Vissza aposztróf `"
 
-#: pathauto.inc:479,479
-msgid "Back tick `"
-msgstr "Vissza aposztróf `"
-
-#: pathauto.inc:528
+#: pathauto.inc:528,480
 msgid "Comma ,"
 msgstr "Vessző ,"
 
-#: pathauto.inc:480,480
-msgid "Comma ,"
-msgstr "Vessző ,"
-
-#: pathauto.inc:529
+#: pathauto.inc:529,481
 msgid "Period ."
 msgstr "Pont ."
 
-#: pathauto.inc:481,481
-msgid "Period ."
-msgstr "Pont ."
-
-#: pathauto.inc:530
+#: pathauto.inc:530,482
 msgid "Hyphen -"
 msgstr "Kötőjel -"
 
-#: pathauto.inc:482,482
-msgid "Hyphen -"
-msgstr "Kötőjel -"
-
-#: pathauto.inc:531
+#: pathauto.inc:531,483
 msgid "Underscore _"
 msgstr "Aláhúzás _"
 
-#: pathauto.inc:483,483
-msgid "Underscore _"
-msgstr "Aláhúzás _"
-
-#: pathauto.inc:532
+#: pathauto.inc:532,484
 msgid "Colon :"
 msgstr "Kettőspont :"
 
-#: pathauto.inc:484,484
-msgid "Colon :"
-msgstr "Kettőspont :"
-
-#: pathauto.inc:533
+#: pathauto.inc:533,485
 msgid "Semicolon ;"
 msgstr "Pontosvessző ;"
 
-#: pathauto.inc:485,485
-msgid "Semicolon ;"
-msgstr "Pontosvessző ;"
-
-#: pathauto.inc:534
+#: pathauto.inc:534,486
 msgid "Pipe |"
 msgstr "Csővezeték jel |"
 
-#: pathauto.inc:486,486
-msgid "Pipe |"
-msgstr "Csővezeték jel |"
-
-#: pathauto.inc:535
+#: pathauto.inc:535,487
 msgid "Left curly bracket {"
 msgstr "Nyitó kapcsos zárójel {"
 
-#: pathauto.inc:487,487
-msgid "Left curly bracket {"
-msgstr "Nyitó kapcsos zárójel {"
-
-#: pathauto.inc:536
+#: pathauto.inc:536,488
 msgid "Left square bracket ["
 msgstr "Nyitó szögletes zárójel ["
 
-#: pathauto.inc:488,488
-msgid "Left square bracket ["
-msgstr "Nyitó szögletes zárójel ["
-
-#: pathauto.inc:537
+#: pathauto.inc:537,489
 msgid "Right curly bracket }"
 msgstr "Záró kapcsos zárójel }"
 
-#: pathauto.inc:489,489
-msgid "Right curly bracket }"
-msgstr "Záró kapcsos zárójel }"
-
-#: pathauto.inc:538
+#: pathauto.inc:538,490
 msgid "Right square bracket ]"
 msgstr "Záró szögletes zárójel ]"
 
-#: pathauto.inc:490,490
-msgid "Right square bracket ]"
-msgstr "Záró szögletes zárójel ]"
-
-#: pathauto.inc:539
+#: pathauto.inc:539,491
 msgid "Plus +"
 msgstr "Összeadás jel +"
 
-#: pathauto.inc:491,491
-msgid "Plus +"
-msgstr "Összeadás jel +"
-
-#: pathauto.inc:540
+#: pathauto.inc:540,492
 msgid "Equal ="
 msgstr "Egyenlőség jel ="
 
-#: pathauto.inc:492,492
-msgid "Equal ="
-msgstr "Egyenlőség jel ="
-
-#: pathauto.inc:541
+#: pathauto.inc:541,493
 msgid "Asterisk *"
 msgstr "Szorzás jel *"
 
-#: pathauto.inc:493,493
-msgid "Asterisk *"
-msgstr "Szorzás jel *"
-
-#: pathauto.inc:542
+#: pathauto.inc:542,494
 msgid "Ampersand &"
 msgstr "Kereskedelmi és jel &"
 
-#: pathauto.inc:494,494
-msgid "Ampersand &"
-msgstr "Kereskedelmi és jel &"
-
-#: pathauto.inc:543
+#: pathauto.inc:543,495
 msgid "Percent %"
 msgstr "Százalék jel %"
 
-#: pathauto.inc:495,495
-msgid "Percent %"
-msgstr "Százalék jel %"
-
-#: pathauto.inc:544
+#: pathauto.inc:544,496
 msgid "Caret ^"
 msgstr "Kalap ^"
 
-#: pathauto.inc:496,496
-msgid "Caret ^"
-msgstr "Kalap ^"
-
-#: pathauto.inc:545
+#: pathauto.inc:545,497
 msgid "Dollar $"
 msgstr "Dollár $"
 
-#: pathauto.inc:497,497
-msgid "Dollar $"
-msgstr "Dollár $"
-
-#: pathauto.inc:546
+#: pathauto.inc:546,498
 msgid "Hash #"
 msgstr "Kettőskereszt #"
 
-#: pathauto.inc:498,498
-msgid "Hash #"
-msgstr "Kettőskereszt #"
-
-#: pathauto.inc:547
+#: pathauto.inc:547,499
 msgid "At @"
 msgstr "Kukac @"
 
-#: pathauto.inc:499,499
-msgid "At @"
-msgstr "Kukac @"
-
-#: pathauto.inc:548
+#: pathauto.inc:548,500
 msgid "Exclamation !"
 msgstr "Felkiáltójel !"
 
-#: pathauto.inc:500,500
-msgid "Exclamation !"
-msgstr "Felkiáltójel !"
-
-#: pathauto.inc:549
+#: pathauto.inc:549,501
 msgid "Tilde ~"
 msgstr "Hullámvonal ~"
 
-#: pathauto.inc:501,501
-msgid "Tilde ~"
-msgstr "Hullámvonal ~"
-
-#: pathauto.inc:550
+#: pathauto.inc:550,502
 msgid "Left parenthesis ("
 msgstr "Nyitó zárójel ("
 
-#: pathauto.inc:502,502
-msgid "Left parenthesis ("
-msgstr "Nyitó zárójel ("
-
-#: pathauto.inc:551
+#: pathauto.inc:551,503
 msgid "right parenthesis )"
 msgstr "Záró zárójel )"
 
-#: pathauto.inc:503,503
-msgid "right parenthesis )"
-msgstr "Záró zárójel )"
-
-#: pathauto.inc:552
+#: pathauto.inc:552,504
 msgid "Question mark ?"
 msgstr "Kérdőjel ?"
 
-#: pathauto.inc:504,504
-msgid "Question mark ?"
-msgstr "Kérdőjel ?"
-
-#: pathauto.inc:553
+#: pathauto.inc:553,505
 msgid "Less than <"
 msgstr "Kisebb, mint jel <"
 
-#: pathauto.inc:505,505
-msgid "Less than <"
-msgstr "Kisebb, mint jel <"
-
-#: pathauto.inc:554
+#: pathauto.inc:554,506
 msgid "Greater than >"
 msgstr "Nagyobb, mint jel >"
 
-#: pathauto.inc:506,506
-msgid "Greater than >"
-msgstr "Nagyobb, mint jel >"
-
-#: pathauto.inc:555
+#: pathauto.inc:555,507
 msgid "Back slash \\"
 msgstr "Visszaperjel \\"
 
-#: pathauto.inc:507,507
-msgid "Back slash \\"
-msgstr "Visszaperjel \\"
-
-#: pathauto.inc:485
-msgid "Pathauto"
-msgstr "Pathauto"
-
-#: pathauto.inc:437,437
-msgid "Pathauto"
-msgstr "Pathauto"
-
-#: pathauto.info:0,0
+#: pathauto.inc:485,437; pathauto.info:0
 msgid "Pathauto"
 msgstr "Pathauto"
 
@@ -1107,7 +770,7 @@ msgstr ""
 "Álnevek létrehozása minden olyan felhasználó-követő oldalhoz, "
 "amely még nem rendelkezik álnévvel."
 
-#: pathauto_user.inc:131
+#: pathauto_user.inc:131,107
 msgid "Bulk generation of users completed, one alias generated."
 msgid_plural "Bulk generation of users completed, @count aliases generated."
 msgstr[0] ""
@@ -1117,17 +780,7 @@ msgstr[1] ""
 "A felhasználók tömeges előállítása megtörtént, @count álnév "
 "lett generálva."
 
-#: pathauto_user.inc:107,107
-msgid "Bulk generation of users completed, one alias generated."
-msgid_plural "Bulk generation of users completed, @count aliases generated."
-msgstr[0] ""
-"A felhasználók tömeges előállítása megtörtént, egy álnév "
-"lett generálva."
-msgstr[1] ""
-"A felhasználók tömeges előállítása megtörtént, @count álnév "
-"lett generálva."
-
-#: pathauto_user.inc:153
+#: pathauto_user.inc:153,129
 msgid "Bulk generation of user blogs completed, one alias generated."
 msgid_plural "Bulk generation of user blogs completed, @count aliases generated."
 msgstr[0] ""
@@ -1137,29 +790,7 @@ msgstr[1] ""
 "A felhasználói blogok tömeges előállítása megtörtént, @count "
 "álnév lett generálva."
 
-#: pathauto_user.inc:129,129
-msgid "Bulk generation of user blogs completed, one alias generated."
-msgid_plural "Bulk generation of user blogs completed, @count aliases generated."
-msgstr[0] ""
-"A felhasználói blogok tömeges előállítása megtörtént, egy "
-"álnév lett generálva."
-msgstr[1] ""
-"A felhasználói blogok tömeges előállítása megtörtént, @count "
-"álnév lett generálva."
-
-#: pathauto_user.inc:177
-msgid "Bulk generation of user tracker pages completed, one alias generated."
-msgid_plural ""
-"Bulk generation of user tracker pages completed, @count aliases "
-"generated."
-msgstr[0] ""
-"A felhasználó-követő oldalak tömeges előállítása "
-"megtörtént, egy álnév lett generálva."
-msgstr[1] ""
-"A felhasználó-követő oldalak tömeges előállítása "
-"megtörtént, @count álnév lett generálva."
-
-#: pathauto_user.inc:153,153
+#: pathauto_user.inc:177,153
 msgid "Bulk generation of user tracker pages completed, one alias generated."
 msgid_plural ""
 "Bulk generation of user tracker pages completed, @count aliases "
@@ -1231,19 +862,13 @@ msgstr ""
 "                  A nyers vezérjelek hibás használata problémákat "
 "okozhat a <em>Pathauto</em> modul írásjel szűrő rendszerében.</p>"
 
-#: pathauto.module:154
+#: pathauto.module:154,164
 msgid "As [cat], but including its supercategories separated by /."
 msgstr ""
 "Mint a [cat], de beleértve annak / jellel elválasztott "
 "szülőkategóriáit is."
 
-#: pathauto.module:164,164
-msgid "As [cat], but including its supercategories separated by /."
-msgstr ""
-"Mint a [cat], de beleértve annak / jellel elválasztott "
-"szülőkategóriáit is."
-
-#: pathauto.module:155
+#: pathauto.module:155,165
 msgid ""
 "As [cat-raw], but including its supercategories separated by /. "
 "WARNING - raw user input."
@@ -1251,43 +876,17 @@ msgstr ""
 "Mint a [cat-raw], de beleértve annak / jellel elválasztott "
 "szülőkategóriáit is. FIGYELEM - nyers felhasználói bevitel."
 
-#: pathauto.module:165,165
-msgid ""
-"As [cat-raw], but including its supercategories separated by /. "
-"WARNING - raw user input."
-msgstr ""
-"Mint a [cat-raw], de beleértve annak / jellel elválasztott "
-"szülőkategóriáit is. FIGYELEM - nyers felhasználói bevitel."
-
-#: pathauto.module:156
+#: pathauto.module:156,161,166,171
 msgid "URL alias for the term."
 msgstr "Webcím álnév a kifejezésnek."
 
-#: pathauto.module:161,161
-msgid "URL alias for the term."
-msgstr "Webcím álnév a kifejezésnek."
-
-#: pathauto.module:166,166
-msgid "URL alias for the term."
-msgstr "Webcím álnév a kifejezésnek."
-
-#: pathauto.module:171,171
-msgid "URL alias for the term."
-msgstr "Webcím álnév a kifejezésnek."
-
-#: pathauto.module:159
+#: pathauto.module:159,169
 msgid "As [term], but including its supercategories separated by /."
 msgstr ""
 "Mint a [term], de beleértve annak / jellel elválasztott "
 "szülőkategóriáit is."
 
-#: pathauto.module:169,169
-msgid "As [term], but including its supercategories separated by /."
-msgstr ""
-"Mint a [term], de beleértve annak / jellel elválasztott "
-"szülőkategóriáit is."
-
-#: pathauto.module:160
+#: pathauto.module:160,170
 msgid ""
 "As [term-raw], but including its supercategories separated by /. "
 "WARNING - raw user input."
@@ -1295,19 +894,7 @@ msgstr ""
 "Mint a [term-raw], de beleértve annak / jellel elválasztott "
 "szülőkategóriáit is. FIGYELEM - nyers felhasználói bevitel."
 
-#: pathauto.module:170,170
-msgid ""
-"As [term-raw], but including its supercategories separated by /. "
-"WARNING - raw user input."
-msgstr ""
-"Mint a [term-raw], de beleértve annak / jellel elválasztott "
-"szülőkategóriáit is. FIGYELEM - nyers felhasználói bevitel."
-
-#: pathauto.module:166
-msgid "URL alias for the parent book."
-msgstr "Webcím álnév a szülő könyvnek"
-
-#: pathauto.module:176,176
+#: pathauto.module:166,176
 msgid "URL alias for the parent book."
 msgstr "Webcím álnév a szülő könyvnek"
 
@@ -1331,16 +918,7 @@ msgstr "felhasználó-követök"
 msgid "forums"
 msgstr "fórumok"
 
-#: pathauto.module:274
-msgid ""
-"An alias will be generated for you. If you wish to create your own "
-"alias below, untick this option."
-msgstr ""
-"Egy új álnév automatikusan létre fog jönni a tartalomhoz. Ha "
-"saját álnév szükséges, akkor ki kell kapcsolni ezt a "
-"lehetőséget."
-
-#: pathauto.module:284,284
+#: pathauto.module:274,284
 msgid ""
 "An alias will be generated for you. If you wish to create your own "
 "alias below, untick this option."
@@ -1358,51 +936,27 @@ msgstr ""
 "beállítása a <a href=\"@pathauto\"><em>Pathauto</em> "
 "beállításainál</a>."
 
-#: pathauto.module:284
+#: pathauto.module:284,294
 msgid "Automatic alias"
 msgstr "Automatikus álnév"
 
-#: pathauto.module:294,294
-msgid "Automatic alias"
-msgstr "Automatikus álnév"
-
-#: pathauto.module:309
+#: pathauto.module:309,319
 msgid "Update path alias"
 msgstr "Útvonal álnév frissítése"
 
-#: pathauto.module:319,319
-msgid "Update path alias"
-msgstr "Útvonal álnév frissítése"
-
-#: pathauto.module:39
+#: pathauto.module:39,49
 msgid "administer pathauto"
 msgstr "pathauto adminisztrációja"
 
-#: pathauto.module:49,49
-msgid "administer pathauto"
-msgstr "pathauto adminisztrációja"
-
-#: pathauto.module:39
+#: pathauto.module:39,49
 msgid "notify of path changes"
 msgstr "értesítés útvonal változásról"
 
-#: pathauto.module:49,49
-msgid "notify of path changes"
-msgstr "értesítés útvonal változásról"
-
-#: pathauto.module:47
+#: pathauto.module:47,57
 msgid "Automated alias settings"
 msgstr "Automatikus álnév beállításai"
 
-#: pathauto.module:57,57
-msgid "Automated alias settings"
-msgstr "Automatikus álnév beállításai"
-
-#: pathauto.module:58
-msgid "Delete aliases"
-msgstr "Álnevek törlése"
-
-#: pathauto.module:68,68
+#: pathauto.module:58,68
 msgid "Delete aliases"
 msgstr "Álnevek törlése"
 
@@ -1410,15 +964,7 @@ msgstr "Álnevek törlése"
 msgid "pathauto"
 msgstr "pathauto"
 
-#: pathauto.module:27
-msgid ""
-"Provides a mechanism for modules to automatically generate aliases for "
-"the content they manage."
-msgstr ""
-"Lehetőséget biztosít a moduloknak, hogy automatikus álneveket "
-"hozzanak létre az általuk kezelt tartalmakhoz."
-
-#: pathauto.info:0,0
+#: pathauto.module:27; pathauto.info:0
 msgid ""
 "Provides a mechanism for modules to automatically generate aliases for "
 "the content they manage."
