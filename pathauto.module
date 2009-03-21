@@ -198,7 +198,6 @@ function pathauto_path_alias_types() {
  * Implementation of hook_nodeapi().
  */
 function pathauto_nodeapi(&$node, $op, $teaser, $page) {
-  _pathauto_include();
   if (module_exists('path')) {
     switch ($op) {
       case 'presave':
@@ -216,6 +215,7 @@ function pathauto_nodeapi(&$node, $op, $teaser, $page) {
         break;
       case 'insert':
       case 'update':
+        _pathauto_include();
         // Get the specific pattern or the default
         if (variable_get('language_content_type_'. $node->type, 0)) {
           $pattern = trim(variable_get('pathauto_node_'. $node->type .'_'. $node->language .'_pattern', FALSE));
@@ -334,12 +334,12 @@ function pathauto_node_operations_update($nodes) {
  * Implementation of hook_taxonomy().
  */
 function pathauto_taxonomy($op, $type, $object = NULL) {
-  _pathauto_include();
   switch ($type) {
     case 'term':
       switch ($op) {
         case 'insert':
         case 'update':
+          _pathauto_include();
           // Use the category info to automatically create an alias
           $category = (object) $object;
           if ($category->name) {
@@ -376,10 +376,10 @@ function pathauto_taxonomy($op, $type, $object = NULL) {
  * Implementation of hook_user() for users, trackers, and blogs.
  */
 function pathauto_user($op, &$edit, &$user, $category = FALSE) {
-  _pathauto_include();
   switch ($op) {
     case 'insert':
     case 'update':
+      _pathauto_include();
       // Use the username to automatically create an alias
       $pathauto_user = (object) array_merge((array) $user, $edit);
       if ($user->name) {
