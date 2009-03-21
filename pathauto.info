@@ -3,4 +3,5 @@ name = Pathauto
 description = Provides a mechanism for modules to automatically generate aliases for the content they manage.
 dependencies[] = path
 dependencies[] = token
+suggests[] = path_redirect
 core = 6.x
