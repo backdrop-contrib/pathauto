@@ -70,11 +70,10 @@ function pathauto_menu() {
  * Include all Pathauto include files.
  */
 function _pathauto_include() {
-  $pathauto_path = drupal_get_path('module', 'pathauto');
-  require_once("$pathauto_path/pathauto.inc");
-  require_once("$pathauto_path/pathauto_node.inc");
-  require_once("$pathauto_path/pathauto_taxonomy.inc");
-  require_once("$pathauto_path/pathauto_user.inc");
+  module_load_include('inc', 'pathauto');
+  module_load_include('inc', 'pathauto', 'pathauto_node');
+  module_load_include('inc', 'pathauto', 'pathauto_taxonomy');
+  module_load_include('inc', 'pathauto', 'pathauto_user');
 }
 
 /**
