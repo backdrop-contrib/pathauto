@@ -319,6 +319,7 @@ function pathauto_node_operations() {
  *   Array of node nid's.
  */
 function pathauto_node_operations_update($nodes) {
+  _pathauto_include();
   foreach ($nodes as $nid) {
     $node = node_load($nid);
     $placeholders = pathauto_get_placeholders('node', $node);
