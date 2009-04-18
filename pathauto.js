@@ -10,13 +10,13 @@ if (Drupal.jsEnabled) {
       if ($("#edit-pathauto-perform-alias").attr("checked")) {
         // Auto-alias checked; disable input.
         $("#edit-path").attr("disabled","disabled");
-        $("#edit-path-wrapper > div[@class=description]").slideUp('fast');
+        $("#edit-path-wrapper > div[class=description]").slideUp('fast');
       }
       else {
         // Auto-alias unchecked; enable input.
         $("#edit-path").removeAttr("disabled");
         $("#edit-path")[0].focus();
-        $("#edit-path-wrapper > div[@class=description]").slideDown('fast');
+        $("#edit-path-wrapper > div[class=description]").slideDown('fast');
       }
     });
   });
