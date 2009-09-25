@@ -388,7 +388,7 @@ function pathauto_user($op, &$edit, &$user, $category = FALSE) {
         $alias = pathauto_create_alias('user', $op, $placeholders, $src, $user->uid);
 
         if (module_exists('blog')) {
-          $new_user = $user;
+          $new_user = drupal_clone($user);
           if ($category == 'account') {
             $new_user->roles = isset($edit['roles']) ? $edit['roles'] : array();
             $new_user->roles[DRUPAL_AUTHENTICATED_RID] = t('authenticated user'); // Add this back
