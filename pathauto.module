@@ -253,47 +253,68 @@ function pathauto_nodeapi(&$node, $op, $teaser, $page) {
  * into the path module's fieldset in the node form.
  */
 function pathauto_form_alter(&$form, $form_state, $form_id) {
-  // Only do this for node forms
-  if (isset($form['#id']) && ($form['#id'] == 'node-form') && arg(0) == 'node') {
+  // Process only node forms.
+  if (isset($form['type']) && isset($form['#node']) && $form['type']['#value'] .'_node_form' == $form_id) {
     $node = $form['#node'];
+    $pattern = FALSE;
 
-    // See if there is a pathauto pattern or default applicable
+    // Find if there is an automatic alias pattern for this node type.
     if (isset($form['language'])) {
       $language = isset($form['language']['#value']) ? $form['language']['#value'] : $form['language']['#default_value'];
       $pattern = trim(variable_get('pathauto_node_'. $form['type']['#value'] .'_'. $language .'_pattern', ''));
     }
-    if (empty($pattern)) {
+    if (!$pattern) {
       $pattern = trim(variable_get('pathauto_node_'. $form['type']['#value'] .'_pattern', ''));
-      if (empty($pattern)) {
+      if (!$pattern) {
         $pattern = trim(variable_get('pathauto_node_pattern', ''));
       }
     }
-    // If there is a pattern AND the user is allowed to create aliases AND the path textbox is present on this form
-    if (!empty($pattern) && user_access('create url aliases') && isset($form['path']['path'])) {
-      $output = t('An alias will be generated for you. If you wish to create your own alias below, untick this option.');
-      if (user_access('administer pathauto')) {
-        $output .= ' '. t('To control the format of the generated aliases, see the <a href="@pathauto">Pathauto settings</a>.', array('@pathauto' => url('admin/build/path/pathauto')));
+
+    // If there is a pattern, show the automatic alias checkbox.
+    if ($pattern) {
+      if (!isset($node->pathauto_perform_alias)) {
+        if (isset($node->nid)) {
+          // If this is not a new node, compare it's current alias to the
+          // alias that would be genereted by pathauto. If they are the same,
+          // then keep the automatic alias enabled.
+          _pathauto_include();
+          $placeholders = pathauto_get_placeholders('node', $node);
+          $pathauto_alias = pathauto_create_alias('node', 'return', $placeholders, "node/{$node->nid}", $node->nid, $node->type, $node->language);
+          $node->pathauto_perform_alias = isset($node->path) && $node->path == $pathauto_alias;
+        }
+        else {
+          // If this is a new node, enable the automatic alias.
+          $node->pathauto_perform_alias = TRUE;
+        }
       }
 
+      // Add JavaScript that will disable the path textfield when the automatic
+      // alias checkbox is checked.
       drupal_add_js(drupal_get_path('module', 'pathauto') .'/pathauto.js');
-      $form['path']['#collapsed'] = FALSE;
 
       $form['path']['pathauto_perform_alias'] = array(
         '#type' => 'checkbox',
         '#title' => t('Automatic alias'),
-        '#default_value' => isset($node->pathauto_perform_alias) ? $node->pathauto_perform_alias : TRUE,
-        '#description' => $output,
+        '#default_value' => $node->pathauto_perform_alias,
+        '#description' => t('An alias will be generated for you. If you wish to create your own alias below, uncheck this option.'),
         '#weight' => -1,
       );
 
-      if (!empty($node->pathauto_perform_alias) && !empty($node->old_alias) && $node->path == '') {
+      if (user_access('administer pathauto')) {
+        $form['path']['pathauto_perform_alias']['#description'] .= ' '. t('To control the format of the generated aliases, see the <a href="@pathauto">automated alias settings</a>.', array('@pathauto' => url('admin/build/path/pathauto')));
+      }
+
+      if ($node->pathauto_perform_alias && !empty($node->old_alias) && empty($node->path)) {
         $form['path']['path']['#default_value'] = $node->old_alias;
         $node->path = $node->old_alias;
       }
 
-      //For Pathauto to remember the old alias and prevent the Path-module from deleteing it when Pathauto wants to preserve it
+      // For Pathauto to remember the old alias and prevent the Path-module from deleteing it when Pathauto wants to preserve it
       if (isset($node->path)) {
-        $form['path']['old_alias'] = array('#type' => 'value', '#value' => $node->path);
+        $form['path']['old_alias'] = array(
+          '#type' => 'value',
+          '#value' => $node->path,
+        );
       }
     }
   }
