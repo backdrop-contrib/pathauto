@@ -246,6 +246,9 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
     // Trim any leading or trailing separators (note the need to
     $output = preg_replace("/^$seppattern+|$seppattern+$/", '', $output);
 
+    // Replace trailing separators around slashes.
+    $output = preg_replace("/$seppattern\/|\/$seppattern/", "/", $output);
+
     // Replace multiple separators with a single one
     $output = preg_replace("/$seppattern+/", "$separator", $output);
   }
