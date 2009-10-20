@@ -66,8 +66,9 @@ class PathautoTestCase extends DrupalWebTestCase {
     // Create node for testing.
     $random_title = $this->randomName(10); // this contains _
     $expected_alias = 'content/simpletest-title-'. strtolower($random_title);
+    // Extra characters at the beginning and end of the title tests that extra separator characters are removed.
     $edit = array(
-      'title' => 'Simpletest title '. $random_title,
+      'title' => ' Simpletest title '. $random_title .' [',
       'body'  => 'Simpletest body '. $this->randomName(10),
     );
 
