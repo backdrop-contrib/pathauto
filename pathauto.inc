@@ -243,14 +243,19 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
     else {
       $seppattern = '\\'. $separator;
     }
-    // Trim any leading or trailing separators (note the need to
+    // Trim any leading or trailing separators.
     $output = preg_replace("/^$seppattern+|$seppattern+$/", '', $output);
 
     // Replace trailing separators around slashes.
     $output = preg_replace("/$seppattern\/|\/$seppattern/", "/", $output);
 
-    // Replace multiple separators with a single one
+    // Replace multiple separators with a single one.
     $output = preg_replace("/$seppattern+/", "$separator", $output);
+
+    // Optionally convert to lower case.
+    if (variable_get('pathauto_case', PATHAUTO_CASE_LOWER)) {
+      $output = drupal_strtolower($output);
+    }
   }
 
   // Enforce the maximum component length
@@ -331,13 +336,8 @@ function pathauto_create_alias($module, $op, $placeholders, $src, $entity_id, $t
     $old_alias = $update_data['old_alias'];
   }
 
-  // Replace the placeholders with the values provided by the module,
-  // and optionally lower-case the result
+  // Replace the placeholders with the values provided by the module.
   $alias = str_replace($placeholders['tokens'], $placeholders['values'], $pattern);
-
-  if (variable_get('pathauto_case', PATHAUTO_CASE_LOWER)) {
-    $alias = drupal_strtolower($alias);
-  }
 
   // Two or more slashes should be collapsed into one
   $alias = preg_replace('/\/+/', '/', $alias);
