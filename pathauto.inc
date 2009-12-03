@@ -453,7 +453,7 @@ function _pathauto_set_alias($src, $dst, $entity_type, $entity_id, $pid = NULL, 
         && function_exists('path_redirect_save')) {
       if (!empty($old_alias)) {
         $redirect = array(
-          'path' => $old_alias,
+          'source' => $old_alias,
           'redirect' => $src,
         );
         path_redirect_save($redirect);
