@@ -1,23 +1,30 @@
 // $Id$
-if (Drupal.jsEnabled) {
-  $(document).ready(function() {
-    if ($("#edit-pathauto-perform-alias").size() && $("#edit-pathauto-perform-alias").attr("checked")) {
-      // Disable input and hide its description.
-      $("#edit-path").attr("disabled","disabled");
-      $("#edit-path-wrapper > div.description").hide(0);
-    }
-    $("#edit-pathauto-perform-alias").bind("click", function() {
-      if ($("#edit-pathauto-perform-alias").attr("checked")) {
-        // Auto-alias checked; disable input.
-        $("#edit-path").attr("disabled","disabled");
-        $("#edit-path-wrapper > div[class=description]").slideUp('fast');
+(function ($) {
+
+Drupal.behaviors.pathauto = {
+  attach: function(context, settings) {
+    $("#edit-path-pathauto-perform-alias", context).once("pathauto", function () {
+      var path_input = $("#edit-path-alias", context);
+      if ($(this, context).size() && $(this, context).attr("checked")) {
+        // Disable input and hide its description.
+        path_input.attr("disabled", "disabled");
+        path_input.parent().find("div.description", context).hide(0);
       }
-      else {
-        // Auto-alias unchecked; enable input.
-        $("#edit-path").removeAttr("disabled");
-        $("#edit-path")[0].focus();
-        $("#edit-path-wrapper > div[class=description]").slideDown('fast');
-      }
+      $(this, context).bind("click", function() {
+        if ($(this, context).attr("checked")) {
+          // Auto-alias checked; disable input.
+          path_input.attr("disabled", "disabled");
+          path_input.parent().find("div.description", context).slideUp('fast');
+        }
+        else {
+          // Auto-alias unchecked; enable input.
+          path_input.removeAttr("disabled");
+          path_input[0].focus();
+          path_input.parent().find("div.description", context).slideDown('fast');
+        }
+      });
     });
-  });
-}
+  }
+};
+
+})(jQuery);

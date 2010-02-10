@@ -2,6 +2,14 @@
 name = Pathauto
 description = Provides a mechanism for modules to automatically generate aliases for the content they manage.
 dependencies[] = path
-dependencies[] = token
 suggests[] = path_redirect
-core = 6.x
+core = 7.x
+
+files[] = pathauto.admin.inc
+files[] = pathauto.inc
+files[] = pathauto.module
+files[] = pathauto_node.inc
+files[] = pathauto_taxonomy.inc
+files[] = pathauto_user.inc
+files[] = pathauto.install
+files[] = tests/pathauto.test

@@ -22,8 +22,8 @@ replacement of Á with A) then you will need to install the Transliteration
 module, which can be found at http://drupal.org/project/transliteration
 
 Once you've installed and enabled the module, simply go to
-admin/build/path/pathauto and check the "Transliterate prior to creating alias"
-box and path aliases should now be transliterated automagically.
+admin/config/search/path/pathauto and check the "Transliterate prior to
+creating alias" box and path aliases should now be transliterated automagically.
 
 **Upgrading from previous versions:
 If you are upgrading from Pathauto 5.x-1.x to 5.x-2.x (or 6.x-2.x) then you 
