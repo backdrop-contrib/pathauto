@@ -129,7 +129,7 @@ function pathauto_admin_settings($form) {
   );
   $form['general']['pathauto_reduce_ascii'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Reduce strings to letters and numbers from ASCII-96'),
+    '#title' => t('Reduce strings to letters and numbers'),
     '#default_value' => variable_get('pathauto_reduce_ascii', FALSE),
     '#description' => t('Filters the new alias to only letters and numbers found in the ASCII-96 set.'),
   );

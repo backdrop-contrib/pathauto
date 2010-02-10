@@ -215,7 +215,7 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
     }
   }
 
-  // Reduce to the subset of ASCII96 letters and numbers
+  // Reduce strings to letters and numbers
   if (variable_get('pathauto_reduce_ascii', FALSE)) {
     $pattern = '/[^a-zA-Z0-9\/]+/ ';
     $output = preg_replace($pattern, $separator, $output);
