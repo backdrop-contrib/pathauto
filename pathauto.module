@@ -113,8 +113,7 @@ function pathauto_tokens($type, $tokens, array $data = array(), array $options =
           $parents = taxonomy_get_parents_all($term->tid);
           array_shift($parents);
           foreach ($parents as $parent) {
-            // Replace any '/' characters in individual terms which might create confusing URLs
-            $catpath = '/' . pathauto_cleanstring(check_plain(preg_replace('/\//', '', $parent->name))) . $catpath;
+            $catpath = '/' . pathauto_cleanstring(check_plain($parent->name)) . $catpath;
           }
 
           $catpath = $catpath . '/' . check_plain($term->name);
