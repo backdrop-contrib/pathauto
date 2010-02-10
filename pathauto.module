@@ -319,7 +319,7 @@ function pathauto_form_alter(&$form, &$form_state, $form_id) {
     // If there is a pattern, show the automatic alias checkbox.
     if ($pattern) {
       if (!isset($node->pathauto_perform_alias)) {
-        if (isset($node->nid)) {
+        if (!empty($node->nid)) {
           // If this is not a new node, compare it's current alias to the
           // alias that would be genereted by pathauto. If they are the same,
           // then keep the automatic alias enabled.
