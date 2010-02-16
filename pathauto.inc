@@ -115,7 +115,7 @@ define('PREG_CLASS_ALNUM',
  * @return
  *   TRUE if an alias exists, FALSE if not.
  */
-function _pathauto_alias_exists($alias, $source, $language = '') {
+function _pathauto_alias_exists($alias, $source, $language = LANGUAGE_NONE) {
   $alias_pid = db_query_range("SELECT pid FROM {url_alias} WHERE alias = :alias AND source <> :source AND language = :lang", 0, 1, array(':alias' => $alias, ':source' => $source, ':lang' => $language))->fetchColumn();
   if (function_exists('path_redirect_delete_multiple')) {
     // Delete from path_redirect the exact same alias to the same node.
@@ -288,7 +288,7 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
  * @return
  *   The alias that was created.
  */
-function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $language = '') {
+function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $language = LANGUAGE_NONE) {
   if (($op != 'bulkupdate') and variable_get('pathauto_verbose', FALSE) && user_access('notify of path changes')) {
     $verbose = TRUE;
   }
@@ -430,7 +430,7 @@ function _pathauto_path_is_callback($path) {
  * @param $language
  *   The path's language.
  */
-function _pathauto_set_alias($source, $alias, $pid = NULL, $verbose = FALSE, $old_alias = NULL, $language = '') {
+function _pathauto_set_alias($source, $alias, $pid = NULL, $verbose = FALSE, $old_alias = NULL, $language = LANGUAGE_NONE) {
   // Alert users that an existing callback cannot be overridden automatically
   if (_pathauto_path_is_callback($alias)) {
     if ($verbose && user_access('notify of path changes')) {
