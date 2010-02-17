@@ -65,19 +65,18 @@ class PathautoTestCase extends DrupalWebTestCase {
     // Create node for testing.
     $random_title = $this->randomName(10); // this contains _
     $expected_alias = 'content/simpletest-title-' . strtolower($random_title);
-    $langcode = FIELD_LANGUAGE_NONE;
+    $langcode = LANGUAGE_NONE;
     // Extra characters at the beginning and end of the title tests that extra separator characters are removed.
     $edit = array(
-      "title[$langcode][0][value]" => ' Simpletest title ' . $random_title . ' [',
+      "title" => ' Simpletest title ' . $random_title . ' [',
       "body[$langcode][0][value]"  => 'Simpletest body ' . $this->randomName(10),
     );
-    $title = $edit["title[$langcode][0][value]"];
 
     $this->drupalPost('node/add/' . str_replace('_', '-', $this->content_type->type), $edit, 'Save');
-    $this->assertRaw(t('@type %title has been created.', array('@type' => $this->content_type->name, '%title' => $title)), 'Test node submitted.', 'Functionality test');
+    $this->assertRaw(t('@type %title has been created.', array('@type' => $this->content_type->name, '%title' => $edit['title'])), 'Test node submitted.', 'Functionality test');
 
     // Look for alias generated in the form.
-    $nodes = node_load_multiple(array(), array('title' => $title));
+    $nodes = node_load_multiple(array(), array('title' => $edit['title']));
     $node = reset($nodes);
     $this->drupalGet('node/' . $node->nid . '/edit');
 
@@ -87,6 +86,6 @@ class PathautoTestCase extends DrupalWebTestCase {
 
     // Check whether the alias actually works.
     $this->drupalGet($expected_alias);
-    $this->assertRaw($title, 'Node accessible through alias.', 'Functionality test');
+    $this->assertRaw($edit['title'], 'Node accessible through alias.', 'Functionality test');
   }
 }
