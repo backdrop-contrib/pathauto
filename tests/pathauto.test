@@ -9,15 +9,37 @@
  */
 
 /**
- * @todo
+ * Unit tests for Pathauto functions.
  */
-class PathautoTestCase extends DrupalWebTestCase {
+class PathautoUnitTestCase extends DrupalWebTestCase {
+  public static function getInfo() {
+    return array(
+      'name' => 'Pathauto unit tests',
+      'description' => 'Unit tests for Pathauto functions.',
+      'group' => 'Pathauto',
+    );
+  }
+
+  function setUp() {
+    parent::setUp('path', 'pathauto');
+    module_load_include('inc', 'pathauto');
+  }
+
+  /**
+   * Test _pathauto_get_schema_alias_maxlength().
+   */
+  function testGetSchemaAliasMaxLength() {
+    $this->assertIdentical(_pathauto_get_schema_alias_maxlength(), 255);
+  }
+}
+
+/**
+ * Test basic pathauto functionality.
+ */
+class PathautoFunctionalTestCase extends DrupalWebTestCase {
   private $web_user;
   private $content_type;
 
-  /**
-   * Implementation of getInfo().
-   */
   public static function getInfo() {
     return array(
       'name' => 'Pathauto basic tests',
@@ -26,9 +48,6 @@ class PathautoTestCase extends DrupalWebTestCase {
     );
   }
 
-  /**
-   * Implementation of setUp().
-   */
   function setUp() {
     parent::setUp('path', 'pathauto');
 
@@ -48,9 +67,6 @@ class PathautoTestCase extends DrupalWebTestCase {
     variable_set('pathauto_max_length', '100');
     variable_set('pathauto_max_component_length', '100');
     variable_set('pathauto_punctuation_underscore', '2'); // no action
-
-    $this->assertTrue(module_exists('pathauto'), t('Pathauto module is loaded.'));
-    $this->assertTrue(module_exists('path'), t('Path module is loaded.'));
   }
 
   /**

@@ -24,9 +24,10 @@
 function pathauto_help($path, $arg) {
   switch ($path) {
     case 'admin/help#pathauto':
+      module_load_include('inc', 'pathauto');
       $output = '<p>' . t('Provides a mechanism for modules to automatically generate aliases for the content they manage.') . '</p>';
       $output .= '<h2>' . t('Settings') . '</h2>';
-      $output .= '<p>' . t('The <strong>maximum alias length</strong> and <strong>maximum component length</strong> values default to 100 and have a limit of 128 from Pathauto. This length is limited by the length of the "alias" column of the url_alias database table. The default database schema for this column is 128. If you set a length that is equal to that of the one set in the "alias" column it will cause problems in situations where the system needs to append additional words to the aliased URL. For example, URLs generated for feeds will have "/feed" added to the end. You should enter a value that is the length of the "alias" column minus the length of any strings that might get added to the end of the URL. The length of strings that might get added to the end of your URLs depends on which modules you have enabled and on your Pathauto settings. The recommended and default value is 100.') . '</p>';
+      $output .= '<p>' . t('The <strong>maximum alias length</strong> and <strong>maximum component length</strong> values default to 100 and have a limit of @max from Pathauto. This length is limited by the length of the "alias" column of the url_alias database table. The default database schema for this column is @max. If you set a length that is equal to that of the one set in the "alias" column it will cause problems in situations where the system needs to append additional words to the aliased URL. For example, URLs generated for feeds will have "/feed" added to the end. You should enter a value that is the length of the "alias" column minus the length of any strings that might get added to the end of the URL. The length of strings that might get added to the end of your URLs depends on which modules you have enabled and on your Pathauto settings. The recommended and default value is 100.', array('@max' => _pathauto_get_schema_alias_maxlength())) . '</p>';
       return $output;
   }
 }
