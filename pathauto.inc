@@ -583,7 +583,7 @@ function _pathauto_truncate_chars($string, $length, $separator) {
  */
 function _pathauto_get_schema_alias_maxlength() {
   $maxlength = &drupal_static(__FUNCTION__);
-  if (!isset($length)) {
+  if (!isset($maxlength)) {
     $schema = drupal_get_schema('url_alias');
     $maxlength = $schema['fields']['alias']['length'];
   }
