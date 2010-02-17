@@ -37,7 +37,7 @@ class PathautoUnitTestCase extends DrupalWebTestCase {
  * Test basic pathauto functionality.
  */
 class PathautoFunctionalTestCase extends DrupalWebTestCase {
-  private $web_user;
+  private $admin_user;
   private $content_type;
 
   public static function getInfo() {
@@ -52,7 +52,7 @@ class PathautoFunctionalTestCase extends DrupalWebTestCase {
     parent::setUp('path', 'pathauto');
 
     $this->content_type = $this->drupalCreateContentType();
-    $this->web_user = $this->drupalCreateUser(array(
+    $this->admin_user = $this->drupalCreateUser(array(
       'administer pathauto',
       'create ' . $this->content_type->type . ' content',
       'edit own ' . $this->content_type->type . ' content',
@@ -62,46 +62,57 @@ class PathautoFunctionalTestCase extends DrupalWebTestCase {
 
     // Set pathauto settings we assume to be as-is in this test.
     variable_set('pathauto_node_' . $this->content_type->type . '_pattern', 'content/[node:title]');
-    variable_set('pathauto_separator', '-');
-    variable_set('pathauto_case', '1'); // lowercase
-    variable_set('pathauto_max_length', '100');
-    variable_set('pathauto_max_component_length', '100');
+    //variable_set('pathauto_separator', '-');
+    //variable_set('pathauto_case', '1'); // lowercase
+    //variable_set('pathauto_max_length', '100');
+    //variable_set('pathauto_max_component_length', '100');
     variable_set('pathauto_punctuation_underscore', '2'); // no action
+
+    $this->drupalLogin($this->admin_user);
   }
 
   /**
    * Basic functional testing of Pathauto.
    */
-  function testPathautoFunctionalTest() {
-    $this->drupalLogin($this->web_user);
-
-    $this->drupalGet('admin/config/search/path/pathauto');
-    $this->assertRaw(t('General settings'), 'Settings page displayed.', 'Functionality test');
-
+  function testNodeEditing() {
     // Create node for testing.
     $random_title = $this->randomName(10); // this contains _
-    $expected_alias = 'content/simpletest-title-' . strtolower($random_title);
-    $langcode = LANGUAGE_NONE;
-    // Extra characters at the beginning and end of the title tests that extra separator characters are removed.
-    $edit = array(
-      "title" => ' Simpletest title ' . $random_title . ' [',
-      "body[$langcode][0][value]"  => 'Simpletest body ' . $this->randomName(10),
-    );
-
-    $this->drupalPost('node/add/' . str_replace('_', '-', $this->content_type->type), $edit, 'Save');
-    $this->assertRaw(t('@type %title has been created.', array('@type' => $this->content_type->name, '%title' => $edit['title'])), 'Test node submitted.', 'Functionality test');
+    $title = ' Simpletest title ' . $random_title . ' [';
+    $automatic_alias = 'content/simpletest-title-' . strtolower($random_title);
+    $node = $this->drupalCreateNode(array('title' => $title, 'type' => $this->content_type->type));
 
     // Look for alias generated in the form.
-    $nodes = node_load_multiple(array(), array('title' => $edit['title']));
-    $node = reset($nodes);
     $this->drupalGet('node/' . $node->nid . '/edit');
-
-    $this->assertPattern('!<input[^>]+name="path\[alias\]"[^>]+value="' . $expected_alias . '"!', 'Proper automated alias generated.', 'Functionality test');
-    // Look for checkbox.
-    $this->assertPattern('!<input[^>]+name="path\[pathauto_perform_alias\]"[^>]+checked="checked"!', 'Automated alias turned on.', 'Functionality test');
+    $this->assertFieldChecked('edit-path-pathauto-perform-alias');
+    $this->assertFieldByName('path[alias]', $automatic_alias, 'Proper automated alias generated.');
 
     // Check whether the alias actually works.
-    $this->drupalGet($expected_alias);
-    $this->assertRaw($edit['title'], 'Node accessible through alias.', 'Functionality test');
+    $this->drupalGet($automatic_alias);
+    $this->assertText($title, 'Node accessible through automatic alias.');
+
+    // Manually set the node's alias.
+    $manual_alias = 'content/' . $node->nid;
+    $edit = array(
+      'path[pathauto_perform_alias]' => FALSE,
+      'path[alias]' => $manual_alias,
+    );
+    $this->drupalPost('node/' . $node->nid . '/edit', $edit, t('Save'));
+    $this->assertText(t('@type @title has been updated', array('@type' => $this->content_type->type, '@title' => $title)));
+
+    // Check that the automatic alias checkbox is now unchecked by default.
+    $this->drupalGet('node/' . $node->nid . '/edit');
+    $this->assertNoFieldChecked('edit-path-pathauto-perform-alias');
+    $this->assertFieldByName('path[alias]', $manual_alias);
+
+    // Submit the node form with the default values.
+    $this->drupalPost(NULL, array(), t('Save'));
+    $this->assertText(t('@type @title has been updated', array('@type' => $this->content_type->type, '@title' => $title)));
+
+    // Test that the old (automatic) alias has been deleted and only accessible
+    // through the new (manual) alias.
+    $this->drupalGet($automatic_alias);
+    $this->assertResponse(404, 'Node not accessible through automatic alias.');
+    $this->drupalGet($manual_alias);
+    $this->assertText($title, 'Node accessible through manual alias.');
   }
 }
