@@ -67,7 +67,7 @@ function pathauto_admin_settings($form) {
     '#size' => 3,
     '#maxlength' => 3,
     '#default_value' => variable_get('pathauto_max_length', 100),
-    '#description' => t('Maximum length of aliases to generate. 100 is recommended. See <a href="@pathauto-help">Pathauto help</a> for details.', array('@pathauto-help' => url('admin/help/pathauto'))),
+    '#description' => t('Maximum length of aliases to generate. 100 is the recommended length. @max is the maximum possible length. See <a href="@pathauto-help">Pathauto help</a> for details.', array('@pathauto-help' => url('admin/help/pathauto'), '@max' => _pathauto_get_schema_alias_maxlength())),
   );
 
   $form['general']['pathauto_max_component_length'] = array(
