@@ -453,6 +453,7 @@ function _pathauto_set_alias($source, $alias, $pid = NULL, $verbose = FALSE, $ol
 
 
     if (variable_get('pathauto_update_action', PATHAUTO_UPDATE_ACTION_DELETE) == PATHAUTO_UPDATE_ACTION_REDIRECT
+        && module_exists('path_redirect')
         && function_exists('path_redirect_save')) {
       if (!empty($old_alias)) {
         $redirect = array(
