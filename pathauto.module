@@ -389,7 +389,7 @@ function pathauto_node_operations_update($nodes) {
   _pathauto_include();
   $nodes = node_load_multiple($nodes);
   foreach ($nodes as $node) {
-    pathauto_create_alias('node', 'bulkupdate', "node/$node->nid", array('node' => $node), $node->type);
+    pathauto_create_alias('node', 'bulkupdate', "node/$node->nid", array('node' => $node), $node->type, $node->language);
   }
 }
 
