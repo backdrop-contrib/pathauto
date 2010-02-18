@@ -117,7 +117,7 @@ function pathauto_tokens($type, $tokens, array $data = array(), array $options =
             $catpath = '/' . pathauto_cleanstring(check_plain($parent->name)) . $catpath;
           }
 
-          $catpath = $catpath . '/' . check_plain($term->name);
+          $catpath = $catpath . '/' . pathauto_cleanstring(check_plain($term->name));
           $alias = drupal_get_path_alias('taxonomy/term/' . $term->tid);
           if (!strncasecmp($alias, 'taxonomy', 8)) {
             $alias = check_plain($term->name);
