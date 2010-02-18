@@ -130,7 +130,7 @@ function pathauto_tokens($type, $tokens, array $data = array(), array $options =
               if (module_exists('book') && !empty($node->book['menu_name'])) {
                 for ($i = 1; $i < 10; $i++) {
                   $second_child = $i + 2;
-                  if ($node->book["p$second_child"] === 0) {
+                  if (!$node->book["p$second_child"]) {
                     $parent_node = db_query('SELECT link_path FROM {menu_links} WHERE mlid = :mlid', array(':mlid' => $node->book["p$i"]))->fetchObject();
                     break;
                   }
