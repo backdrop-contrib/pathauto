@@ -103,7 +103,7 @@ function pathauto_tokens($type, $tokens, array $data = array(), array $options =
           $node = $data['node'];
           // Get taxonomy related data.
           $vid = db_query_range("SELECT t.vid FROM {taxonomy_index} i INNER JOIN {taxonomy_term_data} t ON i.tid = t.tid INNER JOIN {taxonomy_vocabulary} v ON t.vid = v.vid WHERE i.nid = :nid ORDER BY v.weight, t.weight, t.name", 0, 1, array(':nid' => $node->nid))->fetchColumn();
-          $term = db_query_range("SELECT t.tid, t.name FROM {taxonomy_term_data} t INNER JOIN {taxonomy_index} i ON i.tid = t.tid WHERE t.vid = :vid AND i.nid = :nid ORDER BY weight", 0, 1, array(':vid' => $vid, ':nid' => $node->nid))->fetchObject();
+          $term = db_query_range("SELECT t.tid, t.name FROM {taxonomy_term_data} t INNER JOIN {taxonomy_index} i ON i.tid = t.tid WHERE t.vid = :vid AND i.nid = :nid ORDER BY t.weight", 0, 1, array(':vid' => $vid, ':nid' => $node->nid))->fetchObject();
           $term->vid = $vid;
         }
         elseif ($type == 'term') {
