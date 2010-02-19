@@ -51,7 +51,11 @@ function pathauto_install() {
   variable_set('pathauto_punctuation_hyphen', 1); // 1 is replace
 
   // Set the weight to 1
-  db_query("UPDATE {system} SET weight = 1 WHERE name = 'pathauto'");
+  db_update('system')
+    ->fields(array('weight' => 1))
+    ->condition('type', 'module')
+    ->condition('name', 'pathauto')
+    ->execute();
 
   // Clear the cache to get these to take effect.
   cache_clear_all();
@@ -70,9 +74,11 @@ function pathauto_uninstall() {
  * Set the weight a little heavier to allow taxonomy to do its work.
  */
 function pathauto_update_1() {
-  $ret = array();
-  $ret[] = update_sql("UPDATE {system} SET weight = 1 WHERE name = 'pathauto'");
-  return $ret;
+  db_update('system')
+    ->fields(array('weight' => 1))
+    ->condition('type', 'module')
+    ->condition('name', 'pathauto')
+    ->execute();
 }
 
 /**
@@ -86,7 +92,6 @@ function pathauto_update_1() {
  */
 function pathauto_update_3() {
   // Do nothing, this update was a mistake
-  return array();
 }
 
 /**
@@ -95,16 +100,13 @@ function pathauto_update_3() {
 function pathauto_update_4() {
   variable_set('pathauto_punctuation_quotes', variable_get('pathauto_quotes', 0));
   variable_del('pathauto_quotes');
-  return array();
 }
 
 /**
  * Remove the url_alias_extra table which wasn't used.
  */
 function pathauto_update_7() {
-  $ret = array();
   if (db_table_exists('url_alias_extra')) {
-    db_drop_table($ret, 'url_alias_extra');
+    db_drop_table('url_alias_extra');
   }
-  return $ret;
 }
