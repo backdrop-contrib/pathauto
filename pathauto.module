@@ -361,7 +361,7 @@ function _pathauto_user_insert_update(&$edit, $account, $category, $op) {
         $new_user->roles = isset($edit['roles']) ? $edit['roles'] : array();
         $new_user->roles[DRUPAL_AUTHENTICATED_RID] = t('authenticated user'); // Add this back
       }
-      if (user_access('create blog entries', $new_user)) {
+      if (node_access('create', 'blog', $new_user)) {
         $source = 'blog/' . $new_user->uid;
         $alias = pathauto_create_alias('blog', $op, $source, array('user' => $new_user));
       }
