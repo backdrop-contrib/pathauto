@@ -116,3 +116,46 @@ class PathautoFunctionalTestCase extends DrupalWebTestCase {
     $this->assertText($title, 'Node accessible through manual alias.');
   }
 }
+
+/*
+ * Unit tests for the book tokens provided by Pathauto.
+ */
+class PathautoBookTokenTestCase extends DrupalWebTestCase {
+  public static function getInfo() {
+    return array(
+      'name' => 'Pathauto book tokens',
+      'description' => 'Unit tests for the book tokens provided by Pathauto.',
+      'group' => 'Pathauto',
+    );
+  }
+
+  function setUp() {
+    parent::setUp('path', 'pathauto', 'book');
+    variable_set('book_allowed_types', array('book', 'page'));
+  }
+
+  function testBookPathAlias() {
+    variable_set('pathauto_node_book_pattern', '[node:bookpathalias]/[node:title]');
+
+    // Add a root book page.
+    $parent_node = $this->drupalCreateNode(array('type' => 'book', 'title' => 'Root', 'book' => array('bid' => 'new')));
+    $this->assertNodeAlias($parent_node, 'root');
+
+    // Add a first child page.
+    $child_node1 = $this->drupalCreateNode(array('type' => 'book', 'title' => 'Sub page1', 'book' => array('bid' => $parent_node->book['bid'], 'plid' => $parent_node->book['mlid'])));
+    $this->assertNodeAlias($child_node1, 'root/sub-page1');
+
+    // Add a second child page.
+    $child_node2 = $this->drupalCreateNode(array('type' => 'book', 'title' => 'Sub page2', 'book' => array('bid' => $parent_node->book['bid'], 'plid' => $parent_node->book['mlid'])));
+    $this->assertNodeAlias($child_node2, 'root/sub-page2');
+
+    // Add a child page on an existing child page.
+    $sub_child_node1 = $this->drupalCreateNode(array('type' => 'book', 'title' => 'Sub-sub Page1', 'book' => array('bid' => $parent_node->book['bid'], 'plid' => $child_node1->book['mlid'])));
+    $this->assertNodeAlias($sub_child_node1, 'root/sub-page1/sub-sub-page1');
+  }
+
+  function assertNodeAlias(stdClass $node, $expected_alias) {
+    $alias = drupal_get_path_alias('node/' . $node->nid);
+    $this->assertEqual($alias, $expected_alias);
+  }
+}

@@ -87,18 +87,9 @@ function pathauto_tokens($type, $tokens, array $data = array(), array $options =
         foreach ($tokens as $name => $original) {
           switch ($name) {
             case 'bookpathalias':
-              if (module_exists('book') && !empty($node->book['menu_name'])) {
-                for ($i = 1; $i < 10; $i++) {
-                  $second_child = $i + 2;
-                  if (!$node->book["p$second_child"]) {
-                    $parent_node = db_query('SELECT link_path FROM {menu_links} WHERE mlid = :mlid', array(':mlid' => $node->book["p$i"]))->fetchField();
-                    break;
-                  }
-                }
-                $replacements[$original] = drupal_get_path_alias($parent_node);
-              }
-              else {
-                $replacements[$original] = '';
+              $replacements[$original] = '';
+              if (module_exists('book') && !empty($node->book['plid']) && $parent = book_link_load($node->book['plid'])) {
+                $replacements[$original] = drupal_get_path_alias($parent['href']);
               }
               break;
 
