@@ -32,13 +32,13 @@ function pathauto_token_info() {
       'name' => t('Term Alias'),
       'description' => t('URL alias for the term.'),
     );
+  }
 
-    if (module_exists('book')) {
-      $tokens['node']['bookpathalias'] = array(
-        'name' => t('Book Path Alias'),
-        'description' => t('URL alias for the parent book.'),
-      );
-    }
+  if (module_exists('book')) {
+    $tokens['node']['bookpathalias'] = array(
+      'name' => t('Book Path Alias'),
+      'description' => t('URL alias for the parent book.'),
+    );
   }
 
   return array(
