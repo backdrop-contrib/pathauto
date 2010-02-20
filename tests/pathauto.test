@@ -33,13 +33,42 @@ class PathautoUnitTestCase extends DrupalWebTestCase {
   }
 }
 
+ /**
+ * Helper test class with some added functions for testing.
+ */
+class PathautoTestHelper extends DrupalWebTestCase {
+  protected $admin_user;
+
+  function setUp() {
+    // Call parent::setUp() allowing test cases to pass further modules.
+    $modules = func_get_args();
+    $modules = array_merge(array('path', 'pathauto'), $modules);
+    call_user_func_array(array('parent', 'setUp'), $modules);
+
+    // Set pathauto settings we assume to be as-is in this test.
+    variable_set('pathauto_node_page_pattern', 'content/[node:title]');
+
+    $this->admin_user = $this->drupalCreateUser(array(
+      'administer pathauto',
+      'create page content',
+      'edit own page content',
+      'administer url aliases',
+      'create url aliases',
+    ));
+
+    $this->drupalLogin($this->admin_user);
+  }
+
+  function assertNodeAlias(stdClass $node, $expected_alias) {
+    $alias = drupal_get_path_alias('node/' . $node->nid);
+    $this->assertEqual($alias, $expected_alias);
+  }
+}
+
 /**
  * Test basic pathauto functionality.
  */
-class PathautoFunctionalTestCase extends DrupalWebTestCase {
-  private $admin_user;
-  private $content_type;
-
+class PathautoFunctionalTestCase extends PathautoTestHelper {
   public static function getInfo() {
     return array(
       'name' => 'Pathauto basic tests',
@@ -48,38 +77,15 @@ class PathautoFunctionalTestCase extends DrupalWebTestCase {
     );
   }
 
-  function setUp() {
-    parent::setUp('path', 'pathauto');
-
-    $this->content_type = $this->drupalCreateContentType();
-    $this->admin_user = $this->drupalCreateUser(array(
-      'administer pathauto',
-      'create ' . $this->content_type->type . ' content',
-      'edit own ' . $this->content_type->type . ' content',
-      'administer url aliases',
-      'create url aliases',
-    ));
-
-    // Set pathauto settings we assume to be as-is in this test.
-    variable_set('pathauto_node_' . $this->content_type->type . '_pattern', 'content/[node:title]');
-    //variable_set('pathauto_separator', '-');
-    //variable_set('pathauto_case', '1'); // lowercase
-    //variable_set('pathauto_max_length', '100');
-    //variable_set('pathauto_max_component_length', '100');
-    variable_set('pathauto_punctuation_underscore', '2'); // no action
-
-    $this->drupalLogin($this->admin_user);
-  }
-
   /**
    * Basic functional testing of Pathauto.
    */
   function testNodeEditing() {
     // Create node for testing.
-    $random_title = $this->randomName(10); // this contains _
+    $random_title = $this->randomName(10);
     $title = ' Simpletest title ' . $random_title . ' [';
     $automatic_alias = 'content/simpletest-title-' . strtolower($random_title);
-    $node = $this->drupalCreateNode(array('title' => $title, 'type' => $this->content_type->type));
+    $node = $this->drupalCreateNode(array('title' => $title, 'type' => 'page'));
 
     // Look for alias generated in the form.
     $this->drupalGet('node/' . $node->nid . '/edit');
@@ -97,7 +103,7 @@ class PathautoFunctionalTestCase extends DrupalWebTestCase {
       'path[alias]' => $manual_alias,
     );
     $this->drupalPost('node/' . $node->nid . '/edit', $edit, t('Save'));
-    $this->assertText(t('@type @title has been updated', array('@type' => $this->content_type->type, '@title' => $title)));
+    $this->assertText(t('@type @title has been updated', array('@type' => 'Basic page', '@title' => $title)));
 
     // Check that the automatic alias checkbox is now unchecked by default.
     $this->drupalGet('node/' . $node->nid . '/edit');
@@ -106,7 +112,7 @@ class PathautoFunctionalTestCase extends DrupalWebTestCase {
 
     // Submit the node form with the default values.
     $this->drupalPost(NULL, array(), t('Save'));
-    $this->assertText(t('@type @title has been updated', array('@type' => $this->content_type->type, '@title' => $title)));
+    $this->assertText(t('@type @title has been updated', array('@type' => 'Basic page', '@title' => $title)));
 
     // Test that the old (automatic) alias has been deleted and only accessible
     // through the new (manual) alias.
@@ -120,7 +126,7 @@ class PathautoFunctionalTestCase extends DrupalWebTestCase {
 /*
  * Unit tests for the book tokens provided by Pathauto.
  */
-class PathautoBookTokenTestCase extends DrupalWebTestCase {
+class PathautoBookTokenTestCase extends PathautoTestHelper {
   public static function getInfo() {
     return array(
       'name' => 'Pathauto book tokens',
@@ -130,7 +136,7 @@ class PathautoBookTokenTestCase extends DrupalWebTestCase {
   }
 
   function setUp() {
-    parent::setUp('path', 'pathauto', 'book');
+    parent::setUp('book');
     variable_set('book_allowed_types', array('book', 'page'));
   }
 
@@ -152,10 +158,5 @@ class PathautoBookTokenTestCase extends DrupalWebTestCase {
     // Add a child page on an existing child page.
     $sub_child_node1 = $this->drupalCreateNode(array('type' => 'book', 'title' => 'Sub-sub Page1', 'book' => array('bid' => $parent_node->book['bid'], 'plid' => $child_node1->book['mlid'])));
     $this->assertNodeAlias($sub_child_node1, 'root/sub-page1/sub-sub-page1');
-  }
-
-  function assertNodeAlias(stdClass $node, $expected_alias) {
-    $alias = drupal_get_path_alias('node/' . $node->nid);
-    $this->assertEqual($alias, $expected_alias);
   }
 }
