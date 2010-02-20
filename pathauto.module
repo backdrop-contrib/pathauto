@@ -19,21 +19,25 @@
  */
 
 /**
- * Implement hook_help().
+ * Implements hook_help().
  */
 function pathauto_help($path, $arg) {
   switch ($path) {
     case 'admin/help#pathauto':
       module_load_include('inc', 'pathauto');
-      $output = '<p>' . t('Provides a mechanism for modules to automatically generate aliases for the content they manage.') . '</p>';
-      $output .= '<h2>' . t('Settings') . '</h2>';
-      $output .= '<p>' . t('The <strong>maximum alias length</strong> and <strong>maximum component length</strong> values default to 100 and have a limit of @max from Pathauto. This length is limited by the length of the "alias" column of the url_alias database table. The default database schema for this column is @max. If you set a length that is equal to that of the one set in the "alias" column it will cause problems in situations where the system needs to append additional words to the aliased URL. For example, URLs generated for feeds will have "/feed" added to the end. You should enter a value that is the length of the "alias" column minus the length of any strings that might get added to the end of the URL. The length of strings that might get added to the end of your URLs depends on which modules you have enabled and on your Pathauto settings. The recommended and default value is 100.', array('@max' => _pathauto_get_schema_alias_maxlength())) . '</p>';
+      $output = '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Provides a mechanism for modules to automatically generate aliases for the content they manage.') . '</p>';
+      $output .= '<h3>' . t('Settings') . '</h3>';
+      $output .= '<dl>';
+      $output .= '<dt>' . t('Maximum alias and component length') . '</dt>';
+      $output .= '<dd>' . t('The <strong>maximum alias length</strong> and <strong>maximum component length</strong> values default to 100 and have a limit of @max from Pathauto. This length is limited by the length of the "alias" column of the url_alias database table. The default database schema for this column is @max. If you set a length that is equal to that of the one set in the "alias" column it will cause problems in situations where the system needs to append additional words to the aliased URL. For example, URLs generated for feeds will have "/feed" added to the end. You should enter a value that is the length of the "alias" column minus the length of any strings that might get added to the end of the URL. The length of strings that might get added to the end of your URLs depends on which modules you have enabled and on your Pathauto settings. The recommended and default value is 100.', array('@max' => _pathauto_get_schema_alias_maxlength())) . '</dd>';
+      $output .= '</dl>';
       return $output;
   }
 }
 
 /**
- * Implement hook_permission().
+ * Implements hook_permission().
  */
 function pathauto_permission() {
   return array(
@@ -49,7 +53,7 @@ function pathauto_permission() {
 }
 
 /**
- * Implement hook_menu().
+ * Implements hook_menu().
  */
 function pathauto_menu() {
   $items['admin/config/search/path/pathauto'] = array(
@@ -87,7 +91,7 @@ function _pathauto_include() {
 }
 
 /**
- * Implement hook_path_alias_types().
+ * Implements hook_path_alias_types().
  *
  * Used primarily by the bulk delete form.
  */
@@ -112,7 +116,7 @@ function pathauto_path_alias_types() {
 // Some node related functions.
 
 /**
- * Implement hook_node_presave().
+ * Implements hook_node_presave().
  */
 function pathauto_node_presave($node) {
   // About to be saved (before insert/update)
@@ -129,14 +133,14 @@ function pathauto_node_presave($node) {
 }
 
 /**
- * Implement hook_node_insert().
+ * Implements hook_node_insert().
  */
 function pathauto_node_insert($node) {
   _pathauto_node_insert_update($node, 'insert');
 }
 
 /**
- * Implement hook_node_update().
+ * Implements hook_node_update().
  */
 function pathauto_node_update($node) {
   _pathauto_node_insert_update($node, 'update');
@@ -168,7 +172,7 @@ function _pathauto_node_insert_update($node, $op) {
 }
 
 /**
- * Implement hook_node_delete().
+ * Implements hook_node_delete().
  */
 function pathauto_node_delete($node) {
   path_delete(array('source' => 'node/' . $node->nid));
@@ -176,7 +180,7 @@ function pathauto_node_delete($node) {
 }
 
 /**
- * Implement hook_form_alter().
+ * Implements hook_form_alter().
  *
  * This allows alias creators to override Pathauto and specify their
  * own aliases (Pathauto will be invisible to other users). Inserted
@@ -256,7 +260,7 @@ function pathauto_form_alter(&$form, &$form_state, $form_id) {
 }
 
 /**
- * Implement hook_node_operations().
+ * Implements hook_node_operations().
  */
 function pathauto_node_operations() {
   $operations = array(
@@ -286,7 +290,7 @@ function pathauto_node_operations_update($nodes) {
 // Taxonomy related functions.
 
 /**
- * Implement hook_taxonomy_term_insert().
+ * Implements hook_taxonomy_term_insert().
  */
 function pathauto_taxonomy_term_insert($term) {
   // taxonomy.tokens.inc expects a description
@@ -297,7 +301,7 @@ function pathauto_taxonomy_term_insert($term) {
 }
 
 /**
- * Implement hook_taxonomy_term_update().
+ * Implements hook_taxonomy_term_update().
  */
 function pathauto_taxonomy_term_update($term) {
   _pathauto_taxonomy_term_insert_update($term, 'update');
@@ -319,7 +323,7 @@ function _pathauto_taxonomy_term_insert_update($term, $op) {
 }
 
 /**
- * Implement hook_taxonomy_term_delete().
+ * Implements hook_taxonomy_term_delete().
  */
 function pathauto_taxonomy_term_delete($term) {
   path_delete(array('source' => 'taxonomy/term/' . $term->tid));
@@ -331,14 +335,14 @@ function pathauto_taxonomy_term_delete($term) {
 // User related functions. For users, trackers, and blogs.
 
 /**
- * Implement hook_user_insert().
+ * Implements hook_user_insert().
  */
 function pathauto_user_insert(&$edit, $account, $category) {
   _pathauto_user_insert_update($edit, $account, $category, 'insert');
 }
 
 /**
- * Implement hook_user_update().
+ * Implements hook_user_update().
  */
 function pathauto_user_update(&$edit, $account, $category) {
   _pathauto_user_insert_update($edit, $account, $category, 'update');
@@ -382,7 +386,7 @@ function _pathauto_user_insert_update(&$edit, $account, $category, $op) {
 }
 
 /**
- * Implement hook_user_delete().
+ * Implements hook_user_delete().
  */
 function pathauto_user_cancel($edit, $account, $method) {
   switch ($method) {
