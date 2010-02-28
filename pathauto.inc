@@ -211,7 +211,7 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
   }
 
   // Enforce the maximum component length
-  $maxlength = min(variable_get('pathauto_max_component_length', 100), 128);
+  $maxlength = min(variable_get('pathauto_max_component_length', 100), _pathauto_get_schema_alias_maxlength());
   $output = _pathauto_truncate_chars($output, $maxlength, $separator);
 
   return $output;
