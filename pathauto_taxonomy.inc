@@ -59,15 +59,9 @@ function taxonomy_pathauto_bulkupdate() {
 
   // From all vocabularies, only attempt to update those with patterns.
   foreach (taxonomy_get_vocabularies() as $vid => $info) {
-    $pattern = trim(variable_get('pathauto_taxonomy_' . $vid . '_pattern', ''));
-
-    // If it's not set, check the default
     // TODO - If there's a default we shouldn't do this crazy where statement because all vocabularies get aliases.
     // TODO - Special casing to exclude the forum vid (and the images vid and...?).
-    if (empty($pattern)) {
-      $pattern = trim(variable_get('pathauto_taxonomy_pattern', ''));
-    }
-    if (!empty($pattern)) {
+    if (pathauto_pattern_load_by_entity('taxonomy', $vid)) {
       $pattern_or->condition('vid', $vid);
     }
   }

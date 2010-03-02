@@ -112,6 +112,42 @@ function pathauto_path_alias_types() {
   return $objects;
 }
 
+/**
+ * Load an URL alias pattern by entity, bundle, and language.
+ *
+ * @param $entity
+ *   An entity (e.g. node, taxonomy, user, etc.)
+ * @param $bundle
+ *   A bundle (e.g. node type, vocabulary ID, etc.)
+ * @param $language
+ *   A language code, defaults to the LANGUAGE_NONE constant.
+ */
+function pathauto_pattern_load_by_entity($entity, $bundle = '', $language = LANGUAGE_NONE) {
+  $patterns = &drupal_static(__FUNCTION__, array());
+
+  $pattern_id = "$entity:$bundle:$language";
+  if (!isset($patterns[$pattern_id])) {
+    $variables = array();
+    if ($language != LANGUAGE_NONE) {
+      $variables[] = "pathauto_{$entity}_{$bundle}_{$language}_pattern";
+    }
+    if ($bundle) {
+      $variables[] = "pathauto_{$entity}_{$bundle}_pattern";
+    }
+    $variables[] = "pathauto_{$entity}_pattern";
+
+    foreach ($variables as $variable) {
+      if ($pattern = trim(variable_get($variable, ''))) {
+        break;
+      }
+    }
+
+    $patterns[$pattern_id] = $pattern;
+  }
+
+  return $patterns[$pattern_id];
+}
+
 //==============================================================================
 // Some node related functions.
 
@@ -150,19 +186,10 @@ function pathauto_node_update($node) {
  * Internal helper for node insert/update duplicate functionality.
  */
 function _pathauto_node_insert_update($node, $op) {
-  _pathauto_include();
-  // Get the specific pattern or the default
-  if (variable_get('language_content_type_' . $node->type, 0)) {
-    $pattern = trim(variable_get('pathauto_node_' . $node->type . '_' . $node->language . '_pattern', FALSE));
-  }
-  if (empty($pattern)) {
-    $pattern = trim(variable_get('pathauto_node_' . $node->type . '_pattern', FALSE));
-    if (empty($pattern)) {
-      $pattern = trim(variable_get('pathauto_node_pattern', FALSE));
-    }
-  }
-  // Only do work if there's a pattern
-  if ($pattern) {
+  // Only do work if there's a pattern.
+  $language = variable_get('language_content_type_' . $node->type, 0) ? $node->language : LANGUAGE_NONE;
+  if ($pattern = pathauto_pattern_load_by_entity('node', $node->type, $language)) {
+    _pathauto_include();
     // Only create an alias if the checkbox was not provided or if the checkbox was provided and is checked
     if (!isset($node->path['pathauto_perform_alias']) || $node->path['pathauto_perform_alias']) {
       $source = "node/$node->nid";
@@ -190,19 +217,10 @@ function pathauto_form_alter(&$form, &$form_state, $form_id) {
   // Process only node forms.
   if (!empty($form['#node_edit_form'])) {
     $node = $form['#node'];
-    $pattern = FALSE;
 
     // Find if there is an automatic alias pattern for this node type.
-    if (isset($form['language'])) {
-      $language = isset($form['language']['#value']) ? $form['language']['#value'] : $form['language']['#default_value'];
-      $pattern = trim(variable_get('pathauto_node_' . $form['type']['#value'] . '_' . $language . '_pattern', ''));
-    }
-    if (!$pattern) {
-      $pattern = trim(variable_get('pathauto_node_' . $form['type']['#value'] . '_pattern', ''));
-      if (!$pattern) {
-        $pattern = trim(variable_get('pathauto_node_pattern', ''));
-      }
-    }
+    $language = isset($node->language) ? $node->language : LANGUAGE_NONE;
+    $pattern = pathauto_pattern_load_by_entity('node', $node->type, $language);
 
     // If there is a pattern, show the automatic alias checkbox.
     if ($pattern) {
@@ -307,14 +325,18 @@ function pathauto_taxonomy_term_update($term) {
  * Internal helper for taxonomy term insert/update duplicate functionality
  */
 function _pathauto_taxonomy_term_insert_update($term, $op) {
-  _pathauto_include();
-  if ($term->name) {
-    $count = _taxonomy_pathauto_alias($term, $op);
-  }
+  // Only do work if there's a pattern.
+  if ($pattern = pathauto_pattern_load_by_entity('taxonomy', $term->vid)) {
+    _pathauto_include();
 
-  // For all children generate new alias (important if [catpath] used)
-  foreach (taxonomy_get_tree($term->vid, $term->tid) as $subterm) {
-    $count = _taxonomy_pathauto_alias($subterm, $op);
+    if ($term->name) {
+      $count = _taxonomy_pathauto_alias($term, $op);
+    }
+
+    // For all children generate new alias (important if [catpath] used)
+    foreach (taxonomy_get_tree($term->vid, $term->tid) as $subterm) {
+      $count = _taxonomy_pathauto_alias($subterm, $op);
+    }
   }
 }
 

@@ -31,6 +31,29 @@ class PathautoUnitTestCase extends DrupalWebTestCase {
   function testGetSchemaAliasMaxLength() {
     $this->assertIdentical(_pathauto_get_schema_alias_maxlength(), 255);
   }
+
+  /**
+   * Test pathauto_pattern_load_by_entity().
+   */
+  function testPatternLoadByEntity() {
+    variable_set('pathauto_node_story_en_pattern', ' story/en/[node:title] ');
+    variable_set('pathauto_node_story_pattern', 'story/[node:title]');
+    variable_set('pathauto_node_pattern', 'content/[node:title]');
+    variable_set('pathauto_user_pattern', 'users/[user:name]');
+
+    $tests = array(
+      array('entity' => 'node', 'bundle' => 'story', 'language' => 'fr', 'expected' => 'story/[node:title]'),
+      array('entity' => 'node', 'bundle' => 'story', 'language' => 'en', 'expected' => 'story/en/[node:title]'),
+      array('entity' => 'node', 'bundle' => 'story', 'language' => LANGUAGE_NONE, 'expected' => 'story/[node:title]'),
+      array('entity' => 'node', 'bundle' => 'page', 'language' => 'en', 'expected' => 'content/[node:title]'),
+      array('entity' => 'user', 'bundle' => 'user', 'language' => LANGUAGE_NONE, 'expected' => 'users/[user:name]'),
+      array('entity' => 'invalid-entity', 'bundle' => '', 'language' => LANGUAGE_NONE, 'expected' => ''),
+    );
+    foreach ($tests as $test) {
+      $actual = pathauto_pattern_load_by_entity($test['entity'], $test['bundle'], $test['language']);
+      $this->assertIdentical($actual, $test['expected'], t("pathauto_pattern_load_by_entity('@entity', '@bundle', '@language') returned '@actual', expected '@expected'", array('@entity' => $test['entity'], '@bundle' => $test['bundle'], '@language' => $test['language'], '@actual' => $actual, '@expected' => $test['expected'])));
+    }
+  }
 }
 
 /**
