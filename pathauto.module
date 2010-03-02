@@ -187,7 +187,7 @@ function pathauto_node_delete($node) {
  * into the path module's fieldset in the node form.
  */
 function pathauto_form_alter(&$form, &$form_state, $form_id) {
-  // Only do this for node forms
+  // Process only node forms.
   if (!empty($form['#node_edit_form'])) {
     $node = $form['#node'];
     $pattern = FALSE;
@@ -293,10 +293,6 @@ function pathauto_node_operations_update($nodes) {
  * Implements hook_taxonomy_term_insert().
  */
 function pathauto_taxonomy_term_insert($term) {
-  // taxonomy.tokens.inc expects a description
-  if (!isset($term->description)) {
-    $term->description = NULL;
-  }
   _pathauto_taxonomy_term_insert_update($term, 'insert');
 }
 

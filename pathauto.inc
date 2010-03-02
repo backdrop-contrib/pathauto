@@ -92,7 +92,7 @@ function _pathauto_alias_exists($alias, $source, $language = LANGUAGE_NONE) {
  * Returns old alias and pid if there is already an alias
  * pointing to a different item.
  *
- * @param $src
+ * @param $source
  *   A string that is the internal path.
  * @return
  *   An array with the keys "pid" and "old_alias" containing
@@ -190,8 +190,36 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
   // Always replace whitespace with the separator.
   $output = preg_replace('/\s+/', $separator, $output);
 
+  // Trim duplicates and remove trailing and leading separators.
+  $output = _pathauto_clean_separators($output, $separator);
+
+  // Enforce the maximum component length
+  $maxlength = min(variable_get('pathauto_max_component_length', 100), _pathauto_get_schema_alias_maxlength());
+  $output = _pathauto_truncate_chars($output, $maxlength, $separator);
+
+  return $output;
+}
+
+/**
+ * Clean path separators from a given string.
+ *
+ * Trims duplicates and strips leading and trailing separators.
+ *
+ * @param $string
+ *   The string to clean path separators from.
+ * @param $separator
+ *   The path separator to use when cleaning.
+ * @return
+ *   The cleaned version of the string.
+ *
+ * @see pathauto_cleanstring()
+ * @see pathauto_clean_alias()
+ */
+function _pathauto_clean_separators($string, $separator = NULL) {
+  $output = $string;
+
   // Clean duplicate or trailing separators.
-  if (strlen($separator)) {
+  if (isset($separator) && strlen($separator)) {
     // Escape the separator.
     $seppattern = preg_quote($separator, '/');
 
@@ -210,9 +238,31 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
     $output = drupal_strtolower($output);
   }
 
-  // Enforce the maximum component length
-  $maxlength = min(variable_get('pathauto_max_component_length', 100), _pathauto_get_schema_alias_maxlength());
-  $output = _pathauto_truncate_chars($output, $maxlength, $separator);
+  return $output;
+}
+
+/**
+ * Clean up an alias.
+ *
+ * This strips leading and trailing separators from the alias, and invokes
+ * hook_pathauto_clean_alias() for other modules to have their chance.
+ *
+ * @param $alias
+ *   A path alias to clean.
+ * @param $clean_slash
+ *   Whether to clean slashes from the alias..
+ * @return
+ *   The cleaned alias.
+ */
+function pathauto_clean_alias($alias) {
+  $output = $alias;
+  $separator = variable_get('pathauto_separator', '-');
+
+  // Trim duplicates and remove trailing and leading separators.
+  $output = _pathauto_clean_separators($output, $separator);
+
+  // Give other modules a chance to clean this alias.
+  module_invoke_all('pathauto_clean_alias', $output);
 
   return $output;
 }
@@ -236,7 +286,6 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
  *   (e.g., $node->type).
  * @param $language
  *   A string specify the path's language.
- *
  * @return
  *   The alias that was created.
  */
@@ -250,13 +299,13 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
 
   // Retrieve and apply the pattern for this content type
   if (!empty($type)) {
-    $pattern = trim(variable_get('pathauto_' . $module . '_' . $type . '_' . $language . '_pattern', ''));
+    $pattern = trim(variable_get("pathauto_{$module}_{$type}_{$language}_pattern", ''));
     if (empty($pattern)) {
-      $pattern = trim(variable_get('pathauto_' . $module . '_' . $type . '_pattern', ''));
+      $pattern = trim(variable_get("pathauto_{$module}_{$type}_pattern", ''));
     }
   }
   if (empty($pattern)) {
-    $pattern = trim(variable_get('pathauto_' . $module . '_pattern', ''));
+    $pattern = trim(variable_get("pathauto_{$module}_pattern", ''));
   }
   // No pattern? Do nothing (otherwise we may blow away existing aliases...)
   if (empty($pattern)) {
@@ -270,7 +319,7 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
       // Quietly alias 'taxonomy/term/[tid]' with proper path for term.
       $update_data = _pathauto_existing_alias_data($source);
       _pathauto_set_alias($source, $term_path, $update_data['pid'], FALSE, $update_data['old_alias'], $language);
-      // Set $src as proper path.
+      // Set $source as proper path.
       $source = $term_path;
     }
   }
@@ -288,14 +337,17 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
     $old_alias = $update_data['old_alias'];
   }
 
-  // Replace any tokens in the pattern.  Uses callback option to clean replacements. No sanitization.
-  $alias = token_replace($pattern, $data, array('sanitize' => FALSE, 'callback' => 'pathauto_clean_token_values', 'language' => (object)array('language' => $language)));
+  // Replace any tokens in the pattern. Uses callback option to clean replacements. No sanitization.
+  $alias = token_replace($pattern, $data, array('sanitize' => FALSE, 'callback' => 'pathauto_clean_token_values', 'language' => (object) array('language' => $language)));
 
   // Two or more slashes should be collapsed into one
   $alias = preg_replace('/\/+/', '/', $alias);
 
   // Trim any leading or trailing slashes
   $alias = preg_replace('/^\/|\/+$/', '', $alias);
+
+  // Clean the alias.
+  $alias = pathauto_clean_alias($alias);
 
   // Shorten to a logical place based on the last separator.
   $separator = variable_get('pathauto_separator', '-');
@@ -307,7 +359,7 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
   // If the alias already exists, generate a new, hopefully unique, variant
   if (_pathauto_alias_exists($alias, $source, $language)) {
     $original_alias = $alias;
-    for ($i = 0; _pathauto_alias_exists(drupal_substr($alias, 0, $maxlength - drupal_strlen($i)) . $separator . $i, $source, $language); $i++) {
+    for ($i = 0; _pathauto_alias_exists(drupal_substr($alias, 0, $maxlength - strlen($i)) . $separator . $i, $source, $language); $i++) {
     }
     // Make room for the sequence number
     $alias = drupal_substr($alias, 0, $maxlength - drupal_strlen($i));
@@ -325,7 +377,7 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
   }
 
   // If $pid is NULL, a new alias is created - otherwise, the existing
-  // alias for the designated src is replaced
+  // alias for the designated source is replaced.
   _pathauto_set_alias($source, $alias, $pid, $verbose, $old_alias, $language);
 
   // Also create a related feed alias if requested, and if supported
@@ -333,7 +385,7 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
   if (drupal_strlen(variable_get('pathauto_' . $module . '_applytofeeds', ''))) {
     $feedappend = variable_get('pathauto_' . $module . '_applytofeeds', '');
 
-    // For forums and taxonomies, the src doesn't always form the base of the rss feed (ie. image galleries)
+    // For forums and taxonomies, the source doesn't always form the base of the rss feed (ie. image galleries)
     if (($module == 'taxonomy' || $module == 'forum') && isset($data['term'])) {
       $tid = $data['term']->tid;
       $update_data = _pathauto_existing_alias_data("taxonomy/term/$tid/$feedappend");
@@ -402,7 +454,6 @@ function _pathauto_set_alias($source, $alias, $pid = NULL, $verbose = FALSE, $ol
   if ($old_alias != $alias) {
     $path = array('source' => $source, 'alias' => $alias, 'pid' => $pid, 'language' => $language);
     path_save($path);
-
 
     if (variable_get('pathauto_update_action', PATHAUTO_UPDATE_ACTION_DELETE) == PATHAUTO_UPDATE_ACTION_REDIRECT
         && module_exists('path_redirect')

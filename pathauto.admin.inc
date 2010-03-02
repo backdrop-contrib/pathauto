@@ -14,7 +14,7 @@
  * @ingroup forms
  * @see system_settings_form()
  */
-function pathauto_admin_settings($form) {
+function pathauto_admin_settings() {
   _pathauto_include();
 
   // Default words to ignore
@@ -373,7 +373,7 @@ function pathauto_admin_settings_validate($form, &$form_state) {
 /**
  * Menu callback; select certain alias types to delete.
  */
-function pathauto_admin_delete($form) {
+function pathauto_admin_delete() {
   /* TODO:
    1) all - DONE
    2) all node aliases - DONE

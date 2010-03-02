@@ -33,7 +33,7 @@ class PathautoUnitTestCase extends DrupalWebTestCase {
   }
 }
 
- /**
+/**
  * Helper test class with some added functions for testing.
  */
 class PathautoTestHelper extends DrupalWebTestCase {
