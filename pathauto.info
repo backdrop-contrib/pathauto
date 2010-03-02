@@ -11,5 +11,6 @@ files[] = pathauto_taxonomy.inc
 files[] = pathauto_user.inc
 files[] = pathauto.install
 files[] = pathauto.test
+files[] = pathauto.tokens.inc
 configure = admin/config/search/path/pathauto
 recommends[] = path_redirect
