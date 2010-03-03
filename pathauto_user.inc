@@ -17,7 +17,7 @@ function user_pathauto($op) {
       $settings = array();
       $settings['module'] = 'user';
       $settings['token_type'] = 'user';
-      $settings['groupheader'] = t('User path settings');
+      $settings['groupheader'] = t('User paths');
       $settings['patterndescr'] = t('Pattern for user account page paths');
       $settings['patterndefault'] = t('users/[user:name]');
 
@@ -43,7 +43,7 @@ function blog_pathauto($op) {
       $settings = array();
       $settings['module'] = 'blog';
       $settings['token_type'] = 'user';
-      $settings['groupheader'] = t('Blog path settings');
+      $settings['groupheader'] = t('Blog paths');
       $settings['patterndescr'] = t('Pattern for blog page paths');
       $settings['patterndefault'] = t('blogs/[user:name]');
 
@@ -70,7 +70,7 @@ function tracker_pathauto($op) {
       $settings = array();
       $settings['module'] = 'tracker';
       $settings['token_type'] = 'user';
-      $settings['groupheader'] = t('User-tracker path settings');
+      $settings['groupheader'] = t('User-tracker paths');
       $settings['patterndescr'] = t('Pattern for user-tracker page paths');
       $settings['patterndefault'] = t('users/[user:name]/track');
 
@@ -97,7 +97,7 @@ function contact_pathauto($op) {
       $settings = array();
       $settings['module'] = 'contact';
       $settings['token_type'] = 'user';
-      $settings['groupheader'] = t('User contact form path settings');
+      $settings['groupheader'] = t('User personal contact form paths');
       $settings['patterndescr'] = t('Pattern for the user contact form paths');
       $settings['patterndefault'] = t('users/[user:name]/contact');
 

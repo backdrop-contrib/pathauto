@@ -530,7 +530,7 @@ function pathauto_punctuation_chars() {
   $punctuation['exclamation']        = array('value' => '!', 'name' => t('Exclamation !'));
   $punctuation['tilde']              = array('value' => '~', 'name' => t('Tilde ~'));
   $punctuation['left_parenthesis']   = array('value' => '(', 'name' => t('Left parenthesis ('));
-  $punctuation['right_parenthesis']  = array('value' => ')', 'name' => t('right parenthesis )'));
+  $punctuation['right_parenthesis']  = array('value' => ')', 'name' => t('Right parenthesis )'));
   $punctuation['question_mark']      = array('value' => '?', 'name' => t('Question mark ?'));
   $punctuation['less_than']          = array('value' => '<', 'name' => t('Less than <'));
   $punctuation['greater_than']       = array('value' => '>', 'name' => t('Greater than >'));

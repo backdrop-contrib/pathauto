@@ -146,7 +146,7 @@ function pathauto_admin_settings() {
   $form['punctuation'] = array(
     '#type' => 'fieldset',
     '#weight' => $group_weight,
-    '#title' => t('Punctuation settings'),
+    '#title' => t('Punctuation'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
   );

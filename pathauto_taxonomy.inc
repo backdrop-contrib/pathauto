@@ -17,7 +17,7 @@ function taxonomy_pathauto($op) {
       $settings = array();
       $settings['module'] = 'taxonomy';
       $settings['token_type'] = 'term';
-      $settings['groupheader'] = t('Taxonomy term path settings');
+      $settings['groupheader'] = t('Taxonomy term paths');
       $settings['patterndescr'] = t('Default path pattern (applies to all vocabularies with blank patterns below)');
       $settings['patterndefault'] = t('category/[vocabulary:name]/[term:catpath]');
 
@@ -133,7 +133,7 @@ function forum_pathauto($op) {
       $settings = array();
       $settings['module'] = 'forum';
       $settings['token_type'] = 'term';
-      $settings['groupheader'] = t('Forum path settings');
+      $settings['groupheader'] = t('Forum paths');
       $settings['patterndescr'] = t('Pattern for forums and forum containers');
       $settings['patterndefault'] = t('[vocabulary:name]/[term:catpath]');
 
@@ -145,7 +145,7 @@ function forum_pathauto($op) {
         $settings['tokens']["[vocabulary:$key]"] = $info['description'];
       }
       $settings['supportsfeeds'] = '0/feed';
-      $settings['bulkname'] = t('Bulk generate forum paths');
+      $settings['bulkname'] = t('Bulk generate aliases for forum paths that are not aliased');
       $settings['bulkdescr'] = t('Generate aliases for all existing forums and forum containers which do not already have aliases.');
 
       return (object) $settings;

@@ -17,7 +17,7 @@ function node_pathauto($op) {
       $settings = array();
       $settings['module'] = 'node';
       $settings['token_type'] = 'node';
-      $settings['groupheader'] = t('Node path settings');
+      $settings['groupheader'] = t('Node paths');
       $settings['patterndescr'] = t('Default path pattern (applies to all node types with blank patterns below)');
       $settings['patterndefault'] = t('content/[node:title]');
       $settings['bulkname'] = t('Bulk generate aliases for nodes that are not aliased');
