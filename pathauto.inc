@@ -332,12 +332,6 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
   // Replace any tokens in the pattern. Uses callback option to clean replacements. No sanitization.
   $alias = token_replace($pattern, $data, array('sanitize' => FALSE, 'callback' => 'pathauto_clean_token_values', 'language' => (object) array('language' => $language)));
 
-  // Two or more slashes should be collapsed into one
-  $alias = preg_replace('/\/+/', '/', $alias);
-
-  // Trim any leading or trailing slashes
-  $alias = preg_replace('/^\/|\/+$/', '', $alias);
-
   // Clean the alias.
   $alias = pathauto_clean_alias($alias);
 
