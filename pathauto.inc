@@ -297,18 +297,10 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
     $verbose = FALSE;
   }
 
-  // Retrieve and apply the pattern for this content type
-  if (!empty($type)) {
-    $pattern = trim(variable_get("pathauto_{$module}_{$type}_{$language}_pattern", ''));
-    if (empty($pattern)) {
-      $pattern = trim(variable_get("pathauto_{$module}_{$type}_pattern", ''));
-    }
-  }
+  // Retrieve and apply the pattern for this content type.
+  $pattern = pathauto_pattern_load_by_entity($module, $type, $language);
   if (empty($pattern)) {
-    $pattern = trim(variable_get("pathauto_{$module}_pattern", ''));
-  }
-  // No pattern? Do nothing (otherwise we may blow away existing aliases...)
-  if (empty($pattern)) {
+    // No pattern? Do nothing (otherwise we may blow away existing aliases...)
     return '';
   }
 
