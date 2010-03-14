@@ -16,7 +16,7 @@ function pathauto_install() {
   if (module_exists('taxonomy')) {
     variable_set('pathauto_modulelist', array('node', 'user', 'taxonomy'));
     variable_set('pathauto_taxonomy_supportsfeeds', '0/feed');
-    variable_set('pathauto_taxonomy_pattern', 'category/[vocabulary:name]/[term:catpath]');
+    variable_set('pathauto_taxonomy_pattern', 'category/[vocabulary:name]/[term:path]');
     variable_set('pathauto_taxonomy_bulkupdate', FALSE);
     variable_set('pathauto_taxonomy_applytofeeds', FALSE);
     variable_set('pathauto_taxonomy_2_pattern', '');
@@ -110,3 +110,15 @@ function pathauto_update_7() {
     db_drop_table('url_alias_extra');
   }
 }
+
+/**
+ * Upgrade token names.
+ */
+//function pathauto_update_7000() {
+  //$tokens = array(
+  //  'catpath' => 'node:term-lowest:path',
+  //  'catalias' => 'node:term-lowest:alias',
+  //  'termpath' => 'term:path',
+  //  'termalias' => 'term:alias',
+  //);
+//}

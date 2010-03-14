@@ -364,7 +364,7 @@ function pathauto_admin_settings_validate($form, &$form_state) {
     if ($details['value'] == $separator) {
       $action = $form_state['values']['pathauto_punctuation_' . $name];
       if ($action == PATHAUTO_PUNCTUATION_REMOVE) {
-        drupal_set_message(t('You have configured the @name to be the separator and to be removed when encountered in strings. This can cause problems with your patterns and especially with the catpath and termpath patterns. You should probably set the action for @name to be "replace by separator".', array('@name' => $details['name'])), 'error');
+        drupal_set_message(t('You have configured the @name to be the separator and to be removed when encountered in strings. This can cause problems with your patterns and especially with the term:path token. You should probably set the action for @name to be "replace by separator".', array('@name' => $details['name'])), 'error');
       }
     }
   }

@@ -9,7 +9,7 @@
  */
 
 /**
- * Implement hook_pathauto().
+ * Implements hook_pathauto().
  */
 function node_pathauto($op) {
   switch ($op) {

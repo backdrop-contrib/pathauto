@@ -82,9 +82,10 @@ class PathautoTestHelper extends DrupalWebTestCase {
     $this->drupalLogin($this->admin_user);
   }
 
-  function assertNodeAlias(stdClass $node, $expected_alias) {
-    $alias = drupal_get_path_alias('node/' . $node->nid);
-    $this->assertEqual($alias, $expected_alias);
+  function assertToken($type, $object, $token, $expected) {
+    $tokens = token_generate($type, array($token => $token), array($type => $object));
+    $tokens += array($token => '');
+    $this->assertIdentical($tokens[$token], $expected, t("Token value for [@type:@token] was '!actual', expected value '!expected'.", array('@type' => $type, '@token' => $token, '!actual' => $tokens[$token], '!expected' => $expected)));
   }
 }
 
@@ -160,26 +161,101 @@ class PathautoBookTokenTestCase extends PathautoTestHelper {
 
   function setUp() {
     parent::setUp('book');
+
     variable_set('book_allowed_types', array('book', 'page'));
+    variable_set('pathauto_node_book_pattern', '[node:bookpathalias]/[node:title]');
   }
 
   function testBookPathAlias() {
-    variable_set('pathauto_node_book_pattern', '[node:bookpathalias]/[node:title]');
+    // Add a non-book node.
+    $non_book_node = $this->drupalCreateNode(array('type' => 'book'));
+    $this->assertToken('node', $non_book_node, 'bookpathalias', '');
 
     // Add a root book page.
     $parent_node = $this->drupalCreateNode(array('type' => 'book', 'title' => 'Root', 'book' => array('bid' => 'new')));
-    $this->assertNodeAlias($parent_node, 'root');
+    $this->assertToken('node', $parent_node, 'bookpathalias', '');
 
     // Add a first child page.
     $child_node1 = $this->drupalCreateNode(array('type' => 'book', 'title' => 'Sub page1', 'book' => array('bid' => $parent_node->book['bid'], 'plid' => $parent_node->book['mlid'])));
-    $this->assertNodeAlias($child_node1, 'root/sub-page1');
+    $this->assertToken('node', $child_node1, 'bookpathalias', 'root');
 
     // Add a second child page.
     $child_node2 = $this->drupalCreateNode(array('type' => 'book', 'title' => 'Sub page2', 'book' => array('bid' => $parent_node->book['bid'], 'plid' => $parent_node->book['mlid'])));
-    $this->assertNodeAlias($child_node2, 'root/sub-page2');
+    $this->assertToken('node', $child_node2, 'bookpathalias', 'root');
 
     // Add a child page on an existing child page.
     $sub_child_node1 = $this->drupalCreateNode(array('type' => 'book', 'title' => 'Sub-sub Page1', 'book' => array('bid' => $parent_node->book['bid'], 'plid' => $child_node1->book['mlid'])));
-    $this->assertNodeAlias($sub_child_node1, 'root/sub-page1/sub-sub-page1');
+    $this->assertToken('node', $sub_child_node1, 'bookpathalias', 'root/sub-page1');
+  }
+}
+
+/*
+ * Unit tests for the taxonomy tokens provided by Pathauto.
+ */
+class PathautoTaxonomyTokenTestCase extends PathautoTestHelper {
+  protected $vocab;
+
+  public static function getInfo() {
+    return array(
+      'name' => 'Pathauto taxonomy tokens',
+      'description' => 'Unit tests for the taxonomy tokens provided by Pathauto.',
+      'group' => 'Pathauto',
+    );
+  }
+
+  function setUp() {
+    parent::setUp('taxonomy');
+
+    variable_set('pathauto_taxonomy_pattern', 'category/[vocabulary:name]/[term:name]');
+    $this->vocab = $this->addVocabulary();
+  }
+
+  /**
+   * Test the [term:path] and [term:alias] tokens.
+   */
+  function testCatTokens() {
+    $term1 = $this->addTerm($this->vocab);
+    $this->assertToken('term', $term1, 'path', $term1->name);
+    $this->assertToken('term', $term1, 'alias', "category/{$this->vocab->name}/{$term1->name}");
+
+    $term2 = $this->addTerm($this->vocab, array('parent' => $term1->tid));
+    $this->assertToken('term', $term2, 'path', "{$term1->name}/{$term2->name}");
+    $this->assertToken('term', $term2, 'alias', "category/{$this->vocab->name}/{$term2->name}");
+
+    $term3 = $this->addTerm($this->vocab, array('parent' => $term2->tid, 'name' => ' foo/bar fer|zle '));
+    $this->assertToken('term', $term3, 'path', "{$term1->name}/{$term2->name}/foobar-ferzle");
+    $this->assertToken('term', $term3, 'alias', "category/{$this->vocab->name}/foobar-ferzle");
+  }
+
+  /**
+   * Test the [node:term-lowest:path] token.
+   */
+  function testTermTokens() {
+    $term1 = $this->addTerm($this->vocab, array('weight' => 5));
+    $term2 = $this->addTerm($this->vocab, array('weight' => -5));
+    $term3 = $this->addTerm($this->vocab, array('weight' => 0));
+    $node = $this->drupalCreateNode(array('taxonomy' => array($term1->tid, $term2->tid, $term3->tid)));
+    $this->assertToken('node', $node, 'term-lowest:path', $term2->name);
+    $this->assertToken('node', $node, 'term-lowest:alias', "category/{$this->vocab->name}/{$term2->name}");
+  }
+
+  function addVocabulary(array $vocabulary = array()) {
+    $vocabulary += array(
+      'name' => drupal_strtolower($this->randomName(5)),
+      'nodes' => array('page' => 'page'),
+    );
+    $vocabulary = (object) $vocabulary;
+    taxonomy_vocabulary_save($vocabulary);
+    return $vocabulary;
+  }
+
+  function addTerm(stdClass $vocabulary, array $term = array()) {
+    $term += array(
+      'name' => drupal_strtolower($this->randomName(5)),
+      'vid' => $vocabulary->vid,
+    );
+    $term = (object) $term;
+    taxonomy_term_save($term);
+    return $term;
   }
 }

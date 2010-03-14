@@ -15,22 +15,19 @@ function pathauto_token_info() {
   $tokens = array();
 
   if (module_exists('taxonomy')) {
-    $tokens['term']['catpath'] = array(
-      'name' => t("Node's Term Path"),
-      'description' => t('As [cat], but including its supercategories separated by /.'),
+    $tokens['term']['path'] = array(
+      'name' => t('Taxonomy term path'),
+      'description' => t('The name of the taxonomy term and all its parents in a path form. (%example)', array('%example' => 'parent-term/my-term')),
     );
-    $tokens['term']['catalias'] = array(
-      'name' => t("Node's Term Alias"),
-      'description' => t('URL alias for the term.'),
+    $tokens['term']['alias'] = array(
+      'name' => t('Taxonomy term alias'),
+      'description' => t('The URL alias of the taxonomy term.'),
     );
 
-    $tokens['node']['termpath'] = array(
-      'name' => t('Term Path'),
-      'description' => t('As [term], but including its supercategories separated by /.'),
-    );
-    $tokens['node']['termalias'] = array(
-      'name' => t('Term Alias'),
-      'description' => t('URL alias for the term.'),
+    $tokens['node']['term-lowest'] = array(
+      'name' => t('Lowest weighted term'),
+      'description' => t('The taxonomy term associated with the node sorted by vocabulary weight, taxonomy term weight, then taxonomy term name.'),
+      'type' => 'term',
     );
   }
 
@@ -51,61 +48,54 @@ function pathauto_token_info() {
  */
 function pathauto_tokens($type, $tokens, array $data = array(), array $options = array()) {
   $replacements = array();
-  if (module_exists('taxonomy')) {
-    if ($type == 'term' || $type == 'node') {
-      _pathauto_include();
-      $sanitize = !empty($options['sanitize']);
-      $separator = variable_get('pathauto_separator', '-');
-      $catpath = $alias = '';
+  $sanitize = !empty($options['sanitize']);
 
-      if (($type == 'node' && !empty($data['node'])) || ($type == 'term' && !empty($data['term']))) {
-        if ($type == 'node') {
-          $node = $data['node'];
-          // Get taxonomy related data.
-          $vid = db_query_range("SELECT t.vid FROM {taxonomy_index} i INNER JOIN {taxonomy_term_data} t ON i.tid = t.tid INNER JOIN {taxonomy_vocabulary} v ON t.vid = v.vid WHERE i.nid = :nid ORDER BY v.weight, t.weight, t.name", 0, 1, array(':nid' => $node->nid))->fetchColumn();
-          $term = db_query_range("SELECT t.tid, t.name FROM {taxonomy_term_data} t INNER JOIN {taxonomy_index} i ON i.tid = t.tid WHERE t.vid = :vid AND i.nid = :nid ORDER BY t.weight", 0, 1, array(':vid' => $vid, ':nid' => $node->nid))->fetchObject();
-          $term->vid = $vid;
-        }
-        elseif ($type == 'term') {
-          $term = $data['term'];
-        }
+  // Node tokens.
+  if ($type == 'node' && !empty($data['node'])) {
+    $node = $data['node'];
 
-        if (isset($term->tid)) {
-          $parents = taxonomy_get_parents_all($term->tid);
-          array_shift($parents);
-          foreach ($parents as $parent) {
-            $catpath = '/' . pathauto_cleanstring(check_plain($parent->name)) . $catpath;
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'bookpathalias':
+          if (module_exists('book') && !empty($node->book['plid']) && $parent = book_link_load($node->book['plid'])) {
+            $replacements[$original] = drupal_get_path_alias($parent['href']);
           }
+          break;
+      }
+    }
 
-          $catpath = $catpath . '/' . pathauto_cleanstring(check_plain($term->name));
-          $alias = drupal_get_path_alias('taxonomy/term/' . $term->tid);
-          if (!strncasecmp($alias, 'taxonomy', 8)) {
-            $alias = check_plain($term->name);
-          }
-        }
-
-        foreach ($tokens as $name => $original) {
-          switch ($name) {
-            case 'bookpathalias':
-              $replacements[$original] = '';
-              if (module_exists('book') && !empty($node->book['plid']) && $parent = book_link_load($node->book['plid'])) {
-                $replacements[$original] = drupal_get_path_alias($parent['href']);
-              }
-              break;
-
-            case 'termpath':
-            case 'catpath':
-              $replacements[$original] = $catpath;
-              break;
-
-            case 'termalias':
-            case 'catalias':
-              $replacements[$original] = $alias;
-              break;
-          }
-        }
+    // Chained token relationships.
+    if ($term_lowest_tokens = token_find_with_prefix($tokens, 'term-lowest')) {
+      $tid = db_query_range('SELECT t.tid FROM {taxonomy_index} ti INNER JOIN {taxonomy_term_data} t ON i.tid = t.tid INNER JOIN {taxonomy_vocabulary} v ON t.vid = v.vid WHERE ti.vid = :vid ORDER BY v.weight, t.weight, t.name', array(':vid' => $node->vid), 0, 1)->fetchField();
+      if ($term = taxonomy_term_load($tid)) {
+        $replacements += token_generate('term', $term_lowest_tokens, array('term' => $term), $options);
       }
     }
   }
+
+  if ($type == 'term' && !empty($data['term'])) {
+    $term = $data['term'];
+
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'path':
+          module_load_include('inc', 'pathauto');
+          $parents = taxonomy_get_parents_all($term->tid);
+          $catpath = array();
+          foreach ($parents as $parent) {
+            $term_name = $sanitize ? check_plain($parent->name) : $parent->name;
+            array_unshift($catpath, pathauto_cleanstring($term_name));
+          }
+          if ($catpath) {
+            $replacements[$original] = implode('/', $catpath);
+          }
+          break;
+        case 'alias':
+          $replacements[$original] = drupal_get_path_alias('taxonomy/term/' . $term->tid);
+          break;
+      }
+    }
+  }
+
   return $replacements;
 }

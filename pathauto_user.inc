@@ -9,7 +9,7 @@
  */
 
 /**
- * Implement hook_pathauto() for user aliases.
+ * Implements hook_pathauto().
  */
 function user_pathauto($op) {
   switch ($op) {
@@ -35,7 +35,7 @@ function user_pathauto($op) {
 }
 
 /**
- * Implement hook_pathauto() for blog aliases.
+ * Implements hook_pathauto().
  */
 function blog_pathauto($op) {
   switch ($op) {
@@ -62,7 +62,7 @@ function blog_pathauto($op) {
 }
 
 /**
- * Implement hook_pathauto() for user-tracker aliases.
+ * Implements hook_pathauto().
  */
 function tracker_pathauto($op) {
   switch ($op) {
@@ -89,7 +89,7 @@ function tracker_pathauto($op) {
 }
 
 /**
- * Implement hook_pathauto() for contact form aliases.
+ * Implements hook_pathauto().
  */
 function contact_pathauto($op) {
   switch ($op) {

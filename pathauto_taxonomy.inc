@@ -9,7 +9,7 @@
  */
 
 /**
- * Implement hook_pathauto() for taxonomy module.
+ * Implements hook_pathauto().
  */
 function taxonomy_pathauto($op) {
   switch ($op) {
@@ -19,7 +19,7 @@ function taxonomy_pathauto($op) {
       $settings['token_type'] = 'term';
       $settings['groupheader'] = t('Taxonomy term paths');
       $settings['patterndescr'] = t('Default path pattern (applies to all vocabularies with blank patterns below)');
-      $settings['patterndefault'] = t('category/[vocabulary:name]/[term:catpath]');
+      $settings['patterndefault'] = t('category/[vocabulary:name]/[term:path]');
 
       $tokens = token_info();
       foreach ($tokens['tokens']['term'] as $key => $info) {
@@ -28,6 +28,7 @@ function taxonomy_pathauto($op) {
       foreach ($tokens['tokens']['vocabulary'] as $key => $info) {
         $settings['tokens']["[vocabulary:$key]"] = $info['description'];
       }
+
       $settings['supportsfeeds'] = '0/feed';
       $settings['bulkname'] = t('Bulk generate aliases for terms that are not aliased');
       $settings['bulkdescr'] = t('Generate aliases for all existing terms which do not already have aliases.');
@@ -135,7 +136,7 @@ function forum_pathauto($op) {
       $settings['token_type'] = 'term';
       $settings['groupheader'] = t('Forum paths');
       $settings['patterndescr'] = t('Pattern for forums and forum containers');
-      $settings['patterndefault'] = t('[vocabulary:name]/[term:catpath]');
+      $settings['patterndefault'] = t('[vocabulary:name]/[term:path]');
 
       $tokens = token_info();
       foreach ($tokens['tokens']['term'] as $key => $info) {
@@ -144,10 +145,10 @@ function forum_pathauto($op) {
       foreach ($tokens['tokens']['vocabulary'] as $key => $info) {
         $settings['tokens']["[vocabulary:$key]"] = $info['description'];
       }
+
       $settings['supportsfeeds'] = '0/feed';
       $settings['bulkname'] = t('Bulk generate aliases for forum paths that are not aliased');
       $settings['bulkdescr'] = t('Generate aliases for all existing forums and forum containers which do not already have aliases.');
-
       return (object) $settings;
     default:
       break;
