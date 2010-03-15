@@ -9,9 +9,27 @@
  */
 
 /**
+ * Helper test class with some added functions for testing.
+ */
+class PathautoUnitTestHelper extends DrupalWebTestCase {
+  function setUp() {
+    // Call parent::setUp() allowing test cases to pass further modules.
+    $modules = func_get_args();
+    $modules = array_merge(array('path', 'pathauto'), $modules);
+    call_user_func_array(array('parent', 'setUp'), $modules);
+  }
+
+  function assertToken($type, $object, $token, $expected) {
+    $tokens = token_generate($type, array($token => $token), array($type => $object));
+    $tokens += array($token => '');
+    $this->assertIdentical($tokens[$token], $expected, t("Token value for [@type:@token] was '!actual', expected value '!expected'.", array('@type' => $type, '@token' => $token, '!actual' => $tokens[$token], '!expected' => $expected)));
+  }
+}
+
+/**
  * Unit tests for Pathauto functions.
  */
-class PathautoUnitTestCase extends DrupalWebTestCase {
+class PathautoUnitTestCase extends PathautoUnitTestHelper {
   public static function getInfo() {
     return array(
       'name' => 'Pathauto unit tests',
@@ -21,7 +39,7 @@ class PathautoUnitTestCase extends DrupalWebTestCase {
   }
 
   function setUp() {
-    parent::setUp('path', 'pathauto');
+    parent::setUp();
     module_load_include('inc', 'pathauto');
   }
 
@@ -80,12 +98,6 @@ class PathautoTestHelper extends DrupalWebTestCase {
     ));
 
     $this->drupalLogin($this->admin_user);
-  }
-
-  function assertToken($type, $object, $token, $expected) {
-    $tokens = token_generate($type, array($token => $token), array($type => $object));
-    $tokens += array($token => '');
-    $this->assertIdentical($tokens[$token], $expected, t("Token value for [@type:@token] was '!actual', expected value '!expected'.", array('@type' => $type, '@token' => $token, '!actual' => $tokens[$token], '!expected' => $expected)));
   }
 }
 
@@ -150,7 +162,7 @@ class PathautoFunctionalTestCase extends PathautoTestHelper {
 /*
  * Unit tests for the book tokens provided by Pathauto.
  */
-class PathautoBookTokenTestCase extends PathautoTestHelper {
+class PathautoBookTokenTestCase extends PathautoUnitTestHelper {
   public static function getInfo() {
     return array(
       'name' => 'Pathauto book tokens',
@@ -161,7 +173,6 @@ class PathautoBookTokenTestCase extends PathautoTestHelper {
 
   function setUp() {
     parent::setUp('book');
-
     variable_set('book_allowed_types', array('book', 'page'));
     variable_set('pathauto_node_book_pattern', '[node:bookpathalias]/[node:title]');
   }
@@ -192,7 +203,7 @@ class PathautoBookTokenTestCase extends PathautoTestHelper {
 /*
  * Unit tests for the taxonomy tokens provided by Pathauto.
  */
-class PathautoTaxonomyTokenTestCase extends PathautoTestHelper {
+class PathautoTaxonomyTokenTestCase extends PathautoUnitTestHelper {
   protected $vocab;
 
   public static function getInfo() {
@@ -205,9 +216,11 @@ class PathautoTaxonomyTokenTestCase extends PathautoTestHelper {
 
   function setUp() {
     parent::setUp('taxonomy');
-
     variable_set('pathauto_taxonomy_pattern', 'category/[vocabulary:name]/[term:name]');
-    $this->vocab = $this->addVocabulary();
+    // Use the default 'Tags' taxonomy included with the standard install profile.
+    $tags_vid = db_query("SELECT vid FROM {taxonomy_vocabulary} WHERE name = 'Tags'")->fetchField();
+    $this->vocab = taxonomy_vocabulary_load($tags_vid);
+    $this->vocab->name = 'tags';
   }
 
   /**
@@ -234,7 +247,16 @@ class PathautoTaxonomyTokenTestCase extends PathautoTestHelper {
     $term1 = $this->addTerm($this->vocab, array('weight' => 5));
     $term2 = $this->addTerm($this->vocab, array('weight' => -5));
     $term3 = $this->addTerm($this->vocab, array('weight' => 0));
-    $node = $this->drupalCreateNode(array('taxonomy' => array($term1->tid, $term2->tid, $term3->tid)));
+
+    $node = $this->drupalCreateNode(array(
+      'type' => 'article',
+      'taxonomy_tags' => array(LANGUAGE_NONE => array(
+        $term1->tid,
+        $term2->tid,
+        $term3->tid,
+      )),
+    ));
+
     $this->assertToken('node', $node, 'term-lowest:path', $term2->name);
     $this->assertToken('node', $node, 'term-lowest:alias', "category/{$this->vocab->name}/{$term2->name}");
   }
@@ -242,7 +264,7 @@ class PathautoTaxonomyTokenTestCase extends PathautoTestHelper {
   function addVocabulary(array $vocabulary = array()) {
     $vocabulary += array(
       'name' => drupal_strtolower($this->randomName(5)),
-      'nodes' => array('page' => 'page'),
+      'nodes' => array('article' => 'article'),
     );
     $vocabulary = (object) $vocabulary;
     taxonomy_vocabulary_save($vocabulary);
