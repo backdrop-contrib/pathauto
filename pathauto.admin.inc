@@ -9,166 +9,13 @@
  */
 
 /**
- * Form builder; Configure the Pathauto system.
+ * Form builder; Configure the URL alias patterns.
  *
  * @ingroup forms
  * @see system_settings_form()
  */
-function pathauto_admin_settings() {
+function pathauto_patterns_form(&$form) {
   _pathauto_include();
-
-  // Default words to ignore
-  $ignore_words = array(
-    'a', 'an', 'as', 'at', 'before', 'but', 'by', 'for', 'from', 'is', 'in',
-    'into', 'like', 'of', 'off', 'on', 'onto', 'per', 'since', 'than', 'the',
-    'this', 'that', 'to', 'up', 'via', 'with',
-  );
-
-  // Generate the form - settings applying to all patterns first
-  $group_weight = -20;
-  $form['general'] = array(
-    '#type' => 'fieldset',
-    '#weight' => $group_weight,
-    '#title' => t('General settings'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-  );
-  $group_weight++;
-
-  $form['general']['pathauto_verbose'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Verbose'),
-    '#default_value' => variable_get('pathauto_verbose', FALSE),
-    '#description' => t('Display alias changes (except during bulk updates).'),
-  );
-
-  $form['general']['pathauto_separator'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Separator'),
-    '#size' => 1,
-    '#maxlength' => 1,
-    '#default_value' => variable_get('pathauto_separator', '-'),
-    '#description' => t('Character used to separate words in titles. This will replace any spaces and punctuation characters. Using a space or + character can cause unexpected results.'),
-  );
-
-  $form['general']['pathauto_case'] = array(
-    '#type' => 'radios',
-    '#title' => t('Character case'),
-    '#default_value' => variable_get('pathauto_case', PATHAUTO_CASE_LOWER),
-    '#options' => array(
-      t('Leave case the same as source token values.'),
-      t('Change to lower case'),
-    ),
-  );
-
-  $form['general']['pathauto_max_length'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Maximum alias length'),
-    '#size' => 3,
-    '#maxlength' => 3,
-    '#default_value' => variable_get('pathauto_max_length', 100),
-    '#description' => t('Maximum length of aliases to generate. 100 is the recommended length. @max is the maximum possible length. See <a href="@pathauto-help">Pathauto help</a> for details.', array('@pathauto-help' => url('admin/help/pathauto'), '@max' => _pathauto_get_schema_alias_maxlength())),
-  );
-
-  $form['general']['pathauto_max_component_length'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Maximum component length'),
-    '#size' => 3,
-    '#maxlength' => 3,
-    '#default_value' => variable_get('pathauto_max_component_length', 100),
-    '#description' => t('Maximum text length of any component in the alias (e.g., [title]). 100 is the recommended length. @max is the maximum possible length. See <a href="@pathauto-help">Pathauto help</a> for details.', array('@pathauto-help' => url('admin/help/pathauto'), '@max' => _pathauto_get_schema_alias_maxlength())),
-  );
-
-  $form['general']['pathauto_max_bulk_update'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Maximum number of objects to alias in a bulk update'),
-    '#size' => 4,
-    '#maxlength' => 4,
-    '#default_value' => variable_get('pathauto_max_bulk_update', 50),
-    '#description' => t('Maximum number of objects of a given type which should be aliased during a bulk update. The default is 50 and the recommended number depends on the speed of your server. If bulk updates "time out" or result in a "white screen" then reduce the number.'),
-  );
-
-  $actions = array(
-    t('Do nothing. Leave the old alias intact.'),
-    t('Create a new alias. Leave the existing alias functioning.'),
-    t('Create a new alias. Delete the old alias.'),
-  );
-
-  if (function_exists('path_redirect_save')) {
-    $actions[] = t('Create a new alias. Redirect from old alias.');
-  }
-  elseif (variable_get('pathauto_update_action', PATHAUTO_UPDATE_ACTION_DELETE) == PATHAUTO_UPDATE_ACTION_REDIRECT) {
-    // the redirect action is selected, but path_redirect is not enabled
-    // let's set the variable back to the default
-    variable_set('pathauto_update_action', PATHAUTO_UPDATE_ACTION_DELETE);
-  }
-
-  $form['general']['pathauto_update_action'] = array(
-    '#type' => 'radios',
-    '#title' => t('Update action'),
-    '#default_value' => variable_get('pathauto_update_action', PATHAUTO_UPDATE_ACTION_DELETE),
-    '#options' => $actions,
-    '#description' => t('What should Pathauto do when updating an existing content item which already has an alias?'),
-  );
-
-  $disable_transliteration = FALSE;
-  $path = drupal_get_path('module', 'pathauto');
-  $transliteration_help = t('When a pattern includes certain characters (such as those with accents) should Pathauto attempt to transliterate them into the ASCII-96 alphabet? Transliteration is handled by the Transliteration module.');
-  if (!module_exists('transliteration')) {
-    $disable_transliteration = TRUE;
-    $transliteration_help .= ' <strong>' . t("This option is disabled on your site because the Transliteration module either isn't installed, or isn't installed properly.") . '</strong>';
-    // Make sure we don't try to use Transliteration if it isn't available
-    variable_set('pathauto_transliterate', FALSE);
-  }
-  $form['general']['pathauto_transliterate'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Transliterate prior to creating alias'),
-    '#default_value' => variable_get('pathauto_transliterate', FALSE),
-    '#description' => $transliteration_help,
-    '#disabled' => $disable_transliteration,
-  );
-  $form['general']['pathauto_reduce_ascii'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Reduce strings to letters and numbers'),
-    '#default_value' => variable_get('pathauto_reduce_ascii', FALSE),
-    '#description' => t('Filters the new alias to only letters and numbers found in the ASCII-96 set.'),
-  );
-
-  $wysiwyg_warn = _pathauto_warn_wysiwygs();
-
-  $form['general']['pathauto_ignore_words'] = array(
-    '#type' => 'textarea',
-    '#title' => t('Strings to Remove'),
-    '#default_value' => variable_get('pathauto_ignore_words', implode(',', $ignore_words)),
-    '#description' => t('Words to strip out of the URL alias, separated by commas. Do not use this to remove punctuation.') . $wysiwyg_warn,
-  );
-
-  $form['punctuation'] = array(
-    '#type' => 'fieldset',
-    '#weight' => $group_weight,
-    '#title' => t('Punctuation'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-  );
-  $group_weight++;
-
-  $punctuation = pathauto_punctuation_chars();
-  foreach ($punctuation as $name => $details) {
-    $details['default'] = PATHAUTO_PUNCTUATION_REMOVE;
-    if ($details['value'] == variable_get('pathauto_separator', '-')) {
-      $details['default'] = PATHAUTO_PUNCTUATION_REPLACE;
-    }
-    $form['punctuation']['pathauto_punctuation_' . $name] = array(
-      '#type' => 'select',
-      '#title' => $details['name'],
-      '#default_value' => variable_get('pathauto_punctuation_' . $name, $details['default']),
-      '#options' => array(
-        PATHAUTO_PUNCTUATION_REMOVE => t('Remove'),
-        PATHAUTO_PUNCTUATION_REPLACE => t('Replace by separator'),
-        PATHAUTO_PUNCTUATION_DO_NOTHING => t('No action (do not replace)'),
-      ),
-    );
-  }
 
   // Call the hook on all modules - an array of 'settings' objects is returned
   $all_settings = module_invoke_all('pathauto', 'settings');
@@ -187,11 +34,9 @@ function pathauto_admin_settings() {
     $form[$module] = array(
       '#type' => 'fieldset',
       '#title' => $groupheader,
-      '#weight' => $group_weight,
       '#collapsible' => TRUE,
       '#collapsed' => TRUE,
     );
-    $group_weight++;
 
     // Prompt for the default pattern for this module
     $variable = 'pathauto_' . $module . '_pattern';
@@ -303,6 +148,166 @@ function pathauto_admin_settings() {
 }
 
 /**
+ * Form builder; Configure the Pathauto settings.
+ *
+ * @ingroup forms
+ * @see system_settings_form()
+ */
+function pathauto_settings_form(&$form) {
+  _pathauto_include();
+
+  // Default words to ignore
+  $ignore_words = array(
+    'a', 'an', 'as', 'at', 'before', 'but', 'by', 'for', 'from', 'is', 'in',
+    'into', 'like', 'of', 'off', 'on', 'onto', 'per', 'since', 'than', 'the',
+    'this', 'that', 'to', 'up', 'via', 'with',
+  );
+
+  // Generate the form - settings applying to all patterns first
+  $form['general'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('General settings'),
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+  );
+
+  $form['general']['pathauto_verbose'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Verbose'),
+    '#default_value' => variable_get('pathauto_verbose', FALSE),
+    '#description' => t('Display alias changes (except during bulk updates).'),
+  );
+
+  $form['general']['pathauto_separator'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Separator'),
+    '#size' => 1,
+    '#maxlength' => 1,
+    '#default_value' => variable_get('pathauto_separator', '-'),
+    '#description' => t('Character used to separate words in titles. This will replace any spaces and punctuation characters. Using a space or + character can cause unexpected results.'),
+  );
+
+  $form['general']['pathauto_case'] = array(
+    '#type' => 'radios',
+    '#title' => t('Character case'),
+    '#default_value' => variable_get('pathauto_case', PATHAUTO_CASE_LOWER),
+    '#options' => array(
+      t('Leave case the same as source token values.'),
+      t('Change to lower case'),
+    ),
+  );
+
+  $form['general']['pathauto_max_length'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Maximum alias length'),
+    '#size' => 3,
+    '#maxlength' => 3,
+    '#default_value' => variable_get('pathauto_max_length', 100),
+    '#description' => t('Maximum length of aliases to generate. 100 is the recommended length. @max is the maximum possible length. See <a href="@pathauto-help">Pathauto help</a> for details.', array('@pathauto-help' => url('admin/help/pathauto'), '@max' => _pathauto_get_schema_alias_maxlength())),
+  );
+
+  $form['general']['pathauto_max_component_length'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Maximum component length'),
+    '#size' => 3,
+    '#maxlength' => 3,
+    '#default_value' => variable_get('pathauto_max_component_length', 100),
+    '#description' => t('Maximum text length of any component in the alias (e.g., [title]). 100 is the recommended length. @max is the maximum possible length. See <a href="@pathauto-help">Pathauto help</a> for details.', array('@pathauto-help' => url('admin/help/pathauto'), '@max' => _pathauto_get_schema_alias_maxlength())),
+  );
+
+  $form['general']['pathauto_max_bulk_update'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Maximum number of objects to alias in a bulk update'),
+    '#size' => 4,
+    '#maxlength' => 4,
+    '#default_value' => variable_get('pathauto_max_bulk_update', 50),
+    '#description' => t('Maximum number of objects of a given type which should be aliased during a bulk update. The default is 50 and the recommended number depends on the speed of your server. If bulk updates "time out" or result in a "white screen" then reduce the number.'),
+  );
+
+  $actions = array(
+    t('Do nothing. Leave the old alias intact.'),
+    t('Create a new alias. Leave the existing alias functioning.'),
+    t('Create a new alias. Delete the old alias.'),
+  );
+
+  if (function_exists('path_redirect_save')) {
+    $actions[] = t('Create a new alias. Redirect from old alias.');
+  }
+  elseif (variable_get('pathauto_update_action', PATHAUTO_UPDATE_ACTION_DELETE) == PATHAUTO_UPDATE_ACTION_REDIRECT) {
+    // the redirect action is selected, but path_redirect is not enabled
+    // let's set the variable back to the default
+    variable_set('pathauto_update_action', PATHAUTO_UPDATE_ACTION_DELETE);
+  }
+
+  $form['general']['pathauto_update_action'] = array(
+    '#type' => 'radios',
+    '#title' => t('Update action'),
+    '#default_value' => variable_get('pathauto_update_action', PATHAUTO_UPDATE_ACTION_DELETE),
+    '#options' => $actions,
+    '#description' => t('What should Pathauto do when updating an existing content item which already has an alias?'),
+  );
+
+  $disable_transliteration = FALSE;
+  $path = drupal_get_path('module', 'pathauto');
+  $transliteration_help = t('When a pattern includes certain characters (such as those with accents) should Pathauto attempt to transliterate them into the ASCII-96 alphabet? Transliteration is handled by the Transliteration module.');
+  if (!module_exists('transliteration')) {
+    $disable_transliteration = TRUE;
+    $transliteration_help .= ' <strong>' . t("This option is disabled on your site because the Transliteration module either isn't installed, or isn't installed properly.") . '</strong>';
+    // Make sure we don't try to use Transliteration if it isn't available
+    variable_set('pathauto_transliterate', FALSE);
+  }
+  $form['general']['pathauto_transliterate'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Transliterate prior to creating alias'),
+    '#default_value' => variable_get('pathauto_transliterate', FALSE),
+    '#description' => $transliteration_help,
+    '#disabled' => $disable_transliteration,
+  );
+  $form['general']['pathauto_reduce_ascii'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Reduce strings to letters and numbers'),
+    '#default_value' => variable_get('pathauto_reduce_ascii', FALSE),
+    '#description' => t('Filters the new alias to only letters and numbers found in the ASCII-96 set.'),
+  );
+
+  $wysiwyg_warn = _pathauto_warn_wysiwygs();
+
+  $form['general']['pathauto_ignore_words'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Strings to Remove'),
+    '#default_value' => variable_get('pathauto_ignore_words', implode(',', $ignore_words)),
+    '#description' => t('Words to strip out of the URL alias, separated by commas. Do not use this to remove punctuation.') . $wysiwyg_warn,
+  );
+
+  $form['punctuation'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Punctuation'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+
+  $punctuation = pathauto_punctuation_chars();
+  foreach ($punctuation as $name => $details) {
+    $details['default'] = PATHAUTO_PUNCTUATION_REMOVE;
+    if ($details['value'] == variable_get('pathauto_separator', '-')) {
+      $details['default'] = PATHAUTO_PUNCTUATION_REPLACE;
+    }
+    $form['punctuation']['pathauto_punctuation_' . $name] = array(
+      '#type' => 'select',
+      '#title' => $details['name'],
+      '#default_value' => variable_get('pathauto_punctuation_' . $name, $details['default']),
+      '#options' => array(
+        PATHAUTO_PUNCTUATION_REMOVE => t('Remove'),
+        PATHAUTO_PUNCTUATION_REPLACE => t('Replace by separator'),
+        PATHAUTO_PUNCTUATION_DO_NOTHING => t('No action (do not replace)'),
+      ),
+    );
+  }
+
+  return system_settings_form($form);
+}
+
+/**
  * Helper function for pathauto_admin_settings().
  *
  * See if all the tokens are valid in the given context.
@@ -351,9 +356,9 @@ function _pathauto_check_pattern($pattern, $type) {
 }
 
 /**
- * Validate pathauto_admin_settings form submissions.
+ * Validate pathauto_settings_form form submissions.
  */
-function pathauto_admin_settings_validate($form, &$form_state) {
+function pathauto_settings_form_validate($form, &$form_state) {
   _pathauto_include();
 
   // Validate that the separator is not set to be removed per http://drupal.org/node/184119

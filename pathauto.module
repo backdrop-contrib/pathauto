@@ -56,24 +56,31 @@ function pathauto_permission() {
  * Implements hook_menu().
  */
 function pathauto_menu() {
-  $items['admin/config/search/path/pathauto'] = array(
-    'title' => 'Automated alias settings',
+  $items['admin/config/search/path/patterns'] = array(
+    'title' => 'Patterns',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('pathauto_admin_settings'),
-    'access callback' => 'user_access',
+    'page arguments' => array('pathauto_patterns_form'),
     'access arguments' => array('administer pathauto'),
     'type' => MENU_LOCAL_TASK,
     'weight' => 10,
     'file' => 'pathauto.admin.inc',
   );
-
+  $items['admin/config/search/path/settings'] = array(
+    'title' => 'Settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('pathauto_settings_form'),
+    'access arguments' => array('administer pathauto'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 20,
+    'file' => 'pathauto.admin.inc',
+  );
   $items['admin/config/search/path/delete_bulk'] = array(
     'title' => 'Delete aliases',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('pathauto_admin_delete'),
     'access arguments' => array('administer url aliases'),
     'type' => MENU_LOCAL_TASK,
-    'weight' => 11,
+    'weight' => 30,
     'file' => 'pathauto.admin.inc',
   );
 
@@ -258,7 +265,7 @@ function pathauto_form_alter(&$form, &$form_state, $form_id) {
       );
 
       if (user_access('administer pathauto')) {
-        $form['path']['pathauto_perform_alias']['#description'] .= ' ' . t('To control the format of the generated aliases, see the <a href="@pathauto">automated alias settings</a>.', array('@pathauto' => url('admin/config/search/path/pathauto')));
+        $form['path']['pathauto_perform_alias']['#description'] .= ' ' . t('To control the format of the generated aliases, see the <a href="@url-patterns">URL alias patterns</a>.', array('@url-patterns' => url('admin/config/search/path/patterns')));
       }
 
       if ($node->pathauto_perform_alias && !empty($node->old_alias) && empty($path['alias'])) {
@@ -333,7 +340,7 @@ function _pathauto_taxonomy_term_insert_update($term, $op) {
       $count = _taxonomy_pathauto_alias($term, $op);
     }
 
-    // For all children generate new alias (important if [catpath] used)
+    // For all children generate new alias (important if [term:path] used)
     foreach (taxonomy_get_tree($term->vid, $term->tid) as $subterm) {
       $count = _taxonomy_pathauto_alias($subterm, $op);
     }
