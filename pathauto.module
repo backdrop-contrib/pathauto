@@ -305,7 +305,7 @@ function pathauto_node_operations() {
  *   Operation being performed on the node ('insert', 'update' or 'bulkupdate').
  */
 function pathauto_node_update_alias(stdClass $node, $op) {
-  _pathauto_include();
+  module_load_include('inc', 'pathauto');
   pathauto_create_alias('node', $op, "node/{$node->nid}", array('node' => $node), $node->type, $node->language);
 }
 
@@ -482,7 +482,7 @@ function pathauto_user_operations() {
  * @todo Remove support for any sub-path aliases.
  */
 function pathauto_user_update_alias(stdClass $account, $op) {
-  _pathauto_include();
+  module_load_include('inc', 'pathauto');
   pathauto_create_alias('user', $op, "user/{$account->uid}", array('user' => $account));
 
   if (module_exists('blog')) {
@@ -490,8 +490,8 @@ function pathauto_user_update_alias(stdClass $account, $op) {
       pathauto_create_alias('blog', $op, "blog/{$account->uid}", array('user' => $account));
     }
     else {
-      path_delete(array('source' => 'blog/' . $account->uid));
-      path_delete(array('source' => 'blog/' . $account->uid . '/feed'));
+      path_delete(array('source' => "blog/{$account->uid}"));
+      path_delete(array('source' => "blog/{$account->uid}/feed"));
     }
   }
 

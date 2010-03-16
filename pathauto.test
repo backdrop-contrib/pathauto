@@ -104,6 +104,7 @@ class PathautoTestHelper extends DrupalWebTestCase {
 
   function assertEntityAlias($entity_type, $entity, $expected_alias) {
     $path = entity_uri($entity_type, $entity);
+    drupal_clear_path_cache($path['path']);
     $alias = drupal_get_path_alias($path['path']);
     $this->assertIdentical($alias, $expected_alias);
   }
@@ -124,7 +125,7 @@ class PathautoFunctionalTestCase extends PathautoTestHelper {
   /**
    * Basic functional testing of Pathauto.
    */
-  function _testNodeEditing() {
+  function testNodeEditing() {
     // Create node for testing.
     $random_title = $this->randomName(10);
     $title = ' Simpletest title ' . $random_title . ' [';
