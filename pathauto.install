@@ -16,7 +16,7 @@ function pathauto_install() {
   if (module_exists('taxonomy')) {
     variable_set('pathauto_modulelist', array('node', 'user', 'taxonomy'));
     variable_set('pathauto_taxonomy_supportsfeeds', '0/feed');
-    variable_set('pathauto_taxonomy_pattern', 'category/[vocabulary:name]/[term:path]');
+    variable_set('pathauto_taxonomy_pattern', 'category/[term:vocabulary]/[term:path]');
     variable_set('pathauto_taxonomy_bulkupdate', FALSE);
     variable_set('pathauto_taxonomy_applytofeeds', FALSE);
     variable_set('pathauto_taxonomy_2_pattern', '');

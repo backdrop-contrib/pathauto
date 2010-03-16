@@ -266,7 +266,7 @@ class PathautoTaxonomyTokenTestCase extends PathautoUnitTestHelper {
 
   function setUp() {
     parent::setUp('taxonomy');
-    variable_set('pathauto_taxonomy_pattern', 'category/[vocabulary:name]/[term:name]');
+    variable_set('pathauto_taxonomy_pattern', 'category/[term:vocabulary]/[term:name]');
     // Use the default 'Tags' taxonomy included with the standard install profile.
     $tags_vid = db_query("SELECT vid FROM {taxonomy_vocabulary} WHERE name = 'Tags'")->fetchField();
     $this->vocab = taxonomy_vocabulary_load($tags_vid);

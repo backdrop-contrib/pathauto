@@ -19,7 +19,7 @@ function taxonomy_pathauto($op) {
       $settings['token_type'] = 'term';
       $settings['groupheader'] = t('Taxonomy term paths');
       $settings['patterndescr'] = t('Default path pattern (applies to all vocabularies with blank patterns below)');
-      $settings['patterndefault'] = t('category/[vocabulary:name]/[term:path]');
+      $settings['patterndefault'] = t('category/[term:vocabulary]/[term:path]');
 
       $tokens = token_info();
       foreach ($tokens['tokens']['term'] as $key => $info) {
@@ -102,6 +102,8 @@ function taxonomy_pathauto_bulkupdate() {
  *
  * @param $category
  *   A taxonomy object.
+ *
+ * @todo Get rid of this function since we should only provide the $term object.
  */
 function _taxonomy_pathauto_alias($term, $op) {
   $count = 0;
@@ -136,7 +138,7 @@ function forum_pathauto($op) {
       $settings['token_type'] = 'term';
       $settings['groupheader'] = t('Forum paths');
       $settings['patterndescr'] = t('Pattern for forums and forum containers');
-      $settings['patterndefault'] = t('[vocabulary:name]/[term:path]');
+      $settings['patterndefault'] = t('[term:vocabulary]/[term:path]');
 
       $tokens = token_info();
       foreach ($tokens['tokens']['term'] as $key => $info) {
