@@ -26,7 +26,7 @@ function taxonomy_pathauto($op) {
         $settings['tokens']["[term:$key]"] = $info['description'];
       }
       foreach ($tokens['tokens']['vocabulary'] as $key => $info) {
-        $settings['tokens']["[vocabulary:$key]"] = $info['description'];
+        $settings['tokens']["[term:vocabulary:$key]"] = $info['description'];
       }
 
       $settings['supportsfeeds'] = '0/feed';
@@ -145,7 +145,7 @@ function forum_pathauto($op) {
         $settings['tokens']["[term:$key]"] = $info['description'];
       }
       foreach ($tokens['tokens']['vocabulary'] as $key => $info) {
-        $settings['tokens']["[vocabulary:$key]"] = $info['description'];
+        $settings['tokens']["[term:vocabulary:$key]"] = $info['description'];
       }
 
       $settings['supportsfeeds'] = '0/feed';
