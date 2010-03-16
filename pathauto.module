@@ -288,26 +288,46 @@ function pathauto_form_alter(&$form, &$form_state, $form_id) {
  * Implements hook_node_operations().
  */
 function pathauto_node_operations() {
-  $operations = array(
-    'update_alias' => array(
-      'label' => t('Update path alias'),
-      'callback' => 'pathauto_node_operations_update',
-    ),
+  $operations['pathauto_update_alias'] = array(
+    'label' => t('Update URL alias'),
+    'callback' => 'pathauto_node_update_alias_multiple',
+    'callback arguments' => array('bulkupdate', TRUE),
   );
   return $operations;
 }
 
 /**
- * Callback function for updating node aliases.
+ * Update the URL aliases for an individual node.
  *
- * @param $nodes
- *   Array of node nid's.
+ * @param $node
+ *   A node object.
+ * @param $op
+ *   Operation being performed on the node ('insert', 'update' or 'bulkupdate').
  */
-function pathauto_node_operations_update($nodes) {
+function pathauto_node_update_alias(stdClass $node, $op) {
   _pathauto_include();
-  $nodes = node_load_multiple($nodes);
+  pathauto_create_alias('node', $op, "node/{$node->nid}", array('node' => $node), $node->type, $node->language);
+}
+
+/**
+ * Update the URL aliases for multiple nodes.
+ *
+ * @param $nids
+ *   An array of node IDs.
+ * @param $op
+ *   Operation being performed on the nodes ('insert', 'update' or
+ *   'bulkupdate').
+ * @param $message
+ *   A boolean if TRUE will display a message about how many nodes were
+ *   updated.
+ */
+function pathauto_node_update_alias_multiple(array $nids, $op, $message = FALSE) {
+  $nodes = node_load_multiple($nids);
   foreach ($nodes as $node) {
-    pathauto_create_alias('node', 'bulkupdate', "node/$node->nid", array('node' => $node), $node->type, $node->language);
+    pathauto_node_update_alias($node, $op);
+  }
+  if ($message) {
+    drupal_set_message(format_plural(count($nids), 'Updated URL alias for 1 node.', 'Updated URL aliases for @count nodes.'));
   }
 }
 
@@ -375,6 +395,8 @@ function pathauto_user_update(&$edit, $account, $category) {
 
 /**
  * Internal helper for user insert/update duplicate functionality.
+ *
+ * @todo Clean or remove this function in favor of pathauto_user_update_alias().
  */
 function _pathauto_user_insert_update(&$edit, $account, $category, $op) {
   _pathauto_include();
@@ -433,5 +455,73 @@ function pathauto_user_cancel($edit, $account, $method) {
       path_delete(array('source' => 'user/' . $user->uid . '/track/feed'));
       path_delete(array('source' => 'user/' . $user->uid . '/contact'));
       break;
+  }
+}
+
+/**
+ * Implements hook_user_operations().
+ */
+function pathauto_user_operations() {
+  $operations['pathauto_update_alias'] = array(
+    'label' => t('Update URL alias'),
+    'callback' => 'pathauto_user_update_alias_multiple',
+    'callback arguments' => array('bulkupdate', TRUE),
+  );
+  return $operations;
+}
+
+/**
+ * Update the URL aliases for an individual user account.
+ *
+ * @param $account
+ *   A user account object.
+ * @param $op
+ *   Operation being performed on the account ('insert', 'update' or
+ *   'bulkupdate').
+ *
+ * @todo Remove support for any sub-path aliases.
+ */
+function pathauto_user_update_alias(stdClass $account, $op) {
+  _pathauto_include();
+  pathauto_create_alias('user', $op, "user/{$account->uid}", array('user' => $account));
+
+  if (module_exists('blog')) {
+    if (node_access('create', 'blog', $account)) {
+      pathauto_create_alias('blog', $op, "blog/{$account->uid}", array('user' => $account));
+    }
+    else {
+      path_delete(array('source' => 'blog/' . $account->uid));
+      path_delete(array('source' => 'blog/' . $account->uid . '/feed'));
+    }
+  }
+
+  if (module_exists('tracker')) {
+    pathauto_create_alias('tracker', $op, "user/{$account->uid}/track", array('user' => $account));
+  }
+
+  if (module_exists('contact')) {
+    pathauto_create_alias('contact', $op, "user/{$account->uid}/contact", array('user' => $account));
+  }
+}
+
+/**
+ * Update the URL aliases for multiple user accounts.
+ *
+ * @param $uids
+ *   An array of user account IDs.
+ * @param $op
+ *   Operation being performed on the accounts ('insert', 'update' or
+ *   'bulkupdate').
+ * @param $message
+ *   A boolean if TRUE will display a message about how many accounts were
+ *   updated.
+ */
+function pathauto_user_update_alias_multiple(array $uids, $op, $message = FALSE) {
+  $accounts = user_load_multiple($uids);
+  foreach ($accounts as $account) {
+    pathauto_user_update_alias($account, $op);
+  }
+  if ($message) {
+    drupal_set_message(format_plural(count($uids), 'Updated URL alias for 1 user account.', 'Updated URL aliases for @count user accounts.'));
   }
 }

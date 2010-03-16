@@ -91,13 +91,21 @@ class PathautoTestHelper extends DrupalWebTestCase {
 
     $this->admin_user = $this->drupalCreateUser(array(
       'administer pathauto',
-      'create page content',
-      'edit own page content',
       'administer url aliases',
       'create url aliases',
+      'administer nodes',
+      'bypass node access',
+      'access content overview',
+      'administer users',
     ));
 
     $this->drupalLogin($this->admin_user);
+  }
+
+  function assertEntityAlias($entity_type, $entity, $expected_alias) {
+    $path = entity_uri($entity_type, $entity);
+    $alias = drupal_get_path_alias($path['path']);
+    $this->assertIdentical($alias, $expected_alias);
   }
 }
 
@@ -116,7 +124,7 @@ class PathautoFunctionalTestCase extends PathautoTestHelper {
   /**
    * Basic functional testing of Pathauto.
    */
-  function testNodeEditing() {
+  function _testNodeEditing() {
     // Create node for testing.
     $random_title = $this->randomName(10);
     $title = ' Simpletest title ' . $random_title . ' [';
@@ -156,6 +164,47 @@ class PathautoFunctionalTestCase extends PathautoTestHelper {
     $this->assertResponse(404, 'Node not accessible through automatic alias.');
     $this->drupalGet($manual_alias);
     $this->assertText($title, 'Node accessible through manual alias.');
+  }
+
+  /**
+   * Test node operations.
+   */
+  function testNodeOperations() {
+    $node1 = $this->drupalCreateNode(array('title' => 'node1'));
+    $node2 = $this->drupalCreateNode(array('title' => 'node2'));
+
+    // Delete all current URL aliases.
+    db_delete('url_alias')->execute();
+
+    $edit = array(
+      'operation' => 'pathauto_update_alias',
+      "nodes[{$node1->nid}]" => TRUE,
+    );
+    $this->drupalPost('admin/content', $edit, t('Update'));
+    $this->assertText('Updated URL alias for 1 node.');
+
+    $this->assertEntityAlias('node', $node1, 'content/' . $node1->title);
+    $this->assertEntityAlias('node', $node2, 'node/' . $node2->nid);
+  }
+
+  /**
+   * Test user operations.
+   */
+  function testUserOperations() {
+    $account = $this->drupalCreateUser();
+
+    // Delete all current URL aliases.
+    db_delete('url_alias')->execute();
+
+    $edit = array(
+      'operation' => 'pathauto_update_alias',
+      "accounts[{$account->uid}]" => TRUE,
+    );
+    $this->drupalPost('admin/people', $edit, t('Update'));
+    $this->assertText('Updated URL alias for 1 user account.');
+
+    $this->assertEntityAlias('user', $account, 'users/' . drupal_strtolower($account->name));
+    $this->assertEntityAlias('user', $this->admin_user, 'user/' . $this->admin_user->uid);
   }
 }
 
