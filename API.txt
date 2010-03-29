@@ -24,6 +24,10 @@ need to implement two functions:
 See the token.module and it's API.txt for more information about this
 process.
 
+If the token is intended to generate a path expected to contain slashes,
+the token name must end in 'path', 'path-raw' or 'alias'. This indicates to
+Pathauto that the slashes should not be removed from the replacement value.
+
 When an object is created (whether it is a node or a user or a
 taxonomy term) the data that Pathauto hands to the token_values in the
 $object is in a specific format. This is the format that most people
