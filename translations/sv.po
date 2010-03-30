@@ -2,403 +2,414 @@
 #
 # Swedish translation of Drupal (pathauto)
 # Generated from files:
-#  pathauto.admin.inc,v 1.20 2008/09/13 08:54:06 freso
-#  pathauto.inc,v 1.56 2009/12/03 16:12:45 greggles
-#  pathauto.info,v 1.5 2009/03/21 00:24:28 freso
-#  pathauto_node.inc,v 1.48 2008/06/28 15:41:15 freso
-#  pathauto_taxonomy.inc,v 1.41 2008/08/28 16:14:06 greggles
-#  pathauto_user.inc,v 1.31 2008/07/11 20:01:22 greggles
-#  pathauto.module,v 1.126 2009/10/17 17:45:10 greggles
+#  pathauto.admin.inc,v 1.20.2.7 2010/03/15 18:25:21 davereid
+#  pathauto.inc,v 1.56.2.12 2010/03/03 05:46:09 davereid
+#  pathauto.tokens.inc,v 1.1.2.6 2010/03/14 05:20:42 davereid
+#  pathauto_node.inc,v 1.48.2.1 2010/03/03 05:09:02 davereid
+#  pathauto_taxonomy.inc,v 1.41.2.2 2010/03/03 05:09:02 davereid
+#  pathauto_user.inc,v 1.31.2.1 2010/03/03 05:09:02 davereid
+#  pathauto.module,v 1.126.2.21 2010/03/16 06:34:34 davereid
+#  pathauto.info,v 1.5.2.1 2010/03/02 23:04:09 davereid
+#  pathauto.js,v 1.5.2.1 2010/02/10 21:47:40 greggles
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Pathauto 6.x\n"
-"POT-Creation-Date: 2009-12-04 08:01+0100\n"
-"PO-Revision-Date: 2009-12-04 13:01+0100\n"
-"Last-Translator: Magnus Gunnarsson <seals@passagen.se>\n"
+"Project-Id-Version: Pathauto 6.2\n"
+"POT-Creation-Date: 2010-03-30 11:37+0200\n"
+"PO-Revision-Date: 2010-03-30 12:41+0100\n"
+"Last-Translator: Magnus Gunnarsson <magnus.gunnarsson76@gmail.com>\n"
 "Language-Team: drupalsverige.se\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: KBabel 1.11.4\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
 "X-Poedit-Language: Swedish\n"
 "X-Poedit-Country: SWEDEN\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
-#: pathauto.admin.inc:22
-msgid "It appears that the <a href=\"@token_link\">Token module</a> is not installed. Please ensure that you have it installed so that Pathauto can work properly. You may need to disable Pathauto and re-enable it to get Token enabled."
-msgstr "Det verkar som att <a href=\"@token_link\">modulen Token</a> inte är installerad. Försäkra dig om att den är installerad så att Pathauto kan fungera korrekt. Du kan behöva inaktivera Pathauto och återaktivera det igen för att få Token aktiverat."
-
-#: pathauto.admin.inc:38
-msgid "General settings"
-msgstr "Allmänna inställningar"
-
-#: pathauto.admin.inc:46
-msgid "Verbose"
-msgstr "Detaljerad"
-
-#: pathauto.admin.inc:48
-msgid "Display alias changes (except during bulk updates)."
-msgstr "Visa ändringar av alias (förutom under massuppdateringar)."
-
-#: pathauto.admin.inc:53
-msgid "Separator"
-msgstr "Avskiljare"
-
-#: pathauto.admin.inc:57
-msgid "Character used to separate words in titles. This will replace any spaces and punctuation characters. Using a space or + character can cause unexpected results."
-msgstr "Tecken som används för att separera ord i titlar. Detta kommer ersätta alla mellanrum och skiljetecken. Används tecken som mellanslag eller + kan det orsaka oväntat resultat."
-
-# Ej ordagrannt
-#: pathauto.admin.inc:62
-msgid "Character case"
-msgstr "Gemener eller versaler"
-
-#: pathauto.admin.inc:65
-msgid "Leave case the same as source token values."
-msgstr "Spara gemener/versaler enligt källa."
-
-#: pathauto.admin.inc:66
-msgid "Change to lower case"
-msgstr "Ändra till gemener"
-
-#: pathauto.admin.inc:72
-msgid "Maximum alias length"
-msgstr "Längsta längd för alias"
-
-#: pathauto.admin.inc:76
-msgid "Maximum length of aliases to generate. 100 is recommended. See <a href=\"@pathauto-help\">Pathauto help</a> for details."
-msgstr "Längsta längd för genererade alias. 100 är rekommenderat. Läs <a href=\"@pathauto-help\">hjälpen om Pathauto</a> för detaljer."
-
-#: pathauto.admin.inc:81
-msgid "Maximum component length"
-msgstr "Längsta längd för komponent"
-
-#: pathauto.admin.inc:85
-msgid "Maximum text length of any component in the alias (e.g., [title]). 100 is recommended. See <a href=\"@pathauto-help\">Pathauto help</a> for details."
-msgstr "Längsta längd för komponenter i alias (till exempel [title]). 100 är rekommenderat. Läs <a href=\"@pathauto-help\">hjälpen om Pathauto</a> för detaljer."
-
-#: pathauto.admin.inc:90
-msgid "Maximum number of objects to alias in a bulk update"
-msgstr "Största tillåtna antal objekt att döpa om i en massuppdatering"
-
-#: pathauto.admin.inc:94
-msgid "Maximum number of objects of a given type which should be aliased during a bulk update. The default is 50 and the recommended number depends on the speed of your server. If bulk updates \"time out\" or result in a \"white screen\" then reduce the number."
-msgstr "Största tillåtna antal objekt av en vald typ som skall döpas om under en massuppdatering. Standard är 50 och rekommenderat antal beror på prestandan hos din webbserver. Minska antalen om uppdateringen överskrider tidsgränsen eller resulterar i en \"white screen\"."
-
-#: pathauto.admin.inc:98
-msgid "Do nothing. Leave the old alias intact."
-msgstr "Gör inget. Lämna gamla alias intakta."
-
-#: pathauto.admin.inc:99
-msgid "Create a new alias. Leave the existing alias functioning."
-msgstr "Skapa ett nytt alias. Spara det gamla."
-
-#: pathauto.admin.inc:100
-msgid "Create a new alias. Delete the old alias."
-msgstr "Skapa ett nytt alias. Ta bort det gamla."
-
-#: pathauto.admin.inc:104
-msgid "Create a new alias. Redirect from old alias."
-msgstr "Skapa ett nytt alias. Vidarebefordra från det gamla."
-
-#: pathauto.admin.inc:114
-msgid "Update action"
-msgstr "Åtgärd för uppdatering"
-
-#: pathauto.admin.inc:117
-msgid "What should Pathauto do when updating an existing content item which already has an alias?"
-msgstr "Vad skall Pathauto göra vid uppdatering av en existerande innehållspost som redan har ett alias?"
-
-#: pathauto.admin.inc:122
-msgid "When a pattern includes certain characters (such as those with accents) should Pathauto attempt to transliterate them into the ASCII-96 alphabet? Transliteration is handled by the Transliteration module."
-msgstr "När ett mönster innehåller vissa tecken (till exempel accent), skall Pathauto försöka skriva om dem till alfabetet ASCII-96? Omskrivning hanteras av modulen Transliteration."
-
-#: pathauto.admin.inc:125
-msgid "This option is disabled on your site because the Transliteration module either isn't installed, or isn't installed properly."
-msgstr "Detta alternativ är inaktiverat på din webbplats eftersom modulen Transliterate inte är installerad, eller inte är installerad på rätt sätt."
-
-#: pathauto.admin.inc:131
-msgid "Transliterate prior to creating alias"
-msgstr "Skriv om innan alias skapas"
-
-#: pathauto.admin.inc:138
-msgid "Reduce strings to letters and numbers from ASCII-96"
-msgstr "Reducera strängar till endast bokstäver och siffror från ASCII-96"
-
-#: pathauto.admin.inc:140
-msgid "Filters the new alias to only letters and numbers found in the ASCII-96 set."
-msgstr "Filtrerar det nya aliaset till endast bokstäver och siffror som finns i ASCII-96."
-
-#: pathauto.admin.inc:147
-msgid "Strings to Remove"
-msgstr "Strängar att ta bort"
-
-#: pathauto.admin.inc:149
-msgid "Words to strip out of the URL alias, separated by commas. Do not use this to remove punctuation."
-msgstr "Ord att ta bort från URL-aliaset, separerade med kommatecken. Använd inte detta för att ta bort skiljetecken."
-
-#: pathauto.admin.inc:155
-msgid "Punctuation settings"
-msgstr "Inställningar för skiljetecken"
-
-#: pathauto.admin.inc:168
-msgid "Remove"
-msgstr "Ta bort"
-
-#: pathauto.admin.inc:169
-msgid "Replace by separator"
-msgstr "Ersätt med avskiljare"
-
-#: pathauto.admin.inc:170
-msgid "No action (do not replace)"
-msgstr "Ingen åtgärd (ersätt inte)"
-
-#: pathauto.admin.inc:249
+#: pathauto.admin.inc:92
 msgid "Replacement patterns"
 msgstr "Ersättningsmönster"
 
-#: pathauto.admin.inc:253
+#: pathauto.admin.inc:96
 msgid "Use -raw replacements for text to avoid problems with HTML entities."
 msgstr "Använd obearbetade ersättningar för att undvika problem med HTML-enheter."
 
-#: pathauto.admin.inc:286
+#: pathauto.admin.inc:129
 msgid "Internal feed alias text (leave blank to disable)"
 msgstr "Internt alias för innehållsflöde (lämna blankt för att inaktivera)"
 
-#: pathauto.admin.inc:290
+#: pathauto.admin.inc:133
 msgid "The text to use for aliases for RSS feeds. Examples are \"0/feed\" (used throughout Drupal core) and \"feed\" (used by some contributed Drupal modules, like Views)."
 msgstr "Alias för RSS-flöden. Exempel är \"0/feed\" (används genom kärnan för Drupal) och \"feed\" (används av några bidragna moduler i Drupal som Views)."
 
-#: pathauto.admin.inc:345
+#: pathauto.admin.inc:170
+msgid "General settings"
+msgstr "Allmänna inställningar"
+
+#: pathauto.admin.inc:177
+msgid "Verbose"
+msgstr "Detaljerad"
+
+#: pathauto.admin.inc:179
+msgid "Display alias changes (except during bulk updates)."
+msgstr "Visa ändringar av alias (förutom under massuppdateringar)."
+
+#: pathauto.admin.inc:184
+msgid "Separator"
+msgstr "Avskiljare"
+
+#: pathauto.admin.inc:188
+msgid "Character used to separate words in titles. This will replace any spaces and punctuation characters. Using a space or + character can cause unexpected results."
+msgstr "Tecken som används för att separera ord i titlar. Detta kommer ersätta alla mellanrum och skiljetecken. Används tecken som mellanslag eller + kan det orsaka oväntat resultat."
+
+#: pathauto.admin.inc:193
+msgid "Character case"
+msgstr "Gemener eller versaler"
+
+#: pathauto.admin.inc:196
+msgid "Leave case the same as source token values."
+msgstr "Spara gemener/versaler enligt källa."
+
+#: pathauto.admin.inc:197
+msgid "Change to lower case"
+msgstr "Ändra till gemener"
+
+#: pathauto.admin.inc:203
+msgid "Maximum alias length"
+msgstr "Längsta längd för alias"
+
+#: pathauto.admin.inc:207
+msgid "Maximum length of aliases to generate. 100 is the recommended length. @max is the maximum possible length. See <a href=\"@pathauto-help\">Pathauto help</a> for details."
+msgstr "Längsta längd på alias att generera. 100 är rekommenderat. @max är den längsta möjliga längden. Se <a href=\"@pathauto-help\">hjälp om Pathauto</a> för detaljer."
+
+#: pathauto.admin.inc:212
+msgid "Maximum component length"
+msgstr "Längsta längd för komponent"
+
+#: pathauto.admin.inc:216
+msgid "Maximum text length of any component in the alias (e.g., [title]). 100 is the recommended length. @max is the maximum possible length. See <a href=\"@pathauto-help\">Pathauto help</a> for details."
+msgstr "Längsta textlängd för en komponent i aliaset (till exempel [title]. 100 är rekommenderat. @max är den längsta möjliga längden.  Se <a href=\"@pathauto-help\">hjälp om Pathauto</a> för detaljer."
+
+#: pathauto.admin.inc:221
+msgid "Maximum number of objects to alias in a bulk update"
+msgstr "Största tillåtna antal objekt att döpa om i en massuppdatering"
+
+#: pathauto.admin.inc:225
+msgid "Maximum number of objects of a given type which should be aliased during a bulk update. The default is 50 and the recommended number depends on the speed of your server. If bulk updates \"time out\" or result in a \"white screen\" then reduce the number."
+msgstr "Största tillåtna antal objekt av en vald typ som skall döpas om under en massuppdatering. Standard är 50 och rekommenderat antal beror på prestandan hos din webbserver. Minska antalen om uppdateringen överskrider tidsgränsen eller resulterar i en \"white screen\"."
+
+#: pathauto.admin.inc:229
+msgid "Do nothing. Leave the old alias intact."
+msgstr "Gör inget. Lämna gamla alias intakta."
+
+#: pathauto.admin.inc:230
+msgid "Create a new alias. Leave the existing alias functioning."
+msgstr "Skapa ett nytt alias. Spara det gamla."
+
+#: pathauto.admin.inc:231
+msgid "Create a new alias. Delete the old alias."
+msgstr "Skapa ett nytt alias. Ta bort det gamla."
+
+#: pathauto.admin.inc:235
+msgid "Create a new alias. Redirect from old alias."
+msgstr "Skapa ett nytt alias. Vidarebefordra från det gamla."
+
+#: pathauto.admin.inc:245
+msgid "Update action"
+msgstr "Åtgärd för uppdatering"
+
+#: pathauto.admin.inc:248
+msgid "What should Pathauto do when updating an existing content item which already has an alias?"
+msgstr "Vad skall Pathauto göra vid uppdatering av en existerande innehållspost som redan har ett alias?"
+
+#: pathauto.admin.inc:253
+msgid "When a pattern includes certain characters (such as those with accents) should Pathauto attempt to transliterate them into the ASCII-96 alphabet? Transliteration is handled by the Transliteration module."
+msgstr "När ett mönster innehåller vissa tecken (till exempel accent), skall Pathauto försöka skriva om dem till alfabetet ASCII-96? Omskrivning hanteras av modulen Transliteration."
+
+#: pathauto.admin.inc:256
+msgid "This option is disabled on your site because the Transliteration module either isn't installed, or isn't installed properly."
+msgstr "Detta alternativ är inaktiverat på din webbplats eftersom modulen Transliterate inte är installerad, eller inte är installerad på rätt sätt."
+
+#: pathauto.admin.inc:262
+msgid "Transliterate prior to creating alias"
+msgstr "Skriv om innan alias skapas"
+
+#: pathauto.admin.inc:269
+msgid "Reduce strings to letters and numbers"
+msgstr "Reducera strängar till bokstäver och siffror"
+
+#: pathauto.admin.inc:271
+msgid "Filters the new alias to only letters and numbers found in the ASCII-96 set."
+msgstr "Filtrerar det nya aliaset till endast bokstäver och siffror som finns i ASCII-96."
+
+#: pathauto.admin.inc:278
+msgid "Strings to Remove"
+msgstr "Strängar att ta bort"
+
+#: pathauto.admin.inc:280
+msgid "Words to strip out of the URL alias, separated by commas. Do not use this to remove punctuation."
+msgstr "Ord att ta bort från URL-aliaset, separerade med kommatecken. Använd inte detta för att ta bort skiljetecken."
+
+#: pathauto.admin.inc:285
+msgid "Punctuation"
+msgstr "Skiljetecken"
+
+#: pathauto.admin.inc:301
+msgid "Remove"
+msgstr "Ta bort"
+
+#: pathauto.admin.inc:302
+msgid "Replace by separator"
+msgstr "Ersätt med avskiljare"
+
+#: pathauto.admin.inc:303
+msgid "No action (do not replace)"
+msgstr "Ingen åtgärd (ersätt inte)"
+
+#: pathauto.admin.inc:348
 msgid "You are using the token [%token] which is not valid within the scope of tokens where you are using it."
 msgstr "Du anväder symbolen [%token] som inte är giltig i det sammanhang du valt."
 
-#: pathauto.admin.inc:353
+#: pathauto.admin.inc:356
 msgid "You are using the token [%token] which has a -raw companion available [%raw_token]. For Pathauto patterns you should use the -raw version of tokens unless you really know what you are doing. See the <a href=\"@pathauto-help\">Pathauto help</a> for more details."
 msgstr "Du anväder symbolen [%token] som har en obearbetat följeslagare tillgänglig  [%raw_token]. För Pathauto-mönster bör du använda \"-raw\"-versionen av symboler såvida du inte vet exakt vad du håller på med. Läs <a href=\"@pathauto-help\">Pathauto-hjälp</a> för detaljer."
 
-#: pathauto.admin.inc:363
+#: pathauto.admin.inc:366
 msgid "NOTE: This field contains potentially incorrect patterns. %name %problems."
 msgstr "OBSERVERA: Detta fält innehåller potentiellt felaktiga tecken. %name %problems."
 
-#: pathauto.admin.inc:386
+#: pathauto.admin.inc:389
 msgid "You have configured the @name to be the separator and to be removed when encountered in strings. This can cause problems with your patterns and especially with the catpath and termpath patterns. You should probably set the action for @name to be \"replace by separator\"."
 msgstr "Du har konfigurerat @name som avskiljare och som skall tas bort när det påträffas i strängar. Detta kan orsaka problem med dina mönster och speciellt med mönster av typen \"catpath\" och \"termpath\". Du bör troligen sätta åtgärden för @name som \"ersätt med avskiljare\"."
 
-#: pathauto.admin.inc:411
+#: pathauto.admin.inc:413
 msgid "Choose aliases to delete"
 msgstr "Välj alias att ta bort"
 
-#: pathauto.admin.inc:420
+#: pathauto.admin.inc:422
 msgid "All aliases"
 msgstr "Alla alias"
 
-#: pathauto.admin.inc:422
+#: pathauto.admin.inc:424
 msgid "Delete all aliases. Number of aliases which will be deleted: %count."
 msgstr "Ta bort alla alias. Antal alias som kommer att tas bort: %count"
 
-#: pathauto.admin.inc:433
+#: pathauto.admin.inc:435
 msgid "Delete aliases for all @label. Number of aliases which will be deleted: %count."
 msgstr "Ta bort alias för alla @label. Antal alias som kommer att tas bort: %count"
 
-#: pathauto.admin.inc:438
+#: pathauto.admin.inc:440
 msgid "<strong>Note:</strong> there is no confirmation. Be sure of your action before clicking the \"Delete aliases now!\" button.<br />You may want to make a backup of the database and/or the url_alias table prior to using this feature."
 msgstr "<strong>Observera:</strong> det kommer ingen bekräftelse. Var säker på det du gör innan du klickar på knappen \"Ta bort alias nu!\".<br />Du kanske vill göra en backup på din databas och/eller tabellen url_alias innan du använder den här funktionen."
 
-#: pathauto.admin.inc:441
+#: pathauto.admin.inc:443
 msgid "Delete aliases now!"
 msgstr "Ta bort alias nu!"
 
-#: pathauto.admin.inc:455
+#: pathauto.admin.inc:457
 msgid "All of your path aliases have been deleted."
 msgstr "Alla dina webbadressalias har tagits bort."
 
-#: pathauto.admin.inc:460
+#: pathauto.admin.inc:462
 msgid "All of your %type path aliases have been deleted."
 msgstr "Alla dina alias för %type har tagits bort"
 
-#: pathauto.admin.inc:489
+#: pathauto.admin.inc:491
 msgid "You appear to be using a \"WYSIWYG\" editor which can cause problems if that editor runs on the Pathauto administrative settings page. Please be sure to disable these editors for all text boxes on this page. See the \"WYSIWYG Conflicts\" section of the README.txt file for more information."
 msgstr "Du verkar använda en redigerare av typen \"WYSIWYG\" vilket kan orsaka problem om redigeraren körs på Pathautos administrativa inställningssida. Var vänlig se till att inaktivera dessa redigerare för alla textrutor på denna sida. Se området \"WYSIWYG Conflicts\" i filen README.txt för mer information."
 
-#: pathauto.admin.inc:297
+#: pathauto.admin.inc:140
 msgid "Bulk generation of index aliases completed, one alias generated."
 msgid_plural "Bulk generation of index aliases completed, @count aliases generated."
 msgstr[0] "Massuppdatering av indexalias genomförd, ett alias skapades."
 msgstr[1] "Massuppdatering av indexalias genomförd, @count alias skapades."
 
-#: pathauto.admin.inc:364
+#: pathauto.admin.inc:367
 msgid "Problem token:"
 msgid_plural "Problem tokens:"
 msgstr[0] "Problemsymbol: "
 msgstr[1] "Problemsymboler: "
 
-#: pathauto.inc:214
+#: pathauto.inc:170
 msgid "Pathauto could not transliterate the path, as the Transliteration module has been disabled."
 msgstr "Pathauto kunde inte skriva om sökvägen eftersom modulen Transliteration har inaktiverats."
 
-#: pathauto.inc:365
+#: pathauto.inc:364
 msgid "The automatically generated alias %original_alias conflicted with an existing alias. Alias changed to %alias."
 msgstr "Det automatiskt genererade aliaset %original_alias hamnade i konfilkt med ett existerande alias. Alias ändrades till %alias."
 
-#: pathauto.inc:436
-msgid "Ignoring alias %dst due to existing path conflict."
-msgstr "Ingorerar alias %dst på grund av sökvägskonflikt."
+#: pathauto.inc:439
+msgid "Ignoring alias %alias due to existing path conflict."
+msgstr "Ignorerar alias %alias på grund av sökvägskonflikt."
 
-#: pathauto.inc:443
-msgid "Ignoring alias %dst because it is the same as the internal path."
-msgstr "Ignorerar alias %dst då det är detsamma som den interna sökvägen."
+#: pathauto.inc:446
+msgid "Ignoring alias %alias because it is the same as the internal path."
+msgstr "Ignorerar alias %alias då det är detsamma som den interna sökvägen."
 
-#: pathauto.inc:464
-msgid "Created new alias %dst for %src, replacing %old_alias. %old_alias now redirects to %dst."
-msgstr "Skapade nytt alias %dst för %src, som ersätter %old_alias. %old_alias vidarebefodrar nu till %dst."
+#: pathauto.inc:468
+msgid "Created new alias %alias for %source, replacing %old_alias. %old_alias now redirects to %alias."
+msgstr "Skapade nytt alias %alias för %source, som ersätter %old_alias. %old_alias vidarebefodrar nu till %alias."
 
-#: pathauto.inc:467
-msgid "Created new alias %dst for %src, replacing %old_alias."
-msgstr "Skapade nytt alias %dst för %src, som ersätter %old_alias."
+#: pathauto.inc:471
+msgid "Created new alias %alias for %source, replacing %old_alias."
+msgstr "Skapade nytt alias %alias för %source, som ersätter %old_alias."
 
-#: pathauto.inc:470
-msgid "Created new alias %dst for %src."
-msgstr "Skapade nytt alias %dst för %src."
+#: pathauto.inc:474
+msgid "Created new alias %alias for %source."
+msgstr "Skapade nytt alias %alias för %source."
 
-#: pathauto.inc:533
+#: pathauto.inc:532
 msgid "Double quotes \""
 msgstr "Citationstecken \""
 
-#: pathauto.inc:534
+#: pathauto.inc:533
 msgid "Single quotes (apostrophe) '"
 msgstr "Apostrof '"
 
-#: pathauto.inc:535
+#: pathauto.inc:534
 msgid "Back tick `"
 msgstr "Grav accent `"
 
-#: pathauto.inc:536
+#: pathauto.inc:535
 msgid "Comma ,"
 msgstr "Kommatecken ,"
 
-#: pathauto.inc:537
+#: pathauto.inc:536
 msgid "Period ."
 msgstr "Punkt ."
 
-#: pathauto.inc:538
+#: pathauto.inc:537
 msgid "Hyphen -"
 msgstr "Bindestreck -"
 
-#: pathauto.inc:539
+#: pathauto.inc:538
 msgid "Underscore _"
 msgstr "Understreck _"
 
-#: pathauto.inc:540
+#: pathauto.inc:539
 msgid "Colon :"
 msgstr "Kolon :"
 
-#: pathauto.inc:541
+#: pathauto.inc:540
 msgid "Semicolon ;"
 msgstr "Semikolon ;"
 
-#: pathauto.inc:542
+#: pathauto.inc:541
 msgid "Pipe |"
 msgstr "Lodstreck |"
 
-#: pathauto.inc:543
+#: pathauto.inc:542
 msgid "Left curly bracket {"
 msgstr "Klammerparantes, vänster {"
 
-#: pathauto.inc:544
+#: pathauto.inc:543
 msgid "Left square bracket ["
 msgstr "Hakparantes, vänster ["
 
-#: pathauto.inc:545
+#: pathauto.inc:544
 msgid "Right curly bracket }"
 msgstr "Klammerparantes, höger }"
 
-#: pathauto.inc:546
+#: pathauto.inc:545
 msgid "Right square bracket ]"
 msgstr "Hakparantes, höger ]"
 
-#: pathauto.inc:547
+#: pathauto.inc:546
 msgid "Plus +"
 msgstr "Plus +"
 
-#: pathauto.inc:548
+#: pathauto.inc:547
 msgid "Equal ="
 msgstr "Lika med ="
 
-#: pathauto.inc:549
+#: pathauto.inc:548
 msgid "Asterisk *"
 msgstr "Asterisk *"
 
-#: pathauto.inc:550
+#: pathauto.inc:549
 msgid "Ampersand &"
 msgstr "Et-tecken &"
 
-#: pathauto.inc:551
+#: pathauto.inc:550
 msgid "Percent %"
 msgstr "Procent %"
 
-#: pathauto.inc:552
+#: pathauto.inc:551
 msgid "Caret ^"
 msgstr "Cirkumflex ^"
 
-#: pathauto.inc:553
+#: pathauto.inc:552
 msgid "Dollar $"
 msgstr "Dollar $"
 
-#: pathauto.inc:554
+#: pathauto.inc:553
 msgid "Hash #"
 msgstr "Nummertecken #"
 
-#: pathauto.inc:555
+#: pathauto.inc:554
 msgid "At @"
 msgstr "Snabel-a @"
 
-#: pathauto.inc:556
+#: pathauto.inc:555
 msgid "Exclamation !"
 msgstr "Utropstecken !"
 
-#: pathauto.inc:557
+#: pathauto.inc:556
 msgid "Tilde ~"
 msgstr "Tilde ~"
 
-#: pathauto.inc:558
+#: pathauto.inc:557
 msgid "Left parenthesis ("
 msgstr "Vänsterparantes ("
 
-#: pathauto.inc:559
-msgid "right parenthesis )"
+#: pathauto.inc:558
+msgid "Right parenthesis )"
 msgstr "Högerparantes )"
 
-#: pathauto.inc:560
+#: pathauto.inc:559
 msgid "Question mark ?"
 msgstr "Frågetecken ?"
 
-#: pathauto.inc:561
+#: pathauto.inc:560
 msgid "Less than <"
 msgstr "Mindre än <"
 
-#: pathauto.inc:562
+#: pathauto.inc:561
 msgid "Greater than >"
 msgstr "Större än >"
 
-#: pathauto.inc:563
+#: pathauto.inc:562
 msgid "Back slash \\"
 msgstr "Omvänt snedstreck \\"
 
-#: pathauto.inc:493
-#: pathauto.info:0
-msgid "Pathauto"
-msgstr "Pathauto"
+#: pathauto.tokens.inc:18
+msgid "As [cat], but including its supercategories separated by /."
+msgstr "Som [cat] men medräknat sina överkategorier separerade med /."
 
-#: pathauto.inc:493
-msgid "It appears that you have installed Pathauto, which depends on Token, but Token is either not installed or not installed properly."
-msgstr "Det verkar som om du har installerat Pathauto, som är beronde avToken. Token är dock inte installerat eller felaktigt installerat."
+#: pathauto.tokens.inc:19
+msgid "As [cat-raw], but including its supercategories separated by /. WARNING - raw user input."
+msgstr "Som [cat-raw] men medräknat sina överkategorier separerade med /. VARNING - obearbetad inmatning från användare."
+
+#: pathauto.tokens.inc:20;25
+msgid "URL alias for the term."
+msgstr "URL-alias för termen."
+
+#: pathauto.tokens.inc:23
+msgid "As [term], but including its supercategories separated by /."
+msgstr "Som [term] men medräknat sina överkategorier separerade med /."
+
+#: pathauto.tokens.inc:24
+msgid "As [term-raw], but including its supercategories separated by /. WARNING - raw user input."
+msgstr "Som [term-raw] men medräknat sina överkategorier separerade med /. VARNING - obearbetad inmatning från användare."
+
+#: pathauto.tokens.inc:30
+msgid "URL alias for the parent book."
+msgstr "URL-alias för den överliggande boken."
 
 #: pathauto_node.inc:20
-msgid "Node path settings"
-msgstr "Inställningar för nodsökvägar"
+msgid "Node paths"
+msgstr "Sökvägar till noder"
 
 #: pathauto_node.inc:21
 msgid "Default path pattern (applies to all node types with blank patterns below)"
@@ -410,7 +421,7 @@ msgstr "innehall/[title-raw]"
 
 #: pathauto_node.inc:23
 msgid "Bulk generate aliases for nodes that are not aliased"
-msgstr "Massgenerera alias för noder som inte har ett eget alias"
+msgstr "Massgenerera alias för noder som inte redan har eget alias"
 
 #: pathauto_node.inc:24
 msgid "Generate aliases for all existing nodes which do not already have aliases."
@@ -443,8 +454,8 @@ msgstr[0] "Massgenerering av noder slutfördes, ett alias genererades."
 msgstr[1] "Massgenerering av noder slutfördes, @count alias genererades."
 
 #: pathauto_taxonomy.inc:20
-msgid "Taxonomy term path settings"
-msgstr "Inställningar för sökvägar till taxonomitermer"
+msgid "Taxonomy term paths"
+msgstr "Sökvägar till taxonomitermer"
 
 #: pathauto_taxonomy.inc:21
 msgid "Default path pattern (applies to all vocabularies with blank patterns below)"
@@ -454,53 +465,53 @@ msgstr "Standardmönster för sökvägar (gäller för alla vokabulär utan eget
 msgid "category/[vocab-raw]/[catpath-raw]"
 msgstr "kategori/[vocab-raw]/[catpath-raw]"
 
-#: pathauto_taxonomy.inc:32
+#: pathauto_taxonomy.inc:33
 msgid "Bulk generate aliases for terms that are not aliased"
 msgstr "Massgenerera alias för termer som inte redan har eget alias"
 
-#: pathauto_taxonomy.inc:33
+#: pathauto_taxonomy.inc:34
 msgid "Generate aliases for all existing terms which do not already have aliases."
 msgstr "Generera alias för alla existerande termer som inte redan har eget alias."
 
-#: pathauto_taxonomy.inc:42
+#: pathauto_taxonomy.inc:43
 msgid "Pattern for all %vocab-name paths"
 msgstr "Mönster för alla sökvägar rill %vocab-name "
 
-#: pathauto_taxonomy.inc:134
-msgid "Forum path settings"
-msgstr "Inställningar för forumsökvägar"
+#: pathauto_taxonomy.inc:129
+msgid "Forum paths"
+msgstr "Sökvägar till forum"
 
-#: pathauto_taxonomy.inc:135
+#: pathauto_taxonomy.inc:130
 msgid "Pattern for forums and forum containers"
 msgstr "Mönster för forum och forumgrupper"
 
-#: pathauto_taxonomy.inc:136
+#: pathauto_taxonomy.inc:131
 msgid "[vocab-raw]/[catpath-raw]"
 msgstr "[vocab-raw]/[catpath-raw]"
 
-#: pathauto_taxonomy.inc:146
-msgid "Bulk generate forum paths"
-msgstr "Massgenerera forumsökvägar"
+#: pathauto_taxonomy.inc:143
+msgid "Bulk generate aliases for forum paths that are not aliased"
+msgstr "Massgenerera alias för sökvägar till forum som inte redan har eget alias"
 
-#: pathauto_taxonomy.inc:147
+#: pathauto_taxonomy.inc:144
 msgid "Generate aliases for all existing forums and forum containers which do not already have aliases."
 msgstr "Generera alias för alla befintliga forum och forumgrupper som inte redan har ett alias."
 
-#: pathauto_taxonomy.inc:92
+#: pathauto_taxonomy.inc:87
 msgid "Bulk generation of terms completed, one alias generated."
 msgid_plural "Bulk generation of terms completed, @count aliases generated."
 msgstr[0] "Massgenerering av termer slutfördes, ett alias genererades."
 msgstr[1] "Massenerering av termer slutfördes, @count alias genererades."
 
-#: pathauto_taxonomy.inc:168
+#: pathauto_taxonomy.inc:165
 msgid "Bulk update of forums and forum containers completed, one alias generated."
 msgid_plural "Bulk update of forums and forum containers completed, @count aliases generated."
 msgstr[0] "Massgenerering av forum och forumgrupper slutfördes, ett alias genererades."
 msgstr[1] "Massgenerering av forum och forumcontainers slutfördes, @count alias genererades."
 
 #: pathauto_user.inc:20
-msgid "User path settings"
-msgstr "Inställningar för användarsökvägar"
+msgid "User paths"
+msgstr "Sökvägar till användare"
 
 #: pathauto_user.inc:21
 msgid "Pattern for user account page paths"
@@ -508,7 +519,7 @@ msgstr "Mönster för sökvägar till användares kontosidor"
 
 #: pathauto_user.inc:22
 msgid "users/[user-raw]"
-msgstr "anvandare/[user-raw]"
+msgstr "medlemmar/[user-raw]"
 
 #: pathauto_user.inc:32
 msgid "Bulk generate aliases for users that are not aliased"
@@ -519,8 +530,8 @@ msgid "Generate aliases for all existing user account pages which do not already
 msgstr "Generera alias för alla existerande användarkontons sidor som inte redan har alias."
 
 #: pathauto_user.inc:49
-msgid "Blog path settings"
-msgstr "Inställningar för bloggsökvägar"
+msgid "Blog paths"
+msgstr "Sökvägar till bloggar"
 
 #: pathauto_user.inc:50
 msgid "Pattern for blog page paths"
@@ -530,176 +541,189 @@ msgstr "Mönster för sökvägar till bloggsidor"
 msgid "blogs/[user-raw]"
 msgstr "bloggar/[user-raw]"
 
-#: pathauto_user.inc:57
+#: pathauto_user.inc:59
 msgid "Bulk generate aliases for blogs that are not aliased"
 msgstr "Massgenerera alias för bloggar som inte redan har eget alias"
 
-#: pathauto_user.inc:58
+#: pathauto_user.inc:60
 msgid "Generate aliases for all existing blog pages which do not already have aliases."
 msgstr "Generera alias för alla befintliga bloggsidor som inte redan har alias."
 
-#: pathauto_user.inc:74
-msgid "User-tracker path settings"
-msgstr "Inställningar för sökvägar av användarspårning"
+#: pathauto_user.inc:76
+msgid "User-tracker paths"
+msgstr "Sökvägar till användarspårning"
 
-#: pathauto_user.inc:75
+#: pathauto_user.inc:77
 msgid "Pattern for user-tracker page paths"
 msgstr "Mönster för sökvägar av användarspårning"
 
-#: pathauto_user.inc:76
+#: pathauto_user.inc:78
 msgid "users/[user-raw]/track"
-msgstr "anvandare/[user-raw]/track"
+msgstr "medlemmar/[user-raw]/senaste"
 
-#: pathauto_user.inc:82
+#: pathauto_user.inc:85
 msgid "Bulk generate aliases for user-tracker paths that are not aliased"
 msgstr "Massgenerera alias för sökvägar åt användarspårning som inte redan har eget alias"
 
-#: pathauto_user.inc:83
+#: pathauto_user.inc:86
 msgid "Generate aliases for all existing user-tracker pages which do not already have aliases."
 msgstr "Generera alias för alla befintliga anvnädar-tracker-sidor som inte redan har alias."
 
-#: pathauto_user.inc:99
-msgid "User contact form path settings"
-msgstr "Inställningar för spårning av användares kontaktformulär"
+#: pathauto_user.inc:102
+msgid "User personal contact form paths"
+msgstr "Sökvägar till användarkontons sidor"
 
-#: pathauto_user.inc:100
+#: pathauto_user.inc:103
 msgid "Pattern for the user contact form paths"
 msgstr "Mönster för sökvägar åt användares kontaktformulär"
 
-#: pathauto_user.inc:101
+#: pathauto_user.inc:104
 msgid "users/[user-raw]/contact"
-msgstr "anvandare/[user-raw]/kontakt"
+msgstr "medlemmar/[user-raw]/kontakt"
 
-#: pathauto_user.inc:106
+#: pathauto_user.inc:110
 msgid "Bulk generate aliases for user contact form paths that are not aliased"
 msgstr "Massgenerera alias för sökvägar åt användares kontaktformulär som inte redan har eget alias"
 
-#: pathauto_user.inc:107
+#: pathauto_user.inc:111
 msgid "Generate aliases for all existing user contact form pages which do not already have aliases."
 msgstr "Generera alias för alla existerande sidor för användares kontaktformulär som inte redan har alias."
 
-#: pathauto_user.inc:131
+#: pathauto_user.inc:135
 msgid "Bulk generation of users completed, one alias generated."
 msgid_plural "Bulk generation of users completed, @count aliases generated."
 msgstr[0] "Massgenerering av användare slutfördes, ett alias genererades."
 msgstr[1] "Massgenerering av användare slutfördes, @count alias genererades."
 
-#: pathauto_user.inc:153
+#: pathauto_user.inc:157
 msgid "Bulk generation of user blogs completed, one alias generated."
 msgid_plural "Bulk generation of user blogs completed, @count aliases generated."
 msgstr[0] "Massgenerering av bloggar slutfördes, ett alias genererades."
 msgstr[1] "Massgenerering av bloggar slutfördes, @count alias genererades."
 
-#: pathauto_user.inc:177
+#: pathauto_user.inc:181
 msgid "Bulk generation of user tracker pages completed, one alias generated."
 msgid_plural "Bulk generation of user tracker pages completed, @count aliases generated."
 msgstr[0] "Massgenerering av spårning av användarsidor slutfördes, ett alias genererades."
 msgstr[1] "Massgenerering av användar-tracker-sidor slutfördes, @count alias genererades."
 
-#: pathauto_user.inc:199
+#: pathauto_user.inc:203
 msgid "Bulk generation of contact pages completed, one alias generated."
 msgid_plural "Bulk generation of contact pages completed, @count aliases generated."
 msgstr[0] "Massgenerering av kontaktsidor slutfördes, ett alias genererades."
 msgstr[1] "Massgenerering av kontaktsidor slutfördes, @count alias genererades."
 
-#: pathauto.module:27
+#: pathauto.module:28
+msgid "About"
+msgstr "Om"
+
+#: pathauto.module:29
 #: pathauto.info:0
 msgid "Provides a mechanism for modules to automatically generate aliases for the content they manage."
 msgstr "Tillhandahåll en mekanism för moduler att automatiskt generera alias för innehållstypen som de handhar."
 
-#: pathauto.module:28
+#: pathauto.module:30;65
 msgid "Settings"
 msgstr "Inställningar"
 
-#: pathauto.module:29
-msgid "The <strong>maximum alias length</strong> and <strong>maximum component length</strong> values default to 100 and have a limit of 128 from Pathauto. This length is limited by the length of the \"dst\" column of the url_alias database table. The default database schema for this column is 128. If you set a length that is equal to that of the one set in the \"dst\" column it will cause problems in situations where the system needs to append additional words to the aliased URL. For example, URLs generated for feeds will have \"/feed\" added to the end. You should enter a value that is the length of the \"dst\" column minus the length of any strings that might get added to the end of the URL. The length of strings that might get added to the end of your URLs depends on which modules you have enabled and on your Pathauto settings. The recommended and default value is 100."
-msgstr "Värdena <strong>längsta tillåtna längden på alias</strong> och <strong>längsta tillåtna komponentslängd</strong> har 100 som standardvärde och en gräns på 128 av Pathauto. Denna längd begränsas av kolumnen \"dst\" för tabellen 'url_alias' i databasen. Standardvärdet för denna kolumn är 128. Om du ställer in en längd som är samma som den i kolumnen \"dst\" så kommer det skapa problem i situationer där systemet behöver fylla i extra ord i URL:en. Exemplvis kommer URL:er genererade för innehållsflöden att ha \"/feed\" i slutet. Du bör ange ett värde som är lika med värdet i kolumnen \"dst\" minus det antal tecken som kan läggas till i slutet på sökvägen. Längden för de strängar som kan läggas till beror på de moduler som du har aktiverade i dina inställningar för Pathauto. Rekommenderat värde är 100."
+#: pathauto.module:32
+msgid "Maximum alias and component length"
+msgstr "Längsta längd på alias och komponenter"
 
-#: pathauto.module:30
-msgid "<strong>Raw tokens</strong>: In Pathauto it is appropriate to use the -raw form of tokens. Paths are sent through a filtering system which ensures that raw user content is filtered. Failure to use -raw tokens can cause problems with the Pathauto punctuation filtering system."
-msgstr "<strong>Obearbetade symboler</strong>: I Pathauto rekommenderas det att använda den obearbetade formen för symboler. Sökvägar skickas genom ett filtreringssystem som ser till att obearbetat innehåll från användare filtreras. Att inte använda obearbetade symboler kan orsaka problem med Pathautos filtreringssystem för skiljetecken."
+#: pathauto.module:33
+msgid "The <strong>maximum alias length</strong> and <strong>maximum component length</strong> values default to 100 and have a limit of @max from Pathauto. This length is limited by the length of the \"alias\" column of the url_alias database table. The default database schema for this column is @max. If you set a length that is equal to that of the one set in the \"alias\" column it will cause problems in situations where the system needs to append additional words to the aliased URL. For example, URLs generated for feeds will have \"/feed\" added to the end. You should enter a value that is the length of the \"alias\" column minus the length of any strings that might get added to the end of the URL. The length of strings that might get added to the end of your URLs depends on which modules you have enabled and on your Pathauto settings. The recommended and default value is 100."
+msgstr "Värdena <strong>längsta tillåtna längden på alias</strong> och <strong>längsta tillåtna komponentslängd</strong> har 100 som standardvärde och en gräns på @max av Pathauto. Denna längd begränsas av kolumnen \"alias\" för tabellen 'url_alias' i databasen. Standardvärdet för denna kolumn är @max. Om du ställer in en längd som är samma som den i kolumnen \"alias\" så kommer det skapa problem i situationer där systemet behöver fylla i extra ord i URL:en. Exemplvis kommer URL:er genererade för innehållsflöden att ha \"/feed\" i slutet. Du bör ange ett värde som är lika med värdet i kolumnen \"alias\" minus det antal tecken som kan läggas till i slutet på sökvägen. Längden för de strängar som kan läggas till beror på de moduler som du har aktiverade i dina inställningar för Pathauto. Rekommenderat värde är 100."
 
-#: pathauto.module:153
-msgid "As [cat], but including its supercategories separated by /."
-msgstr "Som [cat] men medräknat sina överkategorier separerade med /."
+#: pathauto.module:34
+msgid "Raw tokens"
+msgstr "Obearbetade symboler"
 
-#: pathauto.module:154
-msgid "As [cat-raw], but including its supercategories separated by /. WARNING - raw user input."
-msgstr "Som [cat-raw] men medräknat sina överkategorier separerade med /. VARNING - obearbetad inmatning från användare."
+#: pathauto.module:35
+msgid "In Pathauto it is appropriate to use the -raw form of tokens. Paths are sent through a filtering system which ensures that raw user content is filtered. Failure to use -raw tokens can cause problems with the Pathauto punctuation filtering system."
+msgstr "I Pathauto rekommenderas det att använda den obearbetade formen för symboler. Sökvägar skickas genom ett filtreringssystem som ser till att obearbetat innehåll från användare filtreras. Att inte använda obearbetade symboler kan orsaka problem med Pathautos filtreringssystem för skiljetecken."
 
-#: pathauto.module:155;160
-msgid "URL alias for the term."
-msgstr "URL-alias för termen."
-
-#: pathauto.module:158
-msgid "As [term], but including its supercategories separated by /."
-msgstr "Som [term] men medräknat sina överkategorier separerade med /."
-
-#: pathauto.module:159
-msgid "As [term-raw], but including its supercategories separated by /. WARNING - raw user input."
-msgstr "Som [term-raw] men medräknat sina överkategorier separerade med /. VARNING - obearbetad inmatning från användare."
-
-#: pathauto.module:165
-msgid "URL alias for the parent book."
-msgstr "URL-alias för den överliggande boken."
-
-#: pathauto.module:177
+#: pathauto.module:118
 msgid "Users"
 msgstr "Användare"
 
-#: pathauto.module:177
+#: pathauto.module:118
 msgid "Content"
 msgstr "Innehåll"
 
-#: pathauto.module:179
+#: pathauto.module:120
 msgid "User blogs"
 msgstr "Användarbloggar"
 
-#: pathauto.module:182
+#: pathauto.module:123
 msgid "Vocabularies and terms"
 msgstr "Vokabulärer och termer"
 
-#: pathauto.module:185
+#: pathauto.module:126
 msgid "User trackers"
 msgstr "Spårning av användare"
 
-#: pathauto.module:188
+#: pathauto.module:129
 msgid "Forums"
 msgstr "Forum"
 
-#: pathauto.module:297
+#: pathauto.module:257
+#: pathauto.js:0
 msgid "Automatic alias"
 msgstr "Automatiskt alias"
 
-#: pathauto.module:299
+#: pathauto.module:259
 msgid "An alias will be generated for you. If you wish to create your own alias below, uncheck this option."
 msgstr "Ett alias kommer att genereras åt dig. Om du vill skapa ditt eget alias nedan, avbocka det här alternativet."
 
-#: pathauto.module:304
-msgid "To control the format of the generated aliases, see the <a href=\"@pathauto\">automated alias settings</a>."
-msgstr "För att styra formatet för genererade alias, se <a href=\"@pathauto\">inställningarna för automatiska alias</a>."
+#: pathauto.module:264
+msgid "To control the format of the generated aliases, see the <a href=\"@url-patterns\">URL alias patterns</a>."
+msgstr "För att styra formatet för genererade alias, se <a href=\"@url-patterns\">mönster för URL-alias</a>."
 
-#: pathauto.module:329
-msgid "Update path alias"
+#: pathauto.module:288;443
+msgid "Update URL alias"
 msgstr "Uppdatera URL-alias"
 
-#: pathauto.module:415
+#: pathauto.module:400
 msgid "authenticated user"
 msgstr "inloggad användare"
 
-#: pathauto.module:39
+#: pathauto.module:328
+msgid "Updated URL alias for 1 node."
+msgid_plural "Updated URL aliases for @count nodes."
+msgstr[0] "Uppdaterade URL-alias för 1 nod."
+msgstr[1] "Uppdaterade URL-alias för @count noder."
+
+#: pathauto.module:504
+msgid "Updated URL alias for 1 user account."
+msgid_plural "Updated URL aliases for @count user accounts."
+msgstr[0] "Uppdaterade URL-alias för 1 användarkontono."
+msgstr[1] "Uppdaterade URL-alias för @count användarkonton."
+
+#: pathauto.module:46
 msgid "administer pathauto"
 msgstr "administrera Pathauto"
 
-#: pathauto.module:39
+#: pathauto.module:47
 msgid "notify of path changes"
 msgstr "meddela vid ändringar av sökvägar"
 
-#: pathauto.module:47
-msgid "Automated alias settings"
-msgstr "URL-alias"
+#: pathauto.module:56
+msgid "Patterns"
+msgstr "Mönster"
 
-#: pathauto.module:58
+#: pathauto.module:74
 msgid "Delete aliases"
 msgstr "Radera alias"
+
+#: pathauto.info:0
+msgid "Pathauto"
+msgstr "Pathauto"
+
+#: pathauto.js:0
+msgid "Alias: @alias"
+msgstr "Alias: @alias"
+
+#: pathauto.js:0
+msgid "No alias"
+msgstr "Inga alias"
 
