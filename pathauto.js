@@ -3,7 +3,7 @@
 
 Drupal.behaviors.pathFieldsetSummaries = {
   attach: function (context) {
-    $('fieldset#edit-path', context).setSummary(function (context) {
+    $('fieldset#edit-path', context).drupalSetSummary(function (context) {
       var path = $('#edit-path-alias').val();
       var automatic = $('#edit-path-pathauto-perform-alias').attr('checked');
 
