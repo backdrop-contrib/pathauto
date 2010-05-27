@@ -262,7 +262,10 @@ function pathauto_clean_alias($alias) {
   $output = _pathauto_clean_separators($output, $separator);
 
   // Give other modules a chance to clean this alias.
-  module_invoke_all('pathauto_clean_alias', $output);
+  foreach (module_implements('pathauto_clean_alias') as $module) {
+    $function = $module .'_pathauto_clean_alias';
+    $output = $function($output);
+  }
 
   return $output;
 }
