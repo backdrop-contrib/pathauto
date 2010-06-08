@@ -422,12 +422,12 @@ function _pathauto_user_insert_update(&$edit, $account, $category, $op) {
       }
     }
     if (module_exists('tracker')) {
-      $source = 'user/' . $new_user->uid . '/track';
-      $alias = pathauto_create_alias('tracker', $op, $source, array('user' => $new_user));
+      $source = 'user/' . $pathauto_user->uid . '/track';
+      $alias = pathauto_create_alias('tracker', $op, $source, array('user' => $pathauto_user));
     }
     if (module_exists('contact')) {
-      $source = 'user/' . $new_user->uid . '/contact';
-      $alias = pathauto_create_alias('contact', $op, $source, array('user' => $new_user));
+      $source = 'user/' . $pathauto_user->uid . '/contact';
+      $alias = pathauto_create_alias('contact', $op, $source, array('user' => $pathauto_user));
     }
   }
 }
