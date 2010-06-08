@@ -15,14 +15,14 @@ class PathautoUnitTestHelper extends DrupalWebTestCase {
   function setUp() {
     // Call parent::setUp() allowing test cases to pass further modules.
     $modules = func_get_args();
-    $modules = array_merge(array('path', 'pathauto'), $modules);
+    $modules = array_merge(array('path', 'token', 'pathauto'), $modules);
     call_user_func_array(array($this, 'parent::setUp'), $modules);
   }
 
   function assertToken($type, $object, $token, $expected) {
     $tokens = token_generate($type, array($token => $token), array($type => $object));
     $tokens += array($token => '');
-    $this->assertIdentical($tokens[$token], $expected, t("Token value for [@type:@token] was '!actual', expected value '!expected'.", array('@type' => $type, '@token' => $token, '!actual' => $tokens[$token], '!expected' => $expected)));
+    $this->assertIdentical($tokens[$token], $expected, t("Token value for [@type:@token] was '@actual', expected value '@expected'.", array('@type' => $type, '@token' => $token, '@actual' => $tokens[$token], '@expected' => $expected)));
   }
 }
 
@@ -83,7 +83,7 @@ class PathautoTestHelper extends DrupalWebTestCase {
   function setUp() {
     // Call parent::setUp() allowing test cases to pass further modules.
     $modules = func_get_args();
-    $modules = array_merge(array('path', 'pathauto'), $modules);
+    $modules = array_merge(array('path', 'token', 'pathauto'), $modules);
     call_user_func_array(array($this, 'parent::setUp'), $modules);
 
     // Set pathauto settings we assume to be as-is in this test.
