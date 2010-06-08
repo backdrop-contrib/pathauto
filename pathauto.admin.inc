@@ -14,7 +14,7 @@
  * @ingroup forms
  * @see system_settings_form()
  */
-function pathauto_patterns_form(&$form) {
+function pathauto_patterns_form($form, $form_state) {
   _pathauto_include();
 
   // Call the hook on all modules - an array of 'settings' objects is returned
@@ -35,53 +35,51 @@ function pathauto_patterns_form(&$form) {
       '#type' => 'fieldset',
       '#title' => $groupheader,
       '#collapsible' => TRUE,
-      '#collapsed' => TRUE,
+      '#collapsed' => FALSE,
     );
 
     // Prompt for the default pattern for this module
     $variable = 'pathauto_' . $module . '_pattern';
-    $description = '';
-    if (!count($_POST)) {
-      $error = _pathauto_check_pattern(variable_get($variable, $patterndefault), $settings->token_type);
-      if ($error) {
-        $form[$module]['#collapsed'] = FALSE;
-        $description = $error;
-      }
-    }
     $form[$module][$variable] = array(
       '#type' => 'textfield',
       '#title' => $patterndescr,
       '#default_value' => variable_get($variable, $patterndefault),
-      '#description' => $description,
       '#size' => 65,
       '#maxlength' => 1280,
+      '#element_validate' => array('_pathauto_validate_pattern_element'),
+      '#token_type' => $settings->token_type,
+      '#parents' => array($variable),
     );
+    if (!$_POST) {
+      // Run validation to let user know of problems right away.
+      _pathauto_validate_pattern_element($form[$module][$variable], $form_state);
+    }
 
     // If the module supports a set of specialized patterns, set
     // them up here
     if (isset($settings->patternitems)) {
       foreach ($settings->patternitems as $itemname => $itemlabel) {
         $variable = 'pathauto_' . $module . '_' . $itemname . '_pattern';
-        $description = '';
-        if (!count($_POST)) {
-          $error = _pathauto_check_pattern(variable_get($variable, $patterndefault), $settings->token_type);
-          if ($error) {
-            $form[$module]['#collapsed'] = FALSE;
-            $description = $error;
-          }
-        }
-
-        $form[$module][$variable] = array('#type' => 'textfield',
+        $form[$module][$variable] = array(
+          '#type' => 'textfield',
           '#title' => $itemlabel,
           '#default_value' => variable_get($variable, ''),
-          '#description' => $description,
           '#size' => 65,
-          '#maxlength' => 1280);
+          '#maxlength' => 1280,
+          '#element_validate' => array('_pathauto_validate_pattern_element'),
+          '#token_type' => $settings->token_type,
+          '#parents' => array($variable),
+        );
+        if (!$_POST) {
+          // Run validation to let user know of problems right away.
+          _pathauto_validate_pattern_element($form[$module][$variable], $form_state);
+        }
       }
     }
 
     // Display the user documentation of placeholders supported by
     // this module, as a description on the last pattern
+    // @todo Replace this with the token tree browser element.
     $doc = "<dl>\n";
     foreach ($settings->tokens as $name => $description) {
       $doc .= '<dt>' . $name . '</dt>';
@@ -117,18 +115,12 @@ function pathauto_patterns_form(&$form) {
     // If the module supports feeds, offer to generate aliases for them
     if ($supportsfeeds) {
       $variable = 'pathauto_' . $module . '_applytofeeds';
-      $current = variable_get($variable, $supportsfeeds);
-      // This checks for the old style from 2.0 and earlier. TODO: At some point we can drop that.
-      if (is_numeric($current)) {
-        $current = $supportsfeeds;
-      }
-
       $form[$module][$variable] = array(
         '#type' => 'textfield',
         '#title' => t('Internal feed alias text (leave blank to disable)'),
         '#size' => 65,
         '#maxlength' => 1280,
-        '#default_value' => $current,
+        '#default_value' => $supportsfeeds,
         '#description' => t('The text to use for aliases for RSS feeds. Examples are "0/feed" (used throughout Drupal core) and "feed" (used by some contributed Drupal modules, like Views).'),
       );
     }
@@ -153,129 +145,125 @@ function pathauto_patterns_form(&$form) {
  * @ingroup forms
  * @see system_settings_form()
  */
-function pathauto_settings_form(&$form) {
-  _pathauto_include();
+function pathauto_settings_form($form) {
+  module_load_include('inc', 'pathauto');
 
   // Default words to ignore
+  // @todo Move this to a constant.
   $ignore_words = array(
     'a', 'an', 'as', 'at', 'before', 'but', 'by', 'for', 'from', 'is', 'in',
     'into', 'like', 'of', 'off', 'on', 'onto', 'per', 'since', 'than', 'the',
     'this', 'that', 'to', 'up', 'via', 'with',
   );
 
-  // Generate the form - settings applying to all patterns first
-  $form['general'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('General settings'),
-    '#collapsible' => TRUE,
-    '#collapsed' => FALSE,
-  );
-
-  $form['general']['pathauto_verbose'] = array(
+  $form['pathauto_verbose'] = array(
     '#type' => 'checkbox',
     '#title' => t('Verbose'),
-    '#default_value' => variable_get('pathauto_verbose', FALSE),
+    '#default_value' => FALSE,
     '#description' => t('Display alias changes (except during bulk updates).'),
   );
 
-  $form['general']['pathauto_separator'] = array(
+  $form['pathauto_separator'] = array(
     '#type' => 'textfield',
     '#title' => t('Separator'),
     '#size' => 1,
     '#maxlength' => 1,
-    '#default_value' => variable_get('pathauto_separator', '-'),
+    '#default_value' => '-',
     '#description' => t('Character used to separate words in titles. This will replace any spaces and punctuation characters. Using a space or + character can cause unexpected results.'),
   );
 
-  $form['general']['pathauto_case'] = array(
+  $form['pathauto_case'] = array(
     '#type' => 'radios',
     '#title' => t('Character case'),
-    '#default_value' => variable_get('pathauto_case', PATHAUTO_CASE_LOWER),
+    '#default_value' => PATHAUTO_CASE_LOWER,
     '#options' => array(
-      t('Leave case the same as source token values.'),
-      t('Change to lower case'),
+      PATHAUTO_CASE_LEAVE_ASIS => t('Leave case the same as source token values.'),
+      PATHAUTO_CASE_LOWER => t('Change to lower case'),
     ),
   );
 
-  $form['general']['pathauto_max_length'] = array(
+  $max_length = _pathauto_get_schema_alias_maxlength();
+
+  $form['pathauto_max_length'] = array(
     '#type' => 'textfield',
     '#title' => t('Maximum alias length'),
     '#size' => 3,
     '#maxlength' => 3,
-    '#default_value' => variable_get('pathauto_max_length', 100),
-    '#description' => t('Maximum length of aliases to generate. 100 is the recommended length. @max is the maximum possible length. See <a href="@pathauto-help">Pathauto help</a> for details.', array('@pathauto-help' => url('admin/help/pathauto'), '@max' => _pathauto_get_schema_alias_maxlength())),
+    '#default_value' => 100,
+    '#min_value' => 1,
+    '#max_value' => $max_length,
+    '#description' => t('Maximum length of aliases to generate. 100 is the recommended length. @max is the maximum possible length. See <a href="@pathauto-help">Pathauto help</a> for details.', array('@pathauto-help' => url('admin/help/pathauto'), '@max' => $max_length)),
+    '#element_validate' => array('_pathauto_validate_numeric_element'),
   );
-
-  $form['general']['pathauto_max_component_length'] = array(
+  $form['pathauto_max_component_length'] = array(
     '#type' => 'textfield',
     '#title' => t('Maximum component length'),
     '#size' => 3,
     '#maxlength' => 3,
-    '#default_value' => variable_get('pathauto_max_component_length', 100),
-    '#description' => t('Maximum text length of any component in the alias (e.g., [title]). 100 is the recommended length. @max is the maximum possible length. See <a href="@pathauto-help">Pathauto help</a> for details.', array('@pathauto-help' => url('admin/help/pathauto'), '@max' => _pathauto_get_schema_alias_maxlength())),
+    '#default_value' => 100,
+    '#min_value' => 1,
+    '#max_value' => $max_length,
+    '#description' => t('Maximum text length of any component in the alias (e.g., [title]). 100 is the recommended length. @max is the maximum possible length. See <a href="@pathauto-help">Pathauto help</a> for details.', array('@pathauto-help' => url('admin/help/pathauto'), '@max' => $max_length)),
+    '#element_validate' => array('_pathauto_validate_numeric_element'),
   );
 
-  $form['general']['pathauto_max_bulk_update'] = array(
+  $form['pathauto_max_bulk_update'] = array(
     '#type' => 'textfield',
     '#title' => t('Maximum number of objects to alias in a bulk update'),
     '#size' => 4,
     '#maxlength' => 4,
-    '#default_value' => variable_get('pathauto_max_bulk_update', 50),
+    '#default_value' => 50,
+    '#min_value' => 1,
     '#description' => t('Maximum number of objects of a given type which should be aliased during a bulk update. The default is 50 and the recommended number depends on the speed of your server. If bulk updates "time out" or result in a "white screen" then reduce the number.'),
+    '#element_validate' => array('_pathauto_validate_numeric_element'),
   );
 
-  $actions = array(
-    t('Do nothing. Leave the old alias intact.'),
-    t('Create a new alias. Leave the existing alias functioning.'),
-    t('Create a new alias. Delete the old alias.'),
-  );
-
-  if (function_exists('path_redirect_save')) {
-    $actions[] = t('Create a new alias. Redirect from old alias.');
-  }
-  elseif (variable_get('pathauto_update_action', PATHAUTO_UPDATE_ACTION_DELETE) == PATHAUTO_UPDATE_ACTION_REDIRECT) {
-    // the redirect action is selected, but path_redirect is not enabled
-    // let's set the variable back to the default
-    variable_set('pathauto_update_action', PATHAUTO_UPDATE_ACTION_DELETE);
-  }
-
-  $form['general']['pathauto_update_action'] = array(
+  $form['pathauto_update_action'] = array(
     '#type' => 'radios',
     '#title' => t('Update action'),
-    '#default_value' => variable_get('pathauto_update_action', PATHAUTO_UPDATE_ACTION_DELETE),
-    '#options' => $actions,
+    '#default_value' => PATHAUTO_UPDATE_ACTION_DELETE,
+    '#options' => array(
+      PATHAUTO_UPDATE_ACTION_NO_NEW => t('Do nothing. Leave the old alias intact.'),
+      PATHAUTO_UPDATE_ACTION_LEAVE => t('Create a new alias. Leave the existing alias functioning.'),
+      PATHAUTO_UPDATE_ACTION_DELETE => t('Create a new alias. Delete the old alias.'),
+      PATHAUTO_UPDATE_ACTION_REDIRECT => t('Create a new alias. Redirect from old alias.'),
+    ),
     '#description' => t('What should Pathauto do when updating an existing content item which already has an alias?'),
   );
-
-  $disable_transliteration = FALSE;
-  $path = drupal_get_path('module', 'pathauto');
-  $transliteration_help = t('When a pattern includes certain characters (such as those with accents) should Pathauto attempt to transliterate them into the ASCII-96 alphabet? Transliteration is handled by the Transliteration module.');
-  if (!module_exists('transliteration')) {
-    $disable_transliteration = TRUE;
-    $transliteration_help .= ' <strong>' . t("This option is disabled on your site because the Transliteration module either isn't installed, or isn't installed properly.") . '</strong>';
-    // Make sure we don't try to use Transliteration if it isn't available
-    variable_set('pathauto_transliterate', FALSE);
+  if (!module_exists('path_redirect')) {
+    // Remove the redirection option if Path redirect is not enabled.
+    unset($form['pathauto_update_action']['#options'][PATHAUTO_UPDATE_ACTION_REDIRECT]);
+    if (variable_get('pathauto_update_action', NULL) == PATHAUTO_UPDATE_ACTION_REDIRECT) {
+      // Fix the current update action variable as well.
+      variable_set('pathauto_update_action', PATHAUTO_UPDATE_ACTION_DELETE);
+    }
   }
-  $form['general']['pathauto_transliterate'] = array(
+
+  $form['pathauto_transliterate'] = array(
     '#type' => 'checkbox',
     '#title' => t('Transliterate prior to creating alias'),
-    '#default_value' => variable_get('pathauto_transliterate', FALSE),
-    '#description' => $transliteration_help,
-    '#disabled' => $disable_transliteration,
+    '#default_value' => FALSE,
+    '#description' => t('When a pattern includes certain characters (such as those with accents) should Pathauto attempt to transliterate them into the ASCII-96 alphabet? Transliteration is handled by the Transliteration module.'),
   );
-  $form['general']['pathauto_reduce_ascii'] = array(
+  if (!module_exists('transliteration')) {
+    // Remove the redirection option if Transliteration is not enabled.
+    $form['pathauto_transliterate']['#access'] = FALSE;
+    variable_set('pathauto_transliterate', FALSE);
+  }
+
+  $form['pathauto_reduce_ascii'] = array(
     '#type' => 'checkbox',
     '#title' => t('Reduce strings to letters and numbers'),
-    '#default_value' => variable_get('pathauto_reduce_ascii', FALSE),
+    '#default_value' => FALSE,
     '#description' => t('Filters the new alias to only letters and numbers found in the ASCII-96 set.'),
   );
 
   $wysiwyg_warn = _pathauto_warn_wysiwygs();
 
-  $form['general']['pathauto_ignore_words'] = array(
+  $form['pathauto_ignore_words'] = array(
     '#type' => 'textarea',
     '#title' => t('Strings to Remove'),
-    '#default_value' => variable_get('pathauto_ignore_words', implode(',', $ignore_words)),
+    '#default_value' => implode(',', $ignore_words),
     '#description' => t('Words to strip out of the URL alias, separated by commas. Do not use this to remove punctuation.') . $wysiwyg_warn,
   );
 
@@ -295,7 +283,7 @@ function pathauto_settings_form(&$form) {
     $form['punctuation']['pathauto_punctuation_' . $name] = array(
       '#type' => 'select',
       '#title' => $details['name'],
-      '#default_value' => variable_get('pathauto_punctuation_' . $name, $details['default']),
+      '#default_value' => $details['default'],
       '#options' => array(
         PATHAUTO_PUNCTUATION_REMOVE => t('Remove'),
         PATHAUTO_PUNCTUATION_REPLACE => t('Replace by separator'),
@@ -308,58 +296,38 @@ function pathauto_settings_form(&$form) {
 }
 
 /**
- * Helper function for pathauto_admin_settings().
- *
- * See if all the tokens are valid in the given context.
- *
- * @param $pattern
- *   A string containing the pattern to be tested.
- * @param $type
- *   A flag indicating the class of substitution tokens to use.
- * @return
- *   A status flag, telling whether there is an error or not.
- * @see token_get_list()
- *   For more information on the $type parameter.
+ * Validate a form element that should have an numeric value.
  */
-function _pathauto_check_pattern($pattern, $type) {
-  // Hold items we've warned about so we only warn once per token
-  $warned = &drupal_static(__FUNCTION__);
-  $return = FALSE;
+function _pathauto_validate_numeric_element($element, &$form_state) {
+  $value = $element['#value'];
 
-  // Build up a set of all tokens in a format that's easy to search
-  $tokens = token_info();
-  $tokens = $tokens['tokens'][$type];
-
-  // Now, search the pattern and evaluate its contents.
-  $matches = array();
-  if (preg_match_all('/\[[a-zA-z_\-]+?\]/i', $pattern, $matches)) {
-    // Loop over each found token.
-    foreach ($matches[0] as $id => $token) {
-      $test = str_replace('[', '', str_replace(']', '', $token));
-      $test = drupal_substr($test, strpos($test, $type . ':'));
-      // Check if the token is even valid in this context.
-      if (!array_key_exists($test, $tokens)) {
-        drupal_set_message(t('You are using the token [%token] which is not valid within the scope of tokens where you are using it.', array('%token' => $type . ':' . $test)), 'error');
-        $return[] = $token;
-      }
-    }
+  if (!is_numeric($value)) {
+    form_error($element, t('The field %name is not a valid number.', array('%name' => $element['#title'])));
   }
-
-  if ($return) {
-    $return = t('NOTE: This field contains potentially incorrect patterns. %name %problems.', array(
-      '%name' => format_plural(count($return), 'Problem token:', 'Problem tokens:'),
-      '%problems' => implode(', ', $return),
-    ));
+  elseif (isset($element['#max_value']) && $value > $element['#max_value']) {
+    form_error($element, t('The field %name cannot be greater than @max.', array('%name' => $element['#title'], '@max' => $element['#max_value'])));
   }
+  elseif (isset($element['#min_value']) && $value < $element['#min_value']) {
+    form_error($element, t('The field %name cannot be less than @min.', array('%name' => $element['#title'], '@min' => $element['#min_value'])));
+  }
+}
 
-  return $return;
+/**
+ * Validate a form element that should have an URL alias pattern.
+ */
+function _pathauto_validate_pattern_element(&$element, &$form_state) {
+  $value = isset($element['#value']) ? $element['#value'] : $element['#default_value'];
+  $invalid_tokens = token_get_invalid_tokens_by_context($value, array($element['#token_type']));
+  if ($invalid_tokens) {
+    form_error($element, t('The %pattern-title is using the following invalid tokens: @invalid-tokens.', array('%pattern-title' => $element['#title'], '@invalid-tokens' => implode(', ', $invalid_tokens))));
+  }
 }
 
 /**
  * Validate pathauto_settings_form form submissions.
  */
 function pathauto_settings_form_validate($form, &$form_state) {
-  _pathauto_include();
+  module_load_include('inc', 'pathauto');
 
   // Validate that the separator is not set to be removed per http://drupal.org/node/184119
   // This isn't really all that bad so warn, but still allow them to save the value.
