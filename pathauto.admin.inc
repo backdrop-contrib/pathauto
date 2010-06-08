@@ -22,7 +22,6 @@ function pathauto_patterns_form($form, $form_state) {
   $modulelist = array();
   $indexcount = 0;
   foreach ($all_settings as $settings) {
-    $items = '';
     $module = $settings->module;
     $modulelist[] = $module;
     $patterndescr = $settings->patterndescr;
