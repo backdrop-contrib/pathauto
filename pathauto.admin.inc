@@ -258,13 +258,12 @@ function pathauto_settings_form($form) {
     '#description' => t('Filters the new alias to only letters and numbers found in the ASCII-96 set.'),
   );
 
-  $wysiwyg_warn = _pathauto_warn_wysiwygs();
-
   $form['pathauto_ignore_words'] = array(
     '#type' => 'textarea',
     '#title' => t('Strings to Remove'),
     '#default_value' => implode(',', $ignore_words),
-    '#description' => t('Words to strip out of the URL alias, separated by commas. Do not use this to remove punctuation.') . $wysiwyg_warn,
+    '#description' => t('Words to strip out of the URL alias, separated by commas. Do not use this to remove punctuation.'),
+    '#wysiwyg' => FALSE,
   );
 
   $form['punctuation'] = array(
@@ -328,6 +327,11 @@ function _pathauto_validate_pattern_element(&$element, &$form_state) {
  */
 function pathauto_settings_form_validate($form, &$form_state) {
   module_load_include('inc', 'pathauto');
+
+  // Perform a basic check for HTML characters in the strings to remove field.
+  if (strip_tags($form_state['values']['pathauto_ignore_words']) != $form_state['values']['pathauto_ignore_words']) {
+    form_set_error('pathauto_ignore_words', t('The <em>Strings to remove</em> field must not contain HTML. Make sure to disable any WYSIWYG editors for this field.'));
+  }
 
   // Validate that the separator is not set to be removed per http://drupal.org/node/184119
   // This isn't really all that bad so warn, but still allow them to save the value.
@@ -415,30 +419,4 @@ function pathauto_admin_delete_submit($form, &$form_state) {
     }
   }
   $form_state['redirect'] = 'admin/config/search/path/delete_bulk';
-}
-
-/**
- * Helper function for pathauto_admin_settings().
- *
- * Checks to see if they are using a known WYSIWYG editor and, if so, returns a
- * a warning string.
- *
- * @return
- *   A warning message if appropriate.
- */
-function _pathauto_warn_wysiwygs() {
-  $wysiwygs = array(
-    'bueditor', 'fckeditor', 'htmlarea', 'htmlbox', 'tinymce', 'whizzywig',
-    'widgeditor', 'wymeditor', 'wysiwyg', 'xstandard', 'yui_editor',
-  );
-
-  $wysiwyg_problem = FALSE;
-  foreach ($wysiwygs as $key => $wysiwyg) {
-    if (module_exists($wysiwyg)) {
-      $wysiwyg_problem = TRUE;
-    }
-  }
-  if ($wysiwyg_problem) {
-    return '<strong> ' . t('You appear to be using a "WYSIWYG" editor which can cause problems if that editor runs on the Pathauto administrative settings page. Please be sure to disable these editors for all text boxes on this page. See the "WYSIWYG Conflicts" section of the README.txt file for more information.') . '</strong>';
-  }
 }
