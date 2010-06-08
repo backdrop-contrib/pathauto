@@ -200,7 +200,7 @@ function _pathauto_node_insert_update($node, $op) {
     // Only create an alias if the checkbox was not provided or if the checkbox was provided and is checked
     if (!isset($node->path['pathauto_perform_alias']) || $node->path['pathauto_perform_alias']) {
       $source = "node/$node->nid";
-      $alias = pathauto_create_alias('node', $op, $source, array('node' => $node), $node->type, $node->language);
+      $node->path = pathauto_create_alias('node', $op, $source, array('node' => $node), $node->type, $node->language);
     }
   }
 }
