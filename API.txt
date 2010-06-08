@@ -52,10 +52,7 @@ groupheader - The translated label for the settings group (e.g.,
 patterndescr - The translated label for the default pattern (e.g.,
   t('Default path pattern (applies to all node types with blank patterns below)')
 patterndefault - A translated default pattern (e.g., t('[cat]/[title].html'))
-placeholders - An array whose keys consist of the translated placeholders
-  which will appear in patterns (e.g., t('[title]')) and values are
-  the translated description of the placeholders (e.g.,
-  t('The title of the node, with spaces and punctuation.')
+token_type - The token type (e.g. 'node', 'user') that can be used.
 patternitems - For modules which need to express multiple patterns
   (for example, the node module supports a separate pattern for each
   node type), an array whose keys consist of identifiers for each

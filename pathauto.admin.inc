@@ -19,7 +19,7 @@ function pathauto_patterns_form($form, $form_state) {
 
   // Call the hook on all modules - an array of 'settings' objects is returned
   $all_settings = module_invoke_all('pathauto', 'settings');
-  $modulelist = '';
+  $modulelist = array();
   $indexcount = 0;
   foreach ($all_settings as $settings) {
     $items = '';
@@ -79,13 +79,6 @@ function pathauto_patterns_form($form, $form_state) {
 
     // Display the user documentation of placeholders supported by
     // this module, as a description on the last pattern
-    // @todo Replace this with the token tree browser element.
-    $doc = "<dl>\n";
-    foreach ($settings->tokens as $name => $description) {
-      $doc .= '<dt>' . $name . '</dt>';
-      $doc .= '<dd>' . $description . '</dd>';
-    }
-    $doc .= "</dl>\n";
     $form[$module]['token_help'] = array(
       '#title' => t('Replacement patterns'),
       '#type' => 'fieldset',
@@ -93,7 +86,9 @@ function pathauto_patterns_form($form, $form_state) {
       '#collapsed' => TRUE,
     );
     $form[$module]['token_help']['help'] = array(
-      '#markup' => $doc,
+      '#theme' => 'token_tree',
+      '#token_types' => array($settings->token_type),
+      '#global_types' => FALSE,
     );
 
     // If the module supports bulk updates, offer the update action here

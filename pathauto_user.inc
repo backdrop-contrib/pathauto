@@ -20,12 +20,6 @@ function user_pathauto($op) {
       $settings['groupheader'] = t('User paths');
       $settings['patterndescr'] = t('Pattern for user account page paths');
       $settings['patterndefault'] = t('users/[user:name]');
-
-      $tokens = token_info();
-      foreach ($tokens['tokens']['user'] as $key => $info) {
-        $settings['tokens']["[user:$key]"] = $info['description'];
-      }
-
       $settings['bulkname'] = t('Bulk generate aliases for users that are not aliased');
       $settings['bulkdescr'] = t('Generate aliases for all existing user account pages which do not already have aliases.');
       return (object) $settings;
@@ -46,12 +40,6 @@ function blog_pathauto($op) {
       $settings['groupheader'] = t('Blog paths');
       $settings['patterndescr'] = t('Pattern for blog page paths');
       $settings['patterndefault'] = t('blogs/[user:name]');
-
-      $tokens = token_info();
-      foreach ($tokens['tokens']['user'] as $key => $info) {
-        $settings['tokens']["[user:$key]"] = $info['description'];
-      }
-
       $settings['supportsfeeds'] = 'feed';
       $settings['bulkname'] = t('Bulk generate aliases for blogs that are not aliased');
       $settings['bulkdescr'] = t('Generate aliases for all existing blog pages which do not already have aliases.');
@@ -73,12 +61,6 @@ function tracker_pathauto($op) {
       $settings['groupheader'] = t('User-tracker paths');
       $settings['patterndescr'] = t('Pattern for user-tracker page paths');
       $settings['patterndefault'] = t('users/[user:name]/track');
-
-      $tokens = token_info();
-      foreach ($tokens['tokens']['user'] as $key => $info) {
-        $settings['tokens']["[user:$key]"] = $info['description'];
-      }
-
       $settings['supportsfeeds'] = 'feed';
       $settings['bulkname'] = t('Bulk generate aliases for user-tracker paths that are not aliased');
       $settings['bulkdescr'] = t('Generate aliases for all existing user-tracker pages which do not already have aliases.');
@@ -100,12 +82,6 @@ function contact_pathauto($op) {
       $settings['groupheader'] = t('User personal contact form paths');
       $settings['patterndescr'] = t('Pattern for the user contact form paths');
       $settings['patterndefault'] = t('users/[user:name]/contact');
-
-      $tokens = token_info();
-      foreach ($tokens['tokens']['user'] as $key => $info) {
-        $settings['tokens']["[user:$key]"] = $info['description'];
-      }
-
       $settings['bulkname'] = t('Bulk generate aliases for user contact form paths that are not aliased');
       $settings['bulkdescr'] = t('Generate aliases for all existing user contact form pages which do not already have aliases.');
       return (object) $settings;

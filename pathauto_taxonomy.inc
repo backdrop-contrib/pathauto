@@ -20,15 +20,6 @@ function taxonomy_pathauto($op) {
       $settings['groupheader'] = t('Taxonomy term paths');
       $settings['patterndescr'] = t('Default path pattern (applies to all vocabularies with blank patterns below)');
       $settings['patterndefault'] = t('category/[term:vocabulary]/[term:path]');
-
-      $tokens = token_info();
-      foreach ($tokens['tokens']['term'] as $key => $info) {
-        $settings['tokens']["[term:$key]"] = $info['description'];
-      }
-      foreach ($tokens['tokens']['vocabulary'] as $key => $info) {
-        $settings['tokens']["[term:vocabulary:$key]"] = $info['description'];
-      }
-
       $settings['supportsfeeds'] = '0/feed';
       $settings['bulkname'] = t('Bulk generate aliases for terms that are not aliased');
       $settings['bulkdescr'] = t('Generate aliases for all existing terms which do not already have aliases.');
@@ -75,7 +66,9 @@ function taxonomy_pathauto_bulkupdate() {
   $query->isNull('source');
 
   // Exclude the forums.
-  $query->condition('vid', variable_get('forum_nav_vocabulary', ''), '<>');
+  if ($forum_vid = variable_get('forum_nav_vocabulary', '')) {
+    $query->condition('vid', $forum_vid, '<>');
+  }
 
   // Add $pattern_or condition to query.
   $query->condition($pattern_or);
@@ -139,15 +132,6 @@ function forum_pathauto($op) {
       $settings['groupheader'] = t('Forum paths');
       $settings['patterndescr'] = t('Pattern for forums and forum containers');
       $settings['patterndefault'] = t('[term:vocabulary]/[term:path]');
-
-      $tokens = token_info();
-      foreach ($tokens['tokens']['term'] as $key => $info) {
-        $settings['tokens']["[term:$key]"] = $info['description'];
-      }
-      foreach ($tokens['tokens']['vocabulary'] as $key => $info) {
-        $settings['tokens']["[term:vocabulary:$key]"] = $info['description'];
-      }
-
       $settings['supportsfeeds'] = '0/feed';
       $settings['bulkname'] = t('Bulk generate aliases for forum paths that are not aliased');
       $settings['bulkdescr'] = t('Generate aliases for all existing forums and forum containers which do not already have aliases.');
