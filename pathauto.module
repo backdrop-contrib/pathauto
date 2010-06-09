@@ -159,6 +159,25 @@ function pathauto_pattern_load_by_entity($entity, $bundle = '', $language = LANG
   return $patterns[$pattern_id];
 }
 
+/**
+ * Return the proper SQL to perform cross-db and field-type concatenation.
+ *
+ * @return
+ *   A string of SQL with the concatenation.
+ */
+function _pathauto_sql_concat() {
+  $args = func_get_args();
+  switch (db_driver()) {
+    case 'mysql':
+      return 'CONCAT(' . implode(', ', $args) . ')';
+    case 'mssql':
+      return '(' . implode(' + ', $args) . ')';
+    default:
+      // The ANSI standard of concatentation uses the double-pipe.
+      return '(' . implode(' || ', $args) . ')';
+  }
+}
+
 //==============================================================================
 // Some node related functions.
 

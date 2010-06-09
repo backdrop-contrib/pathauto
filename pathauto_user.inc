@@ -94,7 +94,8 @@ function contact_pathauto($op) {
  * Bulk generate aliases for all users without aliases.
  */
 function user_pathauto_bulkupdate() {
-  $query = "SELECT uid, name, source, alias FROM {users} LEFT JOIN {url_alias} ON CONCAT('user/', CAST(uid AS CHAR)) = source WHERE uid > 0 AND source IS NULL";
+  $concat = _pathauto_sql_concat("'user/'", 'uid');
+  $query = "SELECT uid, name, source, alias FROM {users} LEFT JOIN {url_alias} ON $concat = source WHERE uid > 0 AND source IS NULL";
   $result = db_query_range($query, 0, variable_get('pathauto_max_bulk_update', 50));
 
   $count = 0;
@@ -115,7 +116,8 @@ function user_pathauto_bulkupdate() {
  * Bulk generate aliases for all blogs without aliases.
  */
 function blog_pathauto_bulkupdate() {
-  $query = "SELECT uid, name, source, alias FROM {users} LEFT JOIN {url_alias} ON CONCAT('blog/', CAST(uid AS CHAR)) = source WHERE uid > 0 AND source IS NULL";
+  $concat = _pathauto_sql_concat("'blog/'", 'uid');
+  $query = "SELECT uid, name, source, alias FROM {users} LEFT JOIN {url_alias} ON $concat = source WHERE uid > 0 AND source IS NULL";
   $result = db_query_range($query, 0, variable_get('pathauto_max_bulk_update', 50));
 
   $count = 0;
@@ -135,9 +137,8 @@ function blog_pathauto_bulkupdate() {
  * Bulk generate aliases for user trackers without aliases.
  */
 function tracker_pathauto_bulkupdate() {
-  // We do the double CONCAT because Pgsql8.1 doesn't support more than three arguments to CONCAT
-  // Hopefully some day we can remove that.
-  $query = "SELECT uid, name, source, alias FROM {users} LEFT JOIN {url_alias} ON CONCAT(CONCAT('user/', CAST(uid AS CHAR)), '/track') = source WHERE uid > 0 AND source IS NULL";
+  $concat = _pathauto_sql_concat("'user/'", 'uid', "'/track'");
+  $query = "SELECT uid, name, source, alias FROM {users} LEFT JOIN {url_alias} ON $concat = source WHERE uid > 0 AND source IS NULL";
   $result = db_query_range($query, 0, variable_get('pathauto_max_bulk_update', 50));
 
   $count = 0;
@@ -157,7 +158,8 @@ function tracker_pathauto_bulkupdate() {
  * Bulk generate aliases for all users without aliases
  */
 function contact_pathauto_bulkupdate() {
-  $query = "SELECT uid, name, source, alias FROM {users} LEFT JOIN {url_alias} ON CONCAT(CONCAT('user/', CAST(uid AS CHAR)), '/contact') = source WHERE uid > 0 AND source IS NULL";
+  $concat = _pathauto_sql_concat("'user/'", 'uid', "'/contact'");
+  $query = "SELECT uid, name, source, alias FROM {users} LEFT JOIN {url_alias} ON $concat = source WHERE uid > 0 AND source IS NULL";
   $result = db_query_range($query, 0, variable_get('pathauto_max_bulk_update', 50));
 
   $count = 0;

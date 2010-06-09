@@ -60,7 +60,8 @@ function taxonomy_pathauto_bulkupdate() {
 
   // Set up the query object.
   $query = db_select('taxonomy_term_data', 'td');
-  $query->leftJoin('url_alias', 'ua', "CONCAT('taxonomy/term/', CAST(tid AS CHAR)) = source");
+  $concat = _pathauto_sql_concat("'taxonomy/term/'", 'td.tid');
+  $query->leftJoin('url_alias', 'ua', "$concat = ua.source");
   $query->fields('td', array('tid', 'vid', 'name'));
   $query->fields('ua', array('source', 'alias'));
   $query->isNull('source');
@@ -147,7 +148,8 @@ function forum_pathauto($op) {
 function forum_pathauto_bulkupdate() {
   // Set up the query object and limit it to the forum vocabulary.
   $query = db_select('taxonomy_term_data', 'td');
-  $query->leftJoin('url_alias', 'ua', "CONCAT('forum/', CAST(tid AS CHAR)) = source");
+  $concat = _pathauto_sql_concat("'forum/'", 'td.tid');
+  $query->leftJoin('url_alias', 'ua', "$concat = source");
   $query->condition('vid', variable_get('forum_nav_vocabulary', ''));
   $query->fields('td', array('tid', 'vid', 'name'));
   $query->fields('ua', array('source', 'alias'));

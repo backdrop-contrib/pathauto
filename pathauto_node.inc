@@ -89,7 +89,8 @@ function node_pathauto_bulkupdate() {
   $count = 0;
   if (count($pattern_types)) {
     // @TODO We could rewrite this section to use node_load_multiple
-    $query = "SELECT n.nid, n.vid, n.type, n.title, n.uid, n.created, n.language, ua.source, ua.alias FROM {node} n LEFT JOIN {url_alias} ua ON CONCAT('node/', CAST(n.nid AS CHAR)) = ua.source WHERE ua.source IS NULL AND n.type IN (:pattern_types)";
+    $concat = _pathauto_sql_concat("'node/'", 'n.nid');
+    $query = "SELECT n.nid, n.vid, n.type, n.title, n.uid, n.created, n.language, ua.source, ua.alias FROM {node} n LEFT JOIN {url_alias} ua ON $concat = ua.source WHERE ua.source IS NULL AND n.type IN (:pattern_types)";
     $result = db_query_range($query, 0, variable_get('pathauto_max_bulk_update', 50), array(':pattern_types' => $pattern_types));
 
     foreach ($result as $node_ref) {
