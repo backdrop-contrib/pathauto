@@ -72,7 +72,7 @@ define('PATHAUTO_PUNCTUATION_DO_NOTHING', 2);
  *   TRUE if an alias exists, FALSE if not.
  */
 function _pathauto_alias_exists($alias, $source, $language = LANGUAGE_NONE) {
-  $alias_pid = db_query_range("SELECT pid FROM {url_alias} WHERE alias = :alias AND source <> :source AND language = :lang", 0, 1, array(':alias' => $alias, ':source' => $source, ':lang' => $language))->fetchColumn();
+  $alias_pid = db_query_range("SELECT pid FROM {url_alias} WHERE alias = :alias AND source <> :source AND language = :lang", 0, 1, array(':alias' => $alias, ':source' => $source, ':lang' => $language))->fetchField();
   if (module_exists('path_redirect') && function_exists('path_redirect_delete_multiple')) {
     // Delete from path_redirect the exact same alias to the same node.
     path_redirect_delete_multiple(NULL, array('source' => $alias, 'redirect' => $source));
