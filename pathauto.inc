@@ -137,16 +137,20 @@ function _pathauto_existing_alias_data($source) {
  *   The cleaned string.
  */
 function pathauto_cleanstring($string, $clean_slash = TRUE) {
-  // Default words to ignore
-  $ignore_words = array(
-    'a', 'an', 'as', 'at', 'before', 'but', 'by', 'for', 'from', 'is', 'in',
-    'into', 'like', 'of', 'off', 'on', 'onto', 'per', 'since', 'than', 'the',
-    'this', 'that', 'to', 'up', 'via', 'with',
-  );
+  $output = $string;
+
+  // Optionally transliterate (by running through the Transliteration module)
+  if (variable_get('pathauto_transliterate', FALSE)) {
+    if (module_exists('transliteration')) {
+      $output = transliteration_get($output);
+    }
+    else {
+      drupal_set_message(t('Pathauto could not transliterate the path, as the Transliteration module has been disabled.'), 'error');
+    }
+  }
 
   // Replace or drop punctuation based on user settings
   $separator = variable_get('pathauto_separator', '-');
-  $output = $string;
   $punctuation = pathauto_punctuation_chars();
   foreach ($punctuation as $name => $details) {
     $action = variable_get('pathauto_punctuation_' . $name, PATHAUTO_PUNCTUATION_REMOVE);
@@ -161,25 +165,21 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
     $output = str_replace('/', '', $output);
   }
 
-  // Optionally transliterate (by running through the Transliteration module)
-  if (variable_get('pathauto_transliterate', FALSE)) {
-    if (module_exists('transliteration')) {
-      $output = transliteration_get($output);
-    }
-    else {
-      drupal_set_message(t('Pathauto could not transliterate the path, as the Transliteration module has been disabled.'), 'error');
-    }
-  }
-
   // Reduce strings to letters and numbers
   if (variable_get('pathauto_reduce_ascii', FALSE)) {
     $pattern = '/[^a-zA-Z0-9\/]+/ ';
     $output = preg_replace($pattern, $separator, $output);
   }
 
+  // Default words to ignore
+  $ignore_words = array(
+    'a', 'an', 'as', 'at', 'before', 'but', 'by', 'for', 'from', 'is', 'in',
+    'into', 'like', 'of', 'off', 'on', 'onto', 'per', 'since', 'than', 'the',
+    'this', 'that', 'to', 'up', 'via', 'with',
+  );
+
   // Get rid of words that are on the ignore list
   $ignore_re = '\b' . preg_replace('/,/', '\b|\b', variable_get('pathauto_ignore_words', $ignore_words)) . '\b';
-
   if (function_exists('mb_eregi_replace')) {
     $output = mb_eregi_replace($ignore_re, '', $output);
   }
