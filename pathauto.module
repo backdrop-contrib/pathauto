@@ -379,6 +379,13 @@ function _pathauto_taxonomy_term_insert_update($term, $op) {
   if ($pattern = pathauto_pattern_load_by_entity('taxonomy', $term->vid)) {
     _pathauto_include();
 
+    // Clear the taxonomy static cache.
+    if ($op == 'update') {
+      taxonomy_terms_static_reset();
+      // @todo Remove when http://drupal.org/node/826334 is fixed.
+      drupal_static_reset('taxonomy_get_parents_all');
+    }
+
     if ($term->name) {
       $count = _taxonomy_pathauto_alias($term, $op);
     }

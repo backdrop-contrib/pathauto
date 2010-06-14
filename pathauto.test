@@ -318,6 +318,13 @@ class PathautoTaxonomyTokenTestCase extends PathautoUnitTestHelper {
     $this->assertToken('term', $term1, 'path', $term1->name);
     $this->assertToken('term', $term1, 'alias', "category/{$this->vocab->name}/{$term1->name}");
 
+    // Change the term name to check that the alias is also changed.
+    // Regression test for http://drupal.org/node/822174.
+    $term1->oldname = $term1->name;
+    $term1->name = drupal_strtolower($this->randomName());
+    taxonomy_term_save($term1);
+    $this->assertToken('term', $term1, 'path', $term1->name);
+
     $term2 = $this->addTerm($this->vocab, array('parent' => $term1->tid));
     $this->assertToken('term', $term2, 'path', "{$term1->name}/{$term2->name}");
     $this->assertToken('term', $term2, 'alias', "category/{$this->vocab->name}/{$term2->name}");
