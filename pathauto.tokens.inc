@@ -15,14 +15,6 @@ function pathauto_token_info() {
   $tokens = array();
 
   if (module_exists('taxonomy')) {
-    $tokens['term']['path'] = array(
-      'name' => t('Taxonomy term path'),
-      'description' => t('The name of the taxonomy term and all its parents in a path form. (%example)', array('%example' => 'parent-term/my-term')),
-    );
-    $tokens['term']['alias'] = array(
-      'name' => t('Taxonomy term alias'),
-      'description' => t('The URL alias of the taxonomy term.'),
-    );
     //$tokens['node']['term-lowest'] = array(
     //  'name' => t('Lowest weighted term'),
     //  'description' => t('The taxonomy term associated with the node sorted by vocabulary weight, taxonomy term weight, then taxonomy term name.'),
@@ -70,30 +62,6 @@ function pathauto_tokens($type, $tokens, array $data = array(), array $options =
     //    $replacements += token_generate('term', $term_lowest_tokens, array('term' => $term), $options);
     //  }
     //}
-  }
-
-  if ($type == 'term' && !empty($data['term'])) {
-    $term = $data['term'];
-
-    foreach ($tokens as $name => $original) {
-      switch ($name) {
-        case 'path':
-          module_load_include('inc', 'pathauto');
-          $parents = taxonomy_get_parents_all($term->tid);
-          $catpath = array();
-          foreach ($parents as $parent) {
-            $term_name = $sanitize ? check_plain($parent->name) : $parent->name;
-            array_unshift($catpath, pathauto_cleanstring($term_name));
-          }
-          if ($catpath) {
-            $replacements[$original] = implode('/', $catpath);
-          }
-          break;
-        case 'alias':
-          $replacements[$original] = drupal_get_path_alias('taxonomy/term/' . $term->tid);
-          break;
-      }
-    }
   }
 
   return $replacements;

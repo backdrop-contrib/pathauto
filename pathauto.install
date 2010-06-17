@@ -112,13 +112,13 @@ function pathauto_update_7() {
 }
 
 /**
- * Upgrade token names.
+ * Build a list of Drupal 6 tokens and their Drupal 7 token names.
  */
-//function pathauto_update_7000() {
-  //$tokens = array(
-  //  'catpath' => 'node:term-lowest:path',
-  //  'catalias' => 'node:term-lowest:alias',
-  //  'termpath' => 'term:path',
-  //  'termalias' => 'term:alias',
-  //);
-//}
+function _pathauto_upgrade_token_list() {
+  $tokens = array(
+    'catpath' => 'node:term-lowest:parent:path][node:term-lowest',
+    'catalias' => 'node:term-lowest:path',
+    'termpath' => 'term:parent:path][term:name',
+    'termalias' => 'term:path',
+  );
+}
