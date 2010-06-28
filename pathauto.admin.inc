@@ -142,14 +142,6 @@ function pathauto_patterns_form($form, $form_state) {
 function pathauto_settings_form($form) {
   module_load_include('inc', 'pathauto');
 
-  // Default words to ignore
-  // @todo Move this to a constant.
-  $ignore_words = array(
-    'a', 'an', 'as', 'at', 'before', 'but', 'by', 'for', 'from', 'is', 'in',
-    'into', 'like', 'of', 'off', 'on', 'onto', 'per', 'since', 'than', 'the',
-    'this', 'that', 'to', 'up', 'via', 'with',
-  );
-
   $form['pathauto_verbose'] = array(
     '#type' => 'checkbox',
     '#title' => t('Verbose'),
@@ -255,7 +247,7 @@ function pathauto_settings_form($form) {
   $form['pathauto_ignore_words'] = array(
     '#type' => 'textarea',
     '#title' => t('Strings to Remove'),
-    '#default_value' => variable_get('pathauto_ignore_words', implode(',', $ignore_words)),
+    '#default_value' => variable_get('pathauto_ignore_words', PATHAUTO_IGNORE_WORDS),
     '#description' => t('Words to strip out of the URL alias, separated by commas. Do not use this to remove punctuation.'),
     '#wysiwyg' => FALSE,
   );

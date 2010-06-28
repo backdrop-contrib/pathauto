@@ -19,6 +19,11 @@
  */
 
 /**
+ * The default ignore word list.
+ */
+define('PATHAUTO_IGNORE_WORDS', 'a, an, as, at, before, but, by, for, from, is, in, into, like, of, off, on, onto, per, since, than, the, this, that, to, up, via, with');
+
+/**
  * Implements hook_help().
  */
 function pathauto_help($path, $arg) {

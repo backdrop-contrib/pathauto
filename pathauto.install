@@ -27,7 +27,6 @@ function pathauto_install() {
     variable_set('pathauto_modulelist', array('node', 'user'));
   }
   // Set the rest of the pathauto default variables
-  variable_set('pathauto_ignore_words', 'a,an,as,at,before,but,by,for,from,is,in,into,like,of,off,on,onto,per,since,than,the,this,that,to,up,via,with');
   variable_set('pathauto_indexaliases', FALSE);
   variable_set('pathauto_indexaliases_bulkupdate', FALSE);
   variable_set('pathauto_max_component_length', '100');

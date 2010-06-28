@@ -171,20 +171,27 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
     $output = preg_replace($pattern, $separator, $output);
   }
 
-  // Default words to ignore
-  $ignore_words = array(
-    'a', 'an', 'as', 'at', 'before', 'but', 'by', 'for', 'from', 'is', 'in',
-    'into', 'like', 'of', 'off', 'on', 'onto', 'per', 'since', 'than', 'the',
-    'this', 'that', 'to', 'up', 'via', 'with',
-  );
+  // Calculate and statically cache the ignored words regex expression.
+  $ignore_words_regex = &drupal_static('pathauto_cleanstring:ignore_words_regex');
+  if (!isset($ignore_words_regex)) {
+    $ignore_words = variable_get('pathauto_ignore_words', PATHAUTO_IGNORE_WORDS);
+    $ignore_words_regex = preg_replace(array('/^[,\s]+|[,\s]+$/', '/[,\s]+/'), array('', '\b|\b'), $ignore_words);
+    if ($ignore_words_regex) {
+      $ignore_words_regex = '\b' . $ignore_words_regex . '\b';
+    }
+  }
 
   // Get rid of words that are on the ignore list
-  $ignore_re = '\b' . preg_replace('/,/', '\b|\b', variable_get('pathauto_ignore_words', $ignore_words)) . '\b';
-  if (function_exists('mb_eregi_replace')) {
-    $output = mb_eregi_replace($ignore_re, '', $output);
-  }
-  else {
-    $output = preg_replace("/$ignore_re/i", '', $output);
+  if ($ignore_words_regex) {
+    if (function_exists('mb_eregi_replace')) {
+      $words_removed = mb_eregi_replace($ignore_words_regex, '', $output);
+    }
+    else {
+      $words_removed = preg_replace("/$ignore_words_regex/i", '', $output);
+    }
+    if (drupal_strlen(trim($words_removed)) > 0) {
+      $output = $words_removed;
+    }
   }
 
   // Always replace whitespace with the separator.

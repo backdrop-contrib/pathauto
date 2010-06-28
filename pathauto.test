@@ -72,6 +72,24 @@ class PathautoUnitTestCase extends PathautoUnitTestHelper {
       $this->assertIdentical($actual, $test['expected'], t("pathauto_pattern_load_by_entity('@entity', '@bundle', '@language') returned '@actual', expected '@expected'", array('@entity' => $test['entity'], '@bundle' => $test['bundle'], '@language' => $test['language'], '@actual' => $actual, '@expected' => $test['expected'])));
     }
   }
+
+  /**
+   * Test the 'ignored words' removal functionality of pathauto_cleanstring().
+   */
+  function testIgnoredWordRemoval() {
+    variable_set('pathauto_ignore_words', ', that, this, with, ');
+
+    $tests = array(
+      'this' => 'this',
+      'this with that' => 'this-with-that',
+      'this thing with that thing' => 'thing-thing',
+    );
+
+    foreach ($tests as $input => $expected) {
+      $output = pathauto_cleanstring($input);
+      $this->assertEqual($output, $expected, t("pathauto_cleanstring('@input') expected '@expected', actual '@output'", array('@input' => $input, '@expected' => $expected, '@output' => $output)));
+    }
+  }
 }
 
 /**
