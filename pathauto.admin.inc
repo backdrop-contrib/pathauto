@@ -101,7 +101,7 @@ function pathauto_patterns_form($form, $form_state) {
       $form[$module][$variable] = array(
         '#type' => 'checkbox',
         '#title' => $settings->bulkname,
-        '#default_value' => FALSE,
+        '#default_value' => variable_get($variable, FALSE),
         '#description' => $settings->bulkdescr,
       );
     }
@@ -114,7 +114,7 @@ function pathauto_patterns_form($form, $form_state) {
         '#title' => t('Internal feed alias text (leave blank to disable)'),
         '#size' => 65,
         '#maxlength' => 1280,
-        '#default_value' => $supportsfeeds,
+        '#default_value' => variable_get($variable, $supportsfeeds),
         '#description' => t('The text to use for aliases for RSS feeds. Examples are "0/feed" (used throughout Drupal core) and "feed" (used by some contributed Drupal modules, like Views).'),
       );
     }
@@ -162,14 +162,14 @@ function pathauto_settings_form($form) {
     '#title' => t('Separator'),
     '#size' => 1,
     '#maxlength' => 1,
-    '#default_value' => '-',
+    '#default_value' => variable_get('pathauto_separator', '-'),
     '#description' => t('Character used to separate words in titles. This will replace any spaces and punctuation characters. Using a space or + character can cause unexpected results.'),
   );
 
   $form['pathauto_case'] = array(
     '#type' => 'radios',
     '#title' => t('Character case'),
-    '#default_value' => PATHAUTO_CASE_LOWER,
+    '#default_value' => variable_get('pathauto_case', PATHAUTO_CASE_LOWER),
     '#options' => array(
       PATHAUTO_CASE_LEAVE_ASIS => t('Leave case the same as source token values.'),
       PATHAUTO_CASE_LOWER => t('Change to lower case'),
@@ -183,7 +183,7 @@ function pathauto_settings_form($form) {
     '#title' => t('Maximum alias length'),
     '#size' => 3,
     '#maxlength' => 3,
-    '#default_value' => 100,
+    '#default_value' => variable_get('pathauto_max_length', 100),
     '#min_value' => 1,
     '#max_value' => $max_length,
     '#description' => t('Maximum length of aliases to generate. 100 is the recommended length. @max is the maximum possible length. See <a href="@pathauto-help">Pathauto help</a> for details.', array('@pathauto-help' => url('admin/help/pathauto'), '@max' => $max_length)),
@@ -194,7 +194,7 @@ function pathauto_settings_form($form) {
     '#title' => t('Maximum component length'),
     '#size' => 3,
     '#maxlength' => 3,
-    '#default_value' => 100,
+    '#default_value' => variable_get('pathauto_max_component_length', 100),
     '#min_value' => 1,
     '#max_value' => $max_length,
     '#description' => t('Maximum text length of any component in the alias (e.g., [title]). 100 is the recommended length. @max is the maximum possible length. See <a href="@pathauto-help">Pathauto help</a> for details.', array('@pathauto-help' => url('admin/help/pathauto'), '@max' => $max_length)),
@@ -206,7 +206,7 @@ function pathauto_settings_form($form) {
     '#title' => t('Maximum number of objects to alias in a bulk update'),
     '#size' => 4,
     '#maxlength' => 4,
-    '#default_value' => 50,
+    '#default_value' => variable_get('pathauto_max_bulk_update', 50),
     '#min_value' => 1,
     '#description' => t('Maximum number of objects of a given type which should be aliased during a bulk update. The default is 50 and the recommended number depends on the speed of your server. If bulk updates "time out" or result in a "white screen" then reduce the number.'),
     '#element_validate' => array('_pathauto_validate_numeric_element'),
@@ -215,7 +215,7 @@ function pathauto_settings_form($form) {
   $form['pathauto_update_action'] = array(
     '#type' => 'radios',
     '#title' => t('Update action'),
-    '#default_value' => PATHAUTO_UPDATE_ACTION_DELETE,
+    '#default_value' => variable_get('pathauto_update_action', PATHAUTO_UPDATE_ACTION_DELETE),
     '#options' => array(
       PATHAUTO_UPDATE_ACTION_NO_NEW => t('Do nothing. Leave the old alias intact.'),
       PATHAUTO_UPDATE_ACTION_LEAVE => t('Create a new alias. Leave the existing alias functioning.'),
@@ -236,7 +236,7 @@ function pathauto_settings_form($form) {
   $form['pathauto_transliterate'] = array(
     '#type' => 'checkbox',
     '#title' => t('Transliterate prior to creating alias'),
-    '#default_value' => FALSE,
+    '#default_value' => variable_get('pathauto_transliterate', FALSE),
     '#description' => t('When a pattern includes certain characters (such as those with accents) should Pathauto attempt to transliterate them into the ASCII-96 alphabet? Transliteration is handled by the Transliteration module.'),
   );
   if (!module_exists('transliteration')) {
@@ -248,14 +248,14 @@ function pathauto_settings_form($form) {
   $form['pathauto_reduce_ascii'] = array(
     '#type' => 'checkbox',
     '#title' => t('Reduce strings to letters and numbers'),
-    '#default_value' => FALSE,
+    '#default_value' => variable_get('pathauto_reduce_ascii', FALSE),
     '#description' => t('Filters the new alias to only letters and numbers found in the ASCII-96 set.'),
   );
 
   $form['pathauto_ignore_words'] = array(
     '#type' => 'textarea',
     '#title' => t('Strings to Remove'),
-    '#default_value' => implode(',', $ignore_words),
+    '#default_value' => variable_get('pathauto_ignore_words', implode(',', $ignore_words)),
     '#description' => t('Words to strip out of the URL alias, separated by commas. Do not use this to remove punctuation.'),
     '#wysiwyg' => FALSE,
   );
@@ -276,7 +276,7 @@ function pathauto_settings_form($form) {
     $form['punctuation']['pathauto_punctuation_' . $name] = array(
       '#type' => 'select',
       '#title' => $details['name'],
-      '#default_value' => $details['default'],
+      '#default_value' => variable_get('pathauto_punctuation_' . $name, $details['default']),
       '#options' => array(
         PATHAUTO_PUNCTUATION_REMOVE => t('Remove'),
         PATHAUTO_PUNCTUATION_REPLACE => t('Replace by separator'),
