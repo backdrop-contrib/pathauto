@@ -102,7 +102,7 @@ class PathautoTestHelper extends DrupalWebTestCase {
     // Call parent::setUp() allowing test cases to pass further modules.
     $modules = func_get_args();
     $modules = array_merge(array('path', 'token', 'pathauto'), $modules);
-    call_user_func_array(array($this, 'parent::setUp'), $modules);
+    parent::setUp($modules);
 
     // Set pathauto settings we assume to be as-is in this test.
     variable_set('pathauto_node_page_pattern', 'content/[node:title]');
