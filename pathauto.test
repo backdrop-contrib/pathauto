@@ -16,7 +16,7 @@ class PathautoUnitTestHelper extends DrupalWebTestCase {
     // Call parent::setUp() allowing test cases to pass further modules.
     $modules = func_get_args();
     $modules = array_merge(array('path', 'token', 'pathauto'), $modules);
-    call_user_func_array(array($this, 'parent::setUp'), $modules);
+    parent::setUp($modules);
   }
 
   function assertToken($type, $object, $token, $expected) {
