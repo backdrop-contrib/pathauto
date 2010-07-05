@@ -51,7 +51,7 @@ function pathauto_patterns_form($form, $form_state) {
     );
     if (!$_POST) {
       // Run validation to let user know of problems right away.
-      token_element_validate_token_context($form[$module][$variable], $form_state);
+      _form_validate($form[$module][$variable], $form_state);
     }
 
     // If the module supports a set of specialized patterns, set
@@ -71,7 +71,7 @@ function pathauto_patterns_form($form, $form_state) {
         );
         if (!$_POST) {
           // Run validation to let user know of problems right away.
-          token_element_validate_token_context($form[$module][$variable], $form_state);
+          _form_validate($form[$module][$variable], $form_state);
         }
       }
     }
