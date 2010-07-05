@@ -74,16 +74,20 @@ class PathautoUnitTestCase extends PathautoUnitTestHelper {
   }
 
   /**
-   * Test the 'ignored words' removal functionality of pathauto_cleanstring().
+   * Test pathauto_cleanstring().
    */
-  function testIgnoredWordRemoval() {
-    variable_set('pathauto_ignore_words', ', that, this, with, ');
+  function testCleanString() {
+    $tests = array();
+    variable_set('pathauto_ignore_words', ', in, is,that, the  , this, with, ');
+    variable_set('pathauto_max_component_length', 20);
 
-    $tests = array(
-      'this' => 'this',
-      'this with that' => 'this-with-that',
-      'this thing with that thing' => 'thing-thing',
-    );
+    // Test the 'ignored words' removal.
+    $tests['this'] = 'this';
+    $tests['this with that'] = 'this-with-that';
+    $tests['this thing with that thing'] = 'thing-thing';
+
+    // Test length truncation and duplicate separator removal.
+    $tests[' - Pathauto is the greatest - module ever in Drupal history - '] = 'pathauto-greatest';
 
     foreach ($tests as $input => $expected) {
       $output = pathauto_cleanstring($input);
