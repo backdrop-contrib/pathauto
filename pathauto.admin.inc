@@ -46,13 +46,10 @@ function pathauto_patterns_form($form, $form_state) {
       '#size' => 65,
       '#maxlength' => 1280,
       '#element_validate' => array('token_element_validate_token_context'),
+      '#after_build' => array('token_element_validate_token_context'),
       '#token_types' => array($settings->token_type),
       '#parents' => array($variable),
     );
-    if (!$_POST) {
-      // Run validation to let user know of problems right away.
-      _form_validate($form[$module][$variable], $form_state);
-    }
 
     // If the module supports a set of specialized patterns, set
     // them up here
@@ -66,13 +63,10 @@ function pathauto_patterns_form($form, $form_state) {
           '#size' => 65,
           '#maxlength' => 1280,
           '#element_validate' => array('token_element_validate_token_context'),
+          '#after_build' => array('token_element_validate_token_context'),
           '#token_types' => array($settings->token_type),
           '#parents' => array($variable),
         );
-        if (!$_POST) {
-          // Run validation to let user know of problems right away.
-          _form_validate($form[$module][$variable], $form_state);
-        }
       }
     }
 
