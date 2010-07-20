@@ -286,27 +286,27 @@ class PathautoBookTokenTestCase extends PathautoUnitTestHelper {
     variable_set('pathauto_node_book_pattern', '[node:bookpathalias]/[node:title]');
   }
 
-  function testBookPathAlias() {
-    // Add a non-book node.
-    $non_book_node = $this->drupalCreateNode(array('type' => 'book'));
-    $this->assertToken('node', $non_book_node, 'bookpathalias', '');
-
-    // Add a root book page.
-    $parent_node = $this->drupalCreateNode(array('type' => 'book', 'title' => 'Root', 'book' => array('bid' => 'new')));
-    $this->assertToken('node', $parent_node, 'bookpathalias', '');
-
-    // Add a first child page.
-    $child_node1 = $this->drupalCreateNode(array('type' => 'book', 'title' => 'Sub page1', 'book' => array('bid' => $parent_node->book['bid'], 'plid' => $parent_node->book['mlid'])));
-    $this->assertToken('node', $child_node1, 'bookpathalias', 'root');
-
-    // Add a second child page.
-    $child_node2 = $this->drupalCreateNode(array('type' => 'book', 'title' => 'Sub page2', 'book' => array('bid' => $parent_node->book['bid'], 'plid' => $parent_node->book['mlid'])));
-    $this->assertToken('node', $child_node2, 'bookpathalias', 'root');
-
-    // Add a child page on an existing child page.
-    $sub_child_node1 = $this->drupalCreateNode(array('type' => 'book', 'title' => 'Sub-sub Page1', 'book' => array('bid' => $parent_node->book['bid'], 'plid' => $child_node1->book['mlid'])));
-    $this->assertToken('node', $sub_child_node1, 'bookpathalias', 'root/sub-page1');
-  }
+  //function testBookPathAlias() {
+  //  // Add a non-book node.
+  //  $non_book_node = $this->drupalCreateNode(array('type' => 'book'));
+  //  $this->assertToken('node', $non_book_node, 'bookpathalias', '');
+  //
+  //  // Add a root book page.
+  //  $parent_node = $this->drupalCreateNode(array('type' => 'book', 'title' => 'Root', 'book' => array('bid' => 'new')));
+  //  $this->assertToken('node', $parent_node, 'bookpathalias', '');
+  //
+  //  // Add a first child page.
+  //  $child_node1 = $this->drupalCreateNode(array('type' => 'book', 'title' => 'Sub page1', 'book' => array('bid' => $parent_node->book['bid'], 'plid' => $parent_node->book['mlid'])));
+  //  $this->assertToken('node', $child_node1, 'bookpathalias', 'root');
+  //
+  //  // Add a second child page.
+  //  $child_node2 = $this->drupalCreateNode(array('type' => 'book', 'title' => 'Sub page2', 'book' => array('bid' => $parent_node->book['bid'], 'plid' => $parent_node->book['mlid'])));
+  //  $this->assertToken('node', $child_node2, 'bookpathalias', 'root');
+  //
+  //  // Add a child page on an existing child page.
+  //  $sub_child_node1 = $this->drupalCreateNode(array('type' => 'book', 'title' => 'Sub-sub Page1', 'book' => array('bid' => $parent_node->book['bid'], 'plid' => $child_node1->book['mlid'])));
+  //  $this->assertToken('node', $sub_child_node1, 'bookpathalias', 'root/sub-page1');
+  //}
 }
 
 /*

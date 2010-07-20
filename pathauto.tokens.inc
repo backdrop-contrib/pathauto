@@ -22,13 +22,6 @@ function pathauto_token_info() {
     //);
   }
 
-  if (module_exists('book')) {
-    $tokens['node']['bookpathalias'] = array(
-      'name' => t('Book Path Alias'),
-      'description' => t('URL alias for the parent book.'),
-    );
-  }
-
   return array(
     'tokens' => $tokens,
   );
@@ -45,15 +38,10 @@ function pathauto_tokens($type, $tokens, array $data = array(), array $options =
   if ($type == 'node' && !empty($data['node'])) {
     $node = $data['node'];
 
-    foreach ($tokens as $name => $original) {
-      switch ($name) {
-        case 'bookpathalias':
-          if (module_exists('book') && !empty($node->book['plid']) && $parent = book_link_load($node->book['plid'])) {
-            $replacements[$original] = drupal_get_path_alias($parent['href']);
-          }
-          break;
-      }
-    }
+    //foreach ($tokens as $name => $original) {
+    //  switch ($name) {
+    //  }
+    //}
 
     // Chained token relationships.
     //if ($term_lowest_tokens = token_find_with_prefix($tokens, 'term-lowest')) {

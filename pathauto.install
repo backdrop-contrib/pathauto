@@ -119,5 +119,6 @@ function _pathauto_upgrade_token_list() {
     'catalias' => 'node:term-lowest:path',
     'termpath' => 'term:parent:path][term:name',
     'termalias' => 'term:path',
+    'bookpathalias' => 'node:book:parent:path',
   );
 }
