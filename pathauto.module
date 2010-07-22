@@ -450,14 +450,6 @@ function _pathauto_user_insert_update(&$edit, $account, $category, $op) {
         path_delete(array('source' => 'blog/' . $new_user->uid . '/feed'));
       }
     }
-    if (module_exists('tracker')) {
-      $source = 'user/' . $pathauto_user->uid . '/track';
-      $alias = pathauto_create_alias('tracker', $op, $source, array('user' => $pathauto_user));
-    }
-    if (module_exists('contact')) {
-      $source = 'user/' . $pathauto_user->uid . '/contact';
-      $alias = pathauto_create_alias('contact', $op, $source, array('user' => $pathauto_user));
-    }
   }
 }
 
@@ -522,14 +514,6 @@ function pathauto_user_update_alias(stdClass $account, $op) {
       path_delete(array('source' => "blog/{$account->uid}"));
       path_delete(array('source' => "blog/{$account->uid}/feed"));
     }
-  }
-
-  if (module_exists('tracker')) {
-    pathauto_create_alias('tracker', $op, "user/{$account->uid}/track", array('user' => $account));
-  }
-
-  if (module_exists('contact')) {
-    pathauto_create_alias('contact', $op, "user/{$account->uid}/contact", array('user' => $account));
   }
 }
 
