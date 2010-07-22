@@ -113,12 +113,6 @@ function pathauto_path_alias_types() {
   if (module_exists('blog')) {
     $objects['blog/'] = t('User blogs');
   }
-  if (module_exists('contact')) {
-    $objects['user/%/contact'] = t('User contact forms');
-  }
-  if (module_exists('tracker')) {
-    $objects['user/%/track'] = t('User trackers');
-  }
   if (module_exists('taxonomy')) {
     $objects['taxonomy/term/'] = t('Taxonomy terms');
   }
