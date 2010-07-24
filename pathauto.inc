@@ -94,33 +94,36 @@ function _pathauto_alias_exists($alias, $source, $language = LANGUAGE_NONE) {
  *
  * @param $source
  *   A string that is the internal path.
+ * @param $language
+ *   A string containing the language code to check against.
  * @return
  *   An array with the keys "pid" and "old_alias" containing
  *   the "pid" and old "alias", respectively, of the old alias.
  */
-function _pathauto_existing_alias_data($source) {
+function _pathauto_existing_alias_data($source, $language = LANGUAGE_NONE) {
   $output = array(
     'pid' => '',
     'old_alias' => ''
   );
-  $result = db_query("SELECT pid, alias FROM {url_alias} WHERE source = :source", array(':source' => $source));
-  if ($data = $result->fetchObject()) {
+
+  $existing = db_query_range("SELECT pid, alias FROM {url_alias} WHERE source = :source AND language IN (:language, :language_none) ORDER BY language DESC, pid DESC", 0, 1, array(':source' => $source, ':language' => $language, ':language_none' => LANGUAGE_NONE))->fetchObject();
+  if ($existing) {
     // The item is already aliased, check what to do...
     switch (variable_get('pathauto_update_action', PATHAUTO_UPDATE_ACTION_DELETE)) {
-      // Replace old alias - remember the pid to update
       case PATHAUTO_UPDATE_ACTION_DELETE:
       case PATHAUTO_UPDATE_ACTION_REDIRECT:
-        $output['pid'] = $data->pid;
-      // Add new alias in addition to old one
+        // Replace old alias - remember the pid to update
+        $output['pid'] = $existing->pid;
       case PATHAUTO_UPDATE_ACTION_LEAVE:
-        $output['old_alias'] = $data->alias;
+        // Add new alias in addition to old one
+        $output['old_alias'] = $existing->alias;
         break;
-      // Do nothing
       case PATHAUTO_UPDATE_ACTION_NO_NEW:
-      default:
+        // Do nothing
         break;
     }
   }
+
   return $output;
 }
 
@@ -319,7 +322,7 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
     $term_path = 'taxonomy/term/' . $data['term']->tid;
     if ($term_path != $source) {
       // Quietly alias 'taxonomy/term/[tid]' with proper path for term.
-      $update_data = _pathauto_existing_alias_data($source);
+      $update_data = _pathauto_existing_alias_data($source, $language);
       _pathauto_set_alias($source, $term_path, $update_data['pid'], FALSE, $update_data['old_alias'], $language);
       // Set $source as proper path.
       $source = $term_path;
@@ -334,7 +337,7 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
       // Do nothing
       return '';
     }
-    $update_data = _pathauto_existing_alias_data($source);
+    $update_data = _pathauto_existing_alias_data($source, $language);
     $pid = $update_data['pid'];
     $old_alias = $update_data['old_alias'];
   }
@@ -390,11 +393,11 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
     // For forums and taxonomies, the source doesn't always form the base of the rss feed (ie. image galleries)
     if (($module == 'taxonomy' || $module == 'forum') && isset($data['term'])) {
       $tid = $data['term']->tid;
-      $update_data = _pathauto_existing_alias_data("taxonomy/term/$tid/$feedappend");
+      $update_data = _pathauto_existing_alias_data("taxonomy/term/$tid/$feedappend", $language);
       _pathauto_set_alias("taxonomy/term/$tid/$feedappend", "$alias/feed", $update_data['pid'], $verbose, $update_data['old_alias'], $language);
     }
     else {
-      $update_data = _pathauto_existing_alias_data("$source/$feedappend");
+      $update_data = _pathauto_existing_alias_data("$source/$feedappend", $language);
       _pathauto_set_alias("$source/$feedappend", "$alias/feed", $update_data['pid'], $verbose, $update_data['old_alias'], $language);
     }
   }

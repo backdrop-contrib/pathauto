@@ -137,11 +137,44 @@ class PathautoTestHelper extends DrupalWebTestCase {
     $this->drupalLogin($this->admin_user);
   }
 
-  function assertEntityAlias($entity_type, $entity, $expected_alias) {
-    $path = entity_uri($entity_type, $entity);
-    drupal_clear_path_cache($path['path']);
-    $alias = drupal_get_path_alias($path['path']);
-    $this->assertIdentical($alias, $expected_alias);
+  function saveAlias($source, $alias, $language = LANGUAGE_NONE) {
+    $alias = array(
+      'source' => $source,
+      'alias' => $alias,
+      'language' => $language,
+    );
+    path_save($alias);
+    return $alias;
+  }
+
+  function saveEntityAlias($entity_type, $entity, $alias, $language = LANGUAGE_NONE) {
+    $uri = entity_uri($entity_type, $entity);
+    return $this->saveAlias($uri['path'], $alias, $language);
+  }
+
+  function assertEntityAlias($entity_type, $entity, $expected_alias, $language = LANGUAGE_NONE) {
+    $uri = entity_uri($entity_type, $entity);
+    $this->assertAlias($uri['path'], $expected_alias, $language);
+  }
+
+  function assertNoEntityAlias($entity_type, $entity, $expected_alias, $langauge = LANGAUGE_NONE) {
+    $uri = entity_uri($entity_type, $entity);
+    $this->assertEntityAlias($entity_type, $entity, $uri['path'], $language);
+  }
+
+  function assertAlias($source, $expected_alias, $language = '') {
+    $alias = drupal_get_path_alias($source, $language);
+    $this->assertIdentical($alias, $expected_alias, t("Alias for %source with language '@language' was %actual, expected %expected.", array('%source' => $source, '%actual' => $alias, '%expected' => $expected_alias, '@language' => $language)));
+  }
+
+  function assertAliasExists($conditions) {
+    $alias = path_load($conditions);
+    $this->assertTrue($alias, t('Alias with conditions @conditions found.', array('@conditions' => var_export($conditions, TRUE))));
+  }
+
+  function assertNoAliasExists($conditions) {
+    $alias = path_load($conditions);
+    $this->assertFalse($alias, t('Alias with conditions @conditions not found.', array('@conditions' => var_export($conditions, TRUE))));
   }
 }
 
@@ -278,5 +311,55 @@ class PathautoFunctionalTestCase extends PathautoTestHelper {
     $this->drupalPost('admin/config/search/path/patterns', $edit, 'Save configuration');
     $this->assertText('The Default path pattern (applies to all node types with blank patterns below) is using the following invalid tokens: [user:name], [term:name].');
     $this->assertNoText('The configuration options have been saved.');
+  }
+}
+
+class PathautoLocaleTestCase extends PathautoTestHelper {
+  public static function getInfo() {
+    return array(
+      'name' => 'Pathauto localization tests',
+      'description' => 'Test pathauto functionality with localization and translation.',
+      'group' => 'Pathauto',
+    );
+  }
+
+  function setUp() {
+    parent::setUp(array('locale', 'translation'), array('administer languages'));
+
+    // Add predefined French language and reset the locale cache.
+    require_once DRUPAL_ROOT . '/includes/locale.inc';
+    locale_add_language('fr', NULL, NULL, LANGUAGE_LTR, '', 'fr');
+    drupal_language_initialize();
+  }
+
+  /**
+   * Test that when an English node is updated, its old English alias is
+   * updated and its newer French alias is left intact.
+   */
+  function testLanguageAliases() {
+    $node = array(
+      'title' => 'English node',
+      'language' => 'en',
+      'body' => array('en' => array(array())),
+      'path' => array(
+        'alias' => 'english-node',
+        'pathauto_perform_alias' => FALSE,
+      ),
+    );
+    $node = $this->drupalCreateNode($node);
+    $english_alias = path_load(array('alias' => 'english-node'));
+
+    // Also save a French alias that should not be left alone, even though
+    // it is the newer alias.
+    $this->saveEntityAlias('node', $node, 'french-node', 'fr');
+
+    // Update the node, triggering a change in the English alias.
+    $node = node_load($node->nid);
+    node_save($node);
+
+    // Check that the new English alias replaced the old one.
+    $this->assertEntityAlias('node', $node, 'content/english-node', 'en');
+    $this->assertEntityAlias('node', $node, 'french-node', 'fr');
+    $this->assertAliasExists(array('pid' => $english_alias['pid'], 'alias' => 'content/english-node'));
   }
 }
