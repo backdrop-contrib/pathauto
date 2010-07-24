@@ -387,18 +387,23 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
 
   // Also create a related feed alias if requested, and if supported
   // by the module
-  if (drupal_strlen(variable_get('pathauto_' . $module . '_applytofeeds', ''))) {
-    $feedappend = variable_get('pathauto_' . $module . '_applytofeeds', '');
+  $feedappend = trim(variable_get('pathauto_' . $module . '_applytofeeds', ''));
+  if (drupal_strlen($feedappend)) {
+    // If the alias to generate is not empty, then we can append the feed
+    // string.
+    if (drupal_strlen($alias)) {
+      $alias .= '/feed';
+    }
 
     // For forums and taxonomies, the source doesn't always form the base of the rss feed (ie. image galleries)
     if (($module == 'taxonomy' || $module == 'forum') && isset($data['term'])) {
       $tid = $data['term']->tid;
       $update_data = _pathauto_existing_alias_data("taxonomy/term/$tid/$feedappend", $language);
-      _pathauto_set_alias("taxonomy/term/$tid/$feedappend", "$alias/feed", $update_data['pid'], $verbose, $update_data['old_alias'], $language);
+      _pathauto_set_alias("taxonomy/term/$tid/$feedappend", $alias, $update_data['pid'], $verbose, $update_data['old_alias'], $language);
     }
     else {
       $update_data = _pathauto_existing_alias_data("$source/$feedappend", $language);
-      _pathauto_set_alias("$source/$feedappend", "$alias/feed", $update_data['pid'], $verbose, $update_data['old_alias'], $language);
+      _pathauto_set_alias("$source/$feedappend", $alias, $update_data['pid'], $verbose, $update_data['old_alias'], $language);
     }
   }
 
