@@ -55,6 +55,7 @@ class PathautoTestHelper extends DrupalWebTestCase {
   }
 
   function assertAlias($source, $expected_alias, $language = '') {
+    drupal_clear_path_cache($source);
     $alias = drupal_get_path_alias($source, $language);
     $this->assertIdentical($alias, $expected_alias, t("Alias for %source with language '@language' was %actual, expected %expected.", array('%source' => $source, '%actual' => $alias, '%expected' => $expected_alias, '@language' => $language)));
   }
