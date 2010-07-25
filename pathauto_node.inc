@@ -103,8 +103,8 @@ function node_pathauto_bulkupdate() {
         // @TODO Find the Drupal 7 alternative for this if necessary
         //$node->taxonomy = array_keys(taxonomy_node_get_terms($node));
       }
-      $source = "node/$node->nid";
-      if (pathauto_create_alias('node', 'bulkupdate', $source, array('node' => $node), $node->type, $node->language)) {
+      $uri = entity_uri('node', $node);
+      if (pathauto_create_alias('node', 'bulkupdate', $uri['path'], array('node' => $node), $node->type, $node->language)) {
         $count++;
       }
     }

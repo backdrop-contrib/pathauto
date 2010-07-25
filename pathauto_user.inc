@@ -60,8 +60,8 @@ function user_pathauto_bulkupdate() {
   $count = 0;
   $placeholders = array();
   foreach ($result as $user) {
-    $source = 'user/' . $user->uid;
-    if (pathauto_create_alias('user', 'bulkupdate', $source, array('user' => $user))) {
+    $uri = entity_uri('user', $user);
+    if (pathauto_create_alias('user', 'bulkupdate', $uri['path'], array('user' => $user))) {
       $count++;
     }
   }

@@ -193,7 +193,7 @@ function pathauto_path_delete_multiple($pids) {
 }
 
 /**
- * Delete an URL aliase and any sub-paths.
+ * Delete an URL alias and any of its sub-paths.
  *
  * Given a source like 'node/1' this function will delete any alias that have
  * that specific source or any sources that match 'node/1/%'.
@@ -204,7 +204,30 @@ function pathauto_path_delete_multiple($pids) {
 function pathauto_path_delete_all($source) {
   $sql = "SELECT pid FROM {url_alias} WHERE source = :source OR source LIKE :source_wildcard";
   $pids = db_query($sql, array(':source' => $source, ':source_wildcard' => $source . '/%'))->fetchCol();
-  pathauto_path_delete_multiple($pids);
+  if ($pids) {
+    pathauto_path_delete_multiple($pids);
+  }
+}
+
+/**
+ * Delete an entity URL alias and any of its sub-paths.
+ *
+ * This function also checks to see if the default entity URI is different from
+ * the current entity URI and will delete any of the default aliases.
+ *
+ * @param $entity_type
+ *   A string with the entity type.
+ * @param $entity
+ *   An entity object.
+ * @param $default_uri
+ *   The optional default uri path for the entity.
+ */
+function pathauto_entity_path_delete_all($entity_type, $entity, $default_uri = NULL) {
+  $uri = entity_uri($entity_type, $entity);
+  pathauto_path_delete_all($uri['path']);
+  if (isset($default_uri) && $uri['path'] != $default_uri) {
+    pathauto_path_delete_all($default_uri);
+  }
 }
 
 //==============================================================================
@@ -251,8 +274,8 @@ function _pathauto_node_insert_update($node, $op) {
     _pathauto_include();
     // Only create an alias if the checkbox was not provided or if the checkbox was provided and is checked
     if (!isset($node->path['pathauto_perform_alias']) || $node->path['pathauto_perform_alias']) {
-      $source = "node/$node->nid";
-      $node->path['alias'] = pathauto_create_alias('node', $op, $source, array('node' => $node), $node->type, $node->language);
+      $uri = entity_uri('node', $node);
+      $node->path['alias'] = pathauto_create_alias('node', $op, $uri['path'], array('node' => $node), $node->type, $node->language);
     }
   }
 }
@@ -261,8 +284,7 @@ function _pathauto_node_insert_update($node, $op) {
  * Implements hook_node_delete().
  */
 function pathauto_node_delete($node) {
-  $uri = entity_uri('node', $node);
-  pathauto_path_delete_all($uri['path']);
+  pathauto_entity_path_delete_all('node', $node, "node/{$node->nid}");
 }
 
 /**
@@ -289,8 +311,9 @@ function pathauto_form_alter(&$form, &$form_state, $form_id) {
           // alias that would be genereted by pathauto. If they are the same,
           // then keep the automatic alias enabled.
           _pathauto_include();
-          $path = path_load(array('source' => 'node/' . $node->nid));
-          $pathauto_alias = pathauto_create_alias('node', 'return', "node/{$node->nid}", array('node' => $node), $node->type, $node->language);
+          $uri = entity_uri('node', $node);
+          $path = path_load(array('source' => $uri['path']));
+          $pathauto_alias = pathauto_create_alias('node', 'return', $uri['path'], array('node' => $node), $node->type, $node->language);
           $node->pathauto_perform_alias = !empty($path['alias']) && $path['alias'] == $pathauto_alias;
         }
         else {
@@ -358,7 +381,8 @@ function pathauto_node_operations() {
  */
 function pathauto_node_update_alias(stdClass $node, $op) {
   module_load_include('inc', 'pathauto');
-  pathauto_create_alias('node', $op, "node/{$node->nid}", array('node' => $node), $node->type, $node->language);
+  $uri = entity_uri('node', $node);
+  pathauto_create_alias('node', $op, $uri['path'], array('node' => $node), $node->type, $node->language);
 }
 
 /**
@@ -430,11 +454,7 @@ function _pathauto_taxonomy_term_insert_update($term, $op) {
  * Implements hook_taxonomy_term_delete().
  */
 function pathauto_taxonomy_term_delete($term) {
-  $uri = entity_uri('taxonomy_term', $term);
-  pathauto_path_delete_all($uri['path']);
-  if ($uri['path'] != "taxonomy/term/{$term->tid}") {
-    pathauto_path_delete_all("taxonomy/term/{$term->tid}");
-  }
+  pathauto_entity_path_delete_all('taxonomy_term', $term, "taxonomy/term/{$term->tid}");
 }
 
 //==============================================================================
@@ -464,8 +484,8 @@ function _pathauto_user_insert_update(&$edit, $account, $category, $op) {
   // Use the username to automatically create an alias
   $pathauto_user = (object) array_merge((array) $account, $edit);
   if ($pathauto_user->name) {
-    $source = 'user/' . $pathauto_user->uid;
-    $alias = pathauto_create_alias('user', $op, $source, array('user' => $pathauto_user));
+    $uri = entity_uri('user', $pathauto_user);
+    $alias = pathauto_create_alias('user', $op, $uri['path'], array('user' => $pathauto_user));
 
     if (module_exists('blog')) {
       $new_user = clone $pathauto_user;
@@ -474,8 +494,7 @@ function _pathauto_user_insert_update(&$edit, $account, $category, $op) {
         $new_user->roles[DRUPAL_AUTHENTICATED_RID] = t('authenticated user'); // Add this back
       }
       if (node_access('create', 'blog', $new_user)) {
-        $source = 'blog/' . $new_user->uid;
-        $alias = pathauto_create_alias('blog', $op, $source, array('user' => $new_user));
+        $alias = pathauto_create_alias('blog', $op, "blog/{$new_user->uid}", array('user' => $new_user));
       }
       else {
         pathauto_path_delete_all("blog/{$user->uid}");
@@ -498,7 +517,7 @@ function pathauto_user_cancel($edit, $account, $method) {
     case 'user_cancel_delete':
       // Remove the users's path aliases
       $user = (object) $account;
-      pathauto_path_delete_all("user/{$user->uid}");
+      pathauto_entity_path_delete_all('user', $user, "user/{$user->uid}");
       // They may have enabled these modules and/or feeds when the user was created, so let's try to delete all of them
       pathauto_path_delete_all("blog/{$user->uid}");
       break;

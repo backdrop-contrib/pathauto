@@ -102,19 +102,17 @@ function taxonomy_pathauto_bulkupdate() {
 function _taxonomy_pathauto_alias($term, $op) {
   $count = 0;
   $term = taxonomy_term_load($term->tid);
-  $vocabulary = taxonomy_vocabulary_load($term->vid);
-
+  $uri = entity_uri('taxonomy_term', $term);
   $forum_vid = variable_get('forum_nav_vocabulary', '');
+
   // If we're in a forum vocabulary, also create a forum container, forum, or forum topic alias.
-  if (module_exists('forum') && $forum_vid == (int)$term->vid) {
-    $source = 'forum/' . $term->tid;
-    if (pathauto_create_alias('forum', $op, $source, array('term' => $term, 'vocabulary' => $vocabulary), $term->vid)) {
+  if (module_exists('forum') && $forum_vid == (int) $term->vid) {
+    if (pathauto_create_alias('forum', $op, $uri['path'], array('term' => $term, 'vocabulary' => $vocabulary), $term->vid)) {
       $count++;
     }
   }
   else {
-    $source = 'taxonomy/term/' . $term->tid;
-    if (pathauto_create_alias('taxonomy', $op, $source, array('term' => $term, 'vocabulary' => $vocabulary), $term->vid)) {
+    if (pathauto_create_alias('taxonomy', $op, $uri['path'], array('term' => $term, 'vocabulary' => $vocabulary), $term->vid)) {
       $count++;
     }
   }
