@@ -177,6 +177,36 @@ function _pathauto_sql_concat() {
   }
 }
 
+/**
+ * Delete multiple URL aliases.
+ *
+ * Intent of this is to abstract a potential path_delete_multiple() function
+ * for Drupal 7 or 8.
+ *
+ * @param $pids
+ *   An array of path IDs to delete.
+ */
+function pathauto_path_delete_multiple($pids) {
+  foreach ($pids as $pid) {
+    path_delete(array('pid' => $pid));
+  }
+}
+
+/**
+ * Delete an URL aliase and any sub-paths.
+ *
+ * Given a source like 'node/1' this function will delete any alias that have
+ * that specific source or any sources that match 'node/1/%'.
+ *
+ * @param $source
+ *   An string with a source URL path.
+ */
+function pathauto_path_delete_all($source) {
+  $sql = "SELECT pid FROM {url_alias} WHERE source = :source OR source LIKE :source_wildcard";
+  $pids = db_query($sql, array(':source' => $source, ':source_wildcard' => $source . '/%'))->fetchCol();
+  pathauto_path_delete_multiple($pids);
+}
+
 //==============================================================================
 // Some node related functions.
 
@@ -231,8 +261,8 @@ function _pathauto_node_insert_update($node, $op) {
  * Implements hook_node_delete().
  */
 function pathauto_node_delete($node) {
-  path_delete(array('source' => 'node/' . $node->nid));
-  path_delete(array('source' => 'node/' . $node->nid . '/feed'));
+  $uri = entity_uri('node', $node);
+  pathauto_path_delete_all($uri['path']);
 }
 
 /**
@@ -400,9 +430,11 @@ function _pathauto_taxonomy_term_insert_update($term, $op) {
  * Implements hook_taxonomy_term_delete().
  */
 function pathauto_taxonomy_term_delete($term) {
-  path_delete(array('source' => 'taxonomy/term/' . $term->tid));
-  path_delete(array('source' => 'forum/' . $term->tid));
-  path_delete(array('source' => 'taxonomy/term/' . $term->tid . '/0/feed'));
+  $uri = entity_uri('taxonomy_term', $term);
+  pathauto_path_delete_all($uri['path']);
+  if ($uri['path'] != "taxonomy/term/{$term->tid}") {
+    pathauto_path_delete_all("taxonomy/term/{$term->tid}");
+  }
 }
 
 //==============================================================================
@@ -446,8 +478,7 @@ function _pathauto_user_insert_update(&$edit, $account, $category, $op) {
         $alias = pathauto_create_alias('blog', $op, $source, array('user' => $new_user));
       }
       else {
-        path_delete(array('source' => 'blog/' . $new_user->uid));
-        path_delete(array('source' => 'blog/' . $new_user->uid . '/feed'));
+        pathauto_path_delete_all("blog/{$user->uid}");
       }
     }
   }
@@ -467,14 +498,9 @@ function pathauto_user_cancel($edit, $account, $method) {
     case 'user_cancel_delete':
       // Remove the users's path aliases
       $user = (object) $account;
-      path_delete(array('source' => 'user/' . $user->uid));
-
+      pathauto_path_delete_all("user/{$user->uid}");
       // They may have enabled these modules and/or feeds when the user was created, so let's try to delete all of them
-      path_delete(array('source' => 'blog/' . $user->uid));
-      path_delete(array('source' => 'blog/' . $user->uid . '/feed'));
-      path_delete(array('source' => 'user/' . $user->uid . '/track'));
-      path_delete(array('source' => 'user/' . $user->uid . '/track/feed'));
-      path_delete(array('source' => 'user/' . $user->uid . '/contact'));
+      pathauto_path_delete_all("blog/{$user->uid}");
       break;
   }
 }
@@ -511,8 +537,7 @@ function pathauto_user_update_alias(stdClass $account, $op) {
       pathauto_create_alias('blog', $op, "blog/{$account->uid}", array('user' => $account));
     }
     else {
-      path_delete(array('source' => "blog/{$account->uid}"));
-      path_delete(array('source' => "blog/{$account->uid}/feed"));
+      pathauto_path_delete_all("blog/{$user->uid}");
     }
   }
 }
