@@ -49,7 +49,7 @@ class PathautoTestHelper extends DrupalWebTestCase {
     $this->assertAlias($uri['path'], $expected_alias, $language);
   }
 
-  function assertNoEntityAlias($entity_type, $entity, $expected_alias, $langauge = LANGAUGE_NONE) {
+  function assertNoEntityAlias($entity_type, $entity, $expected_alias, $language = LANGUAGE_NONE) {
     $uri = entity_uri($entity_type, $entity);
     $this->assertEntityAlias($entity_type, $entity, $uri['path'], $language);
   }
@@ -389,18 +389,23 @@ class PathautoLocaleTestCase extends PathautoFunctionalTestHelper {
       ),
     );
     $node = $this->drupalCreateNode($node);
-    $english_alias = path_load(array('alias' => 'english-node'));
+    $english_alias = path_load(array('alias' => 'english-node', 'language' => 'en'));
+    $this->assertTrue($english_alias, 'Alias created with proper language.');
 
     // Also save a French alias that should not be left alone, even though
     // it is the newer alias.
     $this->saveEntityAlias('node', $node, 'french-node', 'fr');
 
+    // Add an alias with the soon-to-be generated alias, causing the upcoming
+    // alias update to generate a unique alias with the '-0' suffix.
+    $this->saveAlias('node/invalid', 'content/english-node', LANGUAGE_NONE);
+
     // Update the node, triggering a change in the English alias.
     pathauto_node_update_alias($node, 'update');
 
     // Check that the new English alias replaced the old one.
-    $this->assertEntityAlias('node', $node, 'content/english-node', 'en');
+    $this->assertEntityAlias('node', $node, 'content/english-node-0', 'en');
     $this->assertEntityAlias('node', $node, 'french-node', 'fr');
-    $this->assertAliasExists(array('pid' => $english_alias['pid'], 'alias' => 'content/english-node'));
+    $this->assertAliasExists(array('pid' => $english_alias['pid'], 'alias' => 'content/english-node-0'));
   }
 }
