@@ -462,7 +462,13 @@ function _pathauto_set_alias($source, $alias, $pid = NULL, $verbose = FALSE, $ol
 
   // Skip replacing the current alias with an identical alias
   if ($old_alias != $alias) {
-    $path = array('source' => $source, 'alias' => $alias, 'pid' => $pid, 'language' => $language);
+    $path = array(
+      'source' => $source,
+      'alias' => $alias,
+      'pid' => $pid,
+      'language' => $language,
+      'pathauto' => TRUE,
+    );
     path_save($path);
 
     if (variable_get('pathauto_update_action', PATHAUTO_UPDATE_ACTION_DELETE) == PATHAUTO_UPDATE_ACTION_REDIRECT
