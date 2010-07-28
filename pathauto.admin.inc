@@ -15,15 +15,10 @@
  * @see system_settings_form()
  */
 function pathauto_patterns_form($form, $form_state) {
-  _pathauto_include();
-
   // Call the hook on all modules - an array of 'settings' objects is returned
   $all_settings = module_invoke_all('pathauto', 'settings');
-  $modulelist = array();
-  $indexcount = 0;
   foreach ($all_settings as $settings) {
     $module = $settings->module;
-    $modulelist[] = $module;
     $patterndescr = $settings->patterndescr;
     $patterndefault = $settings->patterndefault;
     $groupheader = $settings->groupheader;
@@ -84,22 +79,6 @@ function pathauto_patterns_form($form, $form_state) {
       '#global_types' => FALSE,
     );
 
-    // If the module supports bulk updates, offer the update action here
-    if ($settings->bulkname) {
-      $variable = 'pathauto_' . $module . '_bulkupdate';
-      if (variable_get($variable, FALSE)) {
-        variable_set($variable, FALSE);
-        $function = $module . '_pathauto_bulkupdate';
-        call_user_func($function);
-      }
-      $form[$module][$variable] = array(
-        '#type' => 'checkbox',
-        '#title' => $settings->bulkname,
-        '#default_value' => variable_get($variable, FALSE),
-        '#description' => $settings->bulkdescr,
-      );
-    }
-
     // If the module supports feeds, offer to generate aliases for them
     if ($supportsfeeds) {
       $variable = 'pathauto_' . $module . '_applytofeeds';
@@ -112,17 +91,7 @@ function pathauto_patterns_form($form, $form_state) {
         '#description' => t('The text to use for aliases for RSS feeds. Examples are "0/feed" (used throughout Drupal core) and "feed" (used by some contributed Drupal modules, like Views).'),
       );
     }
-
   }
-
-  if (isset($do_index_bulkupdate) && $do_index_bulkupdate) {
-    drupal_set_message(format_plural($indexcount,
-      'Bulk generation of index aliases completed, one alias generated.',
-      'Bulk generation of index aliases completed, @count aliases generated.'));
-  }
-
-  // Keep track of which modules currently support pathauto
-  variable_set('pathauto_modulelist', $modulelist);
 
   return system_settings_form($form);
 }
@@ -184,17 +153,6 @@ function pathauto_settings_form($form) {
     '#min_value' => 1,
     '#max_value' => $max_length,
     '#description' => t('Maximum text length of any component in the alias (e.g., [title]). 100 is the recommended length. @max is the maximum possible length. See <a href="@pathauto-help">Pathauto help</a> for details.', array('@pathauto-help' => url('admin/help/pathauto'), '@max' => $max_length)),
-    '#element_validate' => array('_pathauto_validate_numeric_element'),
-  );
-
-  $form['pathauto_max_bulk_update'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Maximum number of objects to alias in a bulk update'),
-    '#size' => 4,
-    '#maxlength' => 4,
-    '#default_value' => variable_get('pathauto_max_bulk_update', 50),
-    '#min_value' => 1,
-    '#description' => t('Maximum number of objects of a given type which should be aliased during a bulk update. The default is 50 and the recommended number depends on the speed of your server. If bulk updates "time out" or result in a "white screen" then reduce the number.'),
     '#element_validate' => array('_pathauto_validate_numeric_element'),
   );
 
@@ -313,6 +271,111 @@ function pathauto_settings_form_validate($form, &$form_state) {
         drupal_set_message(t('You have configured the @name to be the separator and to be removed when encountered in strings. This can cause problems with your patterns and especially with the term:path token. You should probably set the action for @name to be "replace by separator".', array('@name' => $details['name'])), 'error');
       }
     }
+  }
+}
+
+/**
+ * Form contructor for path alias bulk update form.
+ *
+ * @see pathauto_bulk_update_form_submit()
+ * @ingroup forms
+ */
+function pathauto_bulk_update_form() {
+  $form['#update_callbacks'] = array();
+
+  $form['update'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t('Select the types of un-aliased paths for which to generate URL aliases'),
+    '#options' => array(),
+    '#default_value' => array(),
+  );
+
+  $pathauto_settings = module_invoke_all('pathauto', 'settings');
+  foreach ($pathauto_settings as $settings) {
+    if (!empty($settings->batch_update_callback)) {
+      $form['#update_callbacks'][$settings->batch_update_callback] = $settings;
+      $form['update']['#options'][$settings->batch_update_callback] = $settings->groupheader;
+    }
+  }
+
+  $form['actions']['#type'] = 'actions';
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Update'),
+  );
+
+  return $form;
+}
+
+/**
+ * Form submit handler for path alias bulk update form.
+ *
+ * @see pathauto_batch_update_form()
+ * @see pathauto_bulk_update_batch_finished()
+ */
+function pathauto_bulk_update_form_submit($form, &$form_state) {
+  $batch = array(
+    'title' => t('Bulk updating URL aliases'),
+    'operations' => array(
+      array('pathauto_bulk_update_batch_start', array()),
+    ),
+    'finished' => 'pathauto_bulk_update_batch_finished',
+    'file' => drupal_get_path('module', 'pathauto') . '/pathauto.admin.inc',
+  );
+
+  foreach ($form_state['values']['update'] as $callback) {
+    if (!empty($callback)) {
+      $settings = $form['#update_callbacks'][$callback];
+      if (!empty($settings->batch_file)) {
+        $batch['operations'][] = array('pathauto_bulk_update_batch_process', array($callback, $settings));
+      }
+      else {
+        $batch['operations'][] = array($callback, array());
+      }
+    }
+  }
+
+  batch_set($batch);
+}
+
+/**
+ * Batch callback; count the current number of URL aliases for comparison later.
+ */
+function pathauto_bulk_update_batch_start(&$context) {
+  $context['results']['count_before'] = db_select('url_alias')->countQuery()->execute()->fetchField();
+}
+
+/**
+ * Common batch processing callback for all operations.
+ *
+ * Required to load our include the proper batch file.
+ */
+function pathauto_bulk_update_batch_process($callback, $settings, &$context) {
+  if (!empty($settings->batch_file)) {
+    require_once DRUPAL_ROOT . '/' . $settings->batch_file;
+  }
+  return $callback($context);
+}
+
+/**
+ * Batch finished callback.
+ */
+function pathauto_bulk_update_batch_finished($success, $results, $operations) {
+  if ($success) {
+    // Count the current number of URL aliases after the batch is completed
+    // and compare to the count before the batch started.
+    $results['count_after'] = db_select('url_alias')->countQuery()->execute()->fetchField();
+    $results['count_changed'] = max($results['count_after'] - $results['count_before'], 0);
+    if ($results['count_changed']) {
+      drupal_set_message(format_plural($results['count_changed'], 'Generated 1 URL alias.', 'Generated @count URL aliases.'));
+    }
+    else {
+      drupal_set_message('No new URL aliases to generate.');
+    }
+  }
+  else {
+    $error_operation = reset($operations);
+    drupal_set_message(t('An error occurred while processing @operation with arguments : @args', array('@operation' => $error_operation[0], '@args' => print_r($error_operation[0], TRUE))));
   }
 }
 

@@ -14,24 +14,18 @@
 function pathauto_install() {
   // Check to see if taxonomy module is enabled before we set those variables
   if (module_exists('taxonomy')) {
-    variable_set('pathauto_modulelist', array('node', 'user', 'taxonomy'));
     variable_set('pathauto_taxonomy_supportsfeeds', '0/feed');
-    variable_set('pathauto_taxonomy_pattern', 'category/[term:vocabulary]/[term:path]');
-    variable_set('pathauto_taxonomy_bulkupdate', FALSE);
+    variable_set('pathauto_taxonomy_pattern', '[term:vocabulary]/[term:path]');
     variable_set('pathauto_taxonomy_applytofeeds', FALSE);
     variable_set('pathauto_taxonomy_2_pattern', '');
     variable_set('pathauto_taxonomy_1_pattern', '');
   }
-  else {
-    // Node and user are required so we don't have to check
-    variable_set('pathauto_modulelist', array('node', 'user'));
-  }
+
   // Set the rest of the pathauto default variables
   variable_set('pathauto_indexaliases', FALSE);
   variable_set('pathauto_indexaliases_bulkupdate', FALSE);
   variable_set('pathauto_max_component_length', '100');
   variable_set('pathauto_max_length', '100');
-  variable_set('pathauto_node_bulkupdate', FALSE);
   variable_set('pathauto_node_forum_pattern', '');
   variable_set('pathauto_node_image_pattern', '');
   variable_set('pathauto_node_page_pattern', '');
@@ -40,7 +34,6 @@ function pathauto_install() {
   variable_set('pathauto_punctuation_quotes', 0);
   variable_set('pathauto_separator', '-');
   variable_set('pathauto_update_action', '2');
-  variable_set('pathauto_user_bulkupdate', FALSE);
   variable_set('pathauto_user_pattern', 'users/[user:name]');
   variable_set('pathauto_user_supportsfeeds', NULL);
   variable_set('pathauto_verbose', FALSE);
@@ -122,6 +115,19 @@ function pathauto_update_6200() {
   variable_del('pathauto_tracker_pattern');
   variable_del('pathauto_tracker_supportsfeeds');
   variable_del('pathauto_tracker_applytofeeds');
+}
+
+/**
+ * Remove obsolete variable since batch API is now used.
+ */
+function pathauto_update_7000() {
+  variable_del('pathauto_max_bulk_update');
+  variable_del('pathauto_node_bulkupdate');
+  variable_del('pathauto_taxonomy_bulkupdate');
+  variable_del('pathauto_forum_bulkupdate');
+  variable_del('pathauto_user_bulkupdate');
+  variable_del('pathauto_blog_bulkupdate');
+  variable_del('pathauto_modulelist');
 }
 
 /**
