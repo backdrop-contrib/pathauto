@@ -510,47 +510,18 @@ function pathauto_taxonomy_term_update_alias_multiple(array $tids, $op, array $o
  * Implements hook_user_insert().
  */
 function pathauto_user_insert(&$edit, $account, $category) {
-  _pathauto_user_insert_update($edit, $account, $category, 'insert');
+  pathauto_user_update_alias($account, 'insert');
 }
 
 /**
  * Implements hook_user_update().
  */
 function pathauto_user_update(&$edit, $account, $category) {
-  _pathauto_user_insert_update($edit, $account, $category, 'update');
+  pathauto_user_update_alias($account, 'update');
 }
 
 /**
- * Internal helper for user insert/update duplicate functionality.
- *
- * @todo Clean or remove this function in favor of pathauto_user_update_alias().
- */
-function _pathauto_user_insert_update(&$edit, $account, $category, $op) {
-  // Use the username to automatically create an alias
-  $pathauto_user = (object) array_merge((array) $account, $edit);
-  if ($pathauto_user->name) {
-    module_load_include('inc', 'pathauto');
-    $uri = entity_uri('user', $pathauto_user);
-    $alias = pathauto_create_alias('user', $op, $uri['path'], array('user' => $pathauto_user));
-
-    if (module_exists('blog')) {
-      $new_user = clone $pathauto_user;
-      if ($category == 'account') {
-        $new_user->roles = isset($edit['roles']) ? $edit['roles'] : array();
-        $new_user->roles[DRUPAL_AUTHENTICATED_RID] = t('authenticated user'); // Add this back
-      }
-      if (node_access('create', 'blog', $new_user)) {
-        $alias = pathauto_create_alias('blog', $op, "blog/{$new_user->uid}", array('user' => $new_user));
-      }
-      else {
-        pathauto_path_delete_all("blog/{$user->uid}");
-      }
-    }
-  }
-}
-
-/**
- * Implements hook_user_delete().
+ * Implements hook_user_cancel().
  */
 function pathauto_user_cancel($edit, $account, $method) {
   switch ($method) {
@@ -558,14 +529,11 @@ function pathauto_user_cancel($edit, $account, $method) {
     case 'user_cancel_block_unpublish':
       // Don't remove aliases because the user may become active again later.
       break;
-
     case 'user_cancel_reassign':
     case 'user_cancel_delete':
-      // Remove the users's path aliases
-      $user = (object) $account;
-      pathauto_entity_path_delete_all('user', $user, "user/{$user->uid}");
-      // They may have enabled these modules and/or feeds when the user was created, so let's try to delete all of them
-      pathauto_path_delete_all("blog/{$user->uid}");
+      // Do remove aliases since the account will be deleted.
+      pathauto_entity_path_delete_all('user', $account, "user/{$account->uid}");
+      pathauto_path_delete_all("blog/{$account->uid}");
       break;
   }
 }
