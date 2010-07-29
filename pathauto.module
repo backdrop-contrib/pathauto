@@ -421,7 +421,7 @@ function pathauto_node_update_alias_multiple(array $nids, $op, array $options = 
  * Implements hook_taxonomy_term_insert().
  */
 function pathauto_taxonomy_term_insert($term) {
-  _pathauto_taxonomy_term_insert_update($term, 'insert');
+  pathauto_taxonomy_term_update_alias($term, 'insert');
 }
 
 /**
