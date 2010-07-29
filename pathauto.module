@@ -309,9 +309,9 @@ function pathauto_form_alter(&$form, &$form_state, $form_id) {
           // then keep the automatic alias enabled.
           module_load_include('inc', 'pathauto');
           $uri = entity_uri('node', $node);
-          $path = path_load(array('source' => $uri['path']));
+          $path = drupal_get_path_alias($uri['path'], $language);
           $pathauto_alias = pathauto_create_alias('node', 'return', $uri['path'], array('node' => $node), $node->type, $node->language);
-          $node->pathauto_perform_alias = !empty($path['alias']) && $path['alias'] == $pathauto_alias;
+          $node->pathauto_perform_alias = $path != $uri['path'] && $path == $pathauto_alias;
         }
         else {
           // If this is a new node, enable the automatic alias.

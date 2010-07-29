@@ -108,7 +108,7 @@ function pathauto_settings_form($form) {
   $form['pathauto_verbose'] = array(
     '#type' => 'checkbox',
     '#title' => t('Verbose'),
-    '#default_value' => FALSE,
+    '#default_value' => variable_get('pathauto_verbose', FALSE),
     '#description' => t('Display alias changes (except during bulk updates).'),
   );
 

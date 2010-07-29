@@ -350,10 +350,9 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
   $alias = pathauto_clean_alias($alias);
 
   // Shorten to a logical place based on the last separator.
+  // Make sure we're not ending the alias in the middle of a word.
   $separator = variable_get('pathauto_separator', '-');
   $maxlength = min(variable_get('pathauto_max_length', 100), _pathauto_get_schema_alias_maxlength());
-
-  // Make sure we're not ending the alias in the middle of a word.
   $alias = truncate_utf8($alias, $maxlength, TRUE);
 
   // If the alias already exists, generate a new, hopefully unique, variant
