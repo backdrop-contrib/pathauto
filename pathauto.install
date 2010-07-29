@@ -9,38 +9,18 @@
  */
 
 /**
- * Implement hook_install().
+ * Implements hook_install().
  */
 function pathauto_install() {
-  // Check to see if taxonomy module is enabled before we set those variables
-  if (module_exists('taxonomy')) {
-    variable_set('pathauto_taxonomy_supportsfeeds', '0/feed');
-    variable_set('pathauto_taxonomy_pattern', '[term:vocabulary]/[term:path]');
-    variable_set('pathauto_taxonomy_applytofeeds', FALSE);
-    variable_set('pathauto_taxonomy_2_pattern', '');
-    variable_set('pathauto_taxonomy_1_pattern', '');
-  }
-
-  // Set the rest of the pathauto default variables
-  variable_set('pathauto_indexaliases', FALSE);
-  variable_set('pathauto_indexaliases_bulkupdate', FALSE);
-  variable_set('pathauto_max_component_length', '100');
-  variable_set('pathauto_max_length', '100');
-  variable_set('pathauto_node_forum_pattern', '');
-  variable_set('pathauto_node_image_pattern', '');
-  variable_set('pathauto_node_page_pattern', '');
+  // Set some default variables necessary for the module to perform.
   variable_set('pathauto_node_pattern', 'content/[node:title]');
-  variable_set('pathauto_node_story_pattern', '');
-  variable_set('pathauto_punctuation_quotes', 0);
-  variable_set('pathauto_separator', '-');
-  variable_set('pathauto_update_action', '2');
+  variable_set('pathauto_taxonomy_pattern', '[term:vocabulary]/[term:name]');
+  variable_set('pathauto_forum_pattern', '[term:vocabulary]/[term:name]');
   variable_set('pathauto_user_pattern', 'users/[user:name]');
-  variable_set('pathauto_user_supportsfeeds', NULL);
-  variable_set('pathauto_verbose', FALSE);
-  variable_set('pathauto_node_applytofeeds', '');
+  variable_set('pathauto_blog_pattern', 'blogs/[user:name]');
 
-  // Make sure we "replace hyphen with separator" by default
-  variable_set('pathauto_punctuation_hyphen', 1); // 1 is replace
+  // Set the default separator character to replace instead of remove (default).
+  variable_set('pathauto_punctuation_hyphen', 1);
 
   // Set the weight to 1
   db_update('system')
@@ -48,13 +28,10 @@ function pathauto_install() {
     ->condition('type', 'module')
     ->condition('name', 'pathauto')
     ->execute();
-
-  // Clear the cache to get these to take effect.
-  cache_clear_all();
 }
 
 /**
- * Implement hook_uninstall().
+ * Implements hook_uninstall().
  */
 function pathauto_uninstall() {
   // Delete all the pathauto variables and then clear the variable cache
@@ -118,7 +95,13 @@ function pathauto_update_6200() {
 }
 
 /**
- * Remove obsolete variable since batch API is now used.
+ * Empty update since it is handled by pathauto_update_7000().
+ */
+function pathauto_update_6201() {
+}
+
+/**
+ * Remove obsolete variables since batch API is now used.
  */
 function pathauto_update_7000() {
   variable_del('pathauto_max_bulk_update');
@@ -128,6 +111,20 @@ function pathauto_update_7000() {
   variable_del('pathauto_user_bulkupdate');
   variable_del('pathauto_blog_bulkupdate');
   variable_del('pathauto_modulelist');
+  variable_del('pathauto_indexaliases');
+  variable_del('pathauto_indexaliases_bulkupdate');
+}
+
+/**
+ * Taxonomy and forum feed suffixes changed from '0\/feed' to 'feed'.
+ */
+function pathauto_update_7001() {
+  if (variable_get('pathauto_taxonomy_applytofeeds', '') == '0/feed') {
+    variable_set('pathauto_taxonomy_applytofeeds', 'feed');
+  }
+  if (variable_get('pathauto_forum_applytofeeds', '') == '0/feed') {
+    variable_set('pathauto_forum_applytofeeds', 'feed');
+  }
 }
 
 /**
@@ -135,8 +132,8 @@ function pathauto_update_7000() {
  */
 function _pathauto_upgrade_token_list() {
   $tokens = array(
-    'catpath' => 'node:term-lowest:parent:path][node:term-lowest',
-    'catalias' => 'node:term-lowest:path',
+    //'catpath' => 'node:term-lowest:parent:path][node:term-lowest',
+    //'catalias' => 'node:term-lowest:path',
     'termpath' => 'term:parent:path][term:name',
     'termalias' => 'term:path',
     'bookpathalias' => 'node:book:parent:path',
