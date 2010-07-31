@@ -246,6 +246,19 @@ class PathautoUnitTestCase extends PathautoTestHelper {
     pathauto_node_update_alias($node, 'bulkupdate');
     $this->assertEntityAlias('node', $node, 'content/sixth-title');
   }
+
+  /**
+   * Test that pathauto_create_alias() will not create an alias for a pattern
+   * that does not get any tokens replaced.
+   */
+  function testNoTokensNoAlias() {
+    $node = $this->drupalCreateNode(array('title' => ''));
+    $this->assertNoEntityAliasExists('node', $node);
+
+    $node->title = 'hello';
+    pathauto_node_update($node);
+    $this->assertEntityAlias('node', $node, 'content/hello');
+  }
 }
 
 /**
@@ -416,9 +429,17 @@ class PathautoFunctionalTestCase extends PathautoFunctionalTestHelper {
   function testPatternsValidation() {
     $edit = array();
     $edit['pathauto_node_pattern'] = '[node:title]/[user:name]/[term:name]';
+    $edit['pathauto_node_page_pattern'] = 'page';
     $this->drupalPost('admin/config/search/path/patterns', $edit, 'Save configuration');
     $this->assertText('The Default path pattern (applies to all node types with blank patterns below) is using the following invalid tokens: [user:name], [term:name].');
+    $this->assertText('The Pattern for all Basic page paths should contain at least one token to ensure unique URL aliases are created.');
     $this->assertNoText('The configuration options have been saved.');
+
+    $edit['pathauto_node_pattern'] = '[node:title]';
+    $edit['pathauto_node_page_pattern'] = 'page/[node:title]';
+    $edit['pathauto_node_article_pattern'] = '';
+    $this->drupalPost('admin/config/search/path/patterns', $edit, 'Save configuration');
+    $this->assertText('The configuration options have been saved.');
   }
 }
 
