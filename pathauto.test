@@ -51,7 +51,7 @@ class PathautoTestHelper extends DrupalWebTestCase {
 
   function assertEntityAliasExists($entity_type, $entity) {
     $uri = entity_uri($entity_type, $entity);
-    $this->assertAliasExists(array('source' => $uri['path']));
+    return $this->assertAliasExists(array('source' => $uri['path']));
   }
 
   function assertNoEntityAlias($entity_type, $entity, $language = LANGUAGE_NONE) {
@@ -71,8 +71,9 @@ class PathautoTestHelper extends DrupalWebTestCase {
   }
 
   function assertAliasExists($conditions) {
-    $alias = path_load($conditions);
-    $this->assertTrue($alias, t('Alias with conditions @conditions found.', array('@conditions' => var_export($conditions, TRUE))));
+    $path = path_load($conditions);
+    $this->assertTrue($path, t('Alias with conditions @conditions found.', array('@conditions' => var_export($conditions, TRUE))));
+    return $path;
   }
 
   function assertNoAliasExists($conditions) {
@@ -170,13 +171,13 @@ class PathautoUnitTestCase extends PathautoTestHelper {
 
     // Add a title to the node. This should still not generate a feed alias.
     $node->title = 'Node title';
-    pathauto_node_update_alias($node, 'update');
+    pathauto_node_update($node);
     $this->assertAliasExists(array('source' => "node/{$node->nid}", 'alias' => 'node-title'));
     $this->assertNoAliasExists(array('source' => "node/{$node->nid}/feed"));
 
     // Enable feeds for nodes. A feed alias should now be generated.
     variable_set('pathauto_node_applytofeeds', ' feed ');
-    pathauto_node_update_alias($node, 'update');
+    pathauto_node_update($node);
     $this->assertAliasExists(array('source' => "node/{$node->nid}/feed", 'alias' => 'node-title/feed'));
   }
 
@@ -194,6 +195,56 @@ class PathautoUnitTestCase extends PathautoTestHelper {
     $this->assertNoAliasExists(array('source' => "node/1"));
     $this->assertNoAliasExists(array('source' => "node/1/view"));
     $this->assertAliasExists(array('source' => "node/2"));
+  }
+
+  /**
+   * Test the different update actions in pathauto_create_alias().
+   */
+  function testUpdateActions() {
+    // Test PATHAUTO_UPDATE_ACTION_NO_NEW with unaliased node and 'insert'.
+    variable_set('pathauto_update_action', PATHAUTO_UPDATE_ACTION_NO_NEW);
+    $node = $this->drupalCreateNode(array('title' => 'First title'));
+    $this->assertEntityAlias('node', $node, 'content/first-title');
+
+    // Default action is PATHAUTO_UPDATE_ACTION_DELETE.
+    variable_set('pathauto_update_action', PATHAUTO_UPDATE_ACTION_DELETE);
+    $node->title = 'Second title';
+    pathauto_node_update($node);
+    $this->assertEntityAlias('node', $node, 'content/second-title');
+    $this->assertNoAliasExists(array('alias' => 'content/first-title'));
+
+    // Test PATHAUTO_UPDATE_ACTION_LEAVE
+    variable_set('pathauto_update_action', PATHAUTO_UPDATE_ACTION_LEAVE);
+    $node->title = 'Third title';
+    pathauto_node_update($node);
+    $this->assertEntityAlias('node', $node, 'content/third-title');
+    $this->assertAliasExists(array('source' => "node/{$node->nid}", 'alias' => 'content/second-title'));
+
+    variable_set('pathauto_update_action', PATHAUTO_UPDATE_ACTION_DELETE);
+    $node->title = 'Fourth title';
+    pathauto_node_update($node);
+    $this->assertEntityAlias('node', $node, 'content/fourth-title');
+    $this->assertNoAliasExists(array('alias' => 'content/third-title'));
+    // The older second alias is not deleted yet.
+    $older_path = $this->assertAliasExists(array('source' => "node/{$node->nid}", 'alias' => 'content/second-title'));
+    path_delete($older_path);
+
+    variable_set('pathauto_update_action', PATHAUTO_UPDATE_ACTION_NO_NEW);
+    $node->title = 'Fifth title';
+    pathauto_node_update($node);
+    $this->assertEntityAlias('node', $node, 'content/fourth-title');
+    $this->assertNoAliasExists(array('alias' => 'content/fith-title'));
+
+    // Test PATHAUTO_UPDATE_ACTION_NO_NEW with unaliased node and 'update'.
+    $this->deleteAllAliases();
+    pathauto_node_update($node);
+    $this->assertEntityAlias('node', $node, 'content/fifth-title');
+
+    // Test PATHAUTO_UPDATE_ACTION_NO_NEW with unaliased node and 'bulkupdate'.
+    $this->deleteAllAliases();
+    $node->title = 'Sixth title';
+    pathauto_node_update_alias($node, 'bulkupdate');
+    $this->assertEntityAlias('node', $node, 'content/sixth-title');
   }
 }
 
@@ -416,7 +467,7 @@ class PathautoLocaleTestCase extends PathautoFunctionalTestHelper {
     $this->saveAlias('node/invalid', 'content/english-node', LANGUAGE_NONE);
 
     // Update the node, triggering a change in the English alias.
-    pathauto_node_update_alias($node, 'update');
+    pathauto_node_update($node);
 
     // Check that the new English alias replaced the old one.
     $this->assertEntityAlias('node', $node, 'content/english-node-0', 'en');
