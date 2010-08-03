@@ -428,11 +428,6 @@ function pathauto_taxonomy_term_insert($term) {
  * Implements hook_taxonomy_term_update().
  */
 function pathauto_taxonomy_term_update($term) {
-  // Clear the taxonomy static cache.
-  taxonomy_terms_static_reset();
-  // @todo Remove when http://drupal.org/node/826334 is fixed.
-  drupal_static_reset('taxonomy_get_parents_all');
-
   pathauto_taxonomy_term_update_alias($term, 'update', array('alias children' => TRUE));
 }
 
