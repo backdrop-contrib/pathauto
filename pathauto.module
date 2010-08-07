@@ -452,18 +452,29 @@ function pathauto_taxonomy_term_update_alias(stdClass $term, $op, array $options
   $options += array('alias children' => FALSE);
 
   $module = 'taxonomy';
-  if (module_exists('forum') && $term->vid == variable_get('forum_nav_vocabulary', '')) {
-    $module = 'forum';
+  if ($term->vid == variable_get('forum_nav_vocabulary', '')) {
+    if (module_exists('forum')) {
+      $module = 'forum';
+    }
+    else {
+      return;
+    }
+  }
+
+  // Check that the term has its bundle, which is the vocabulary's machine name.
+  if (!isset($term->vocabulary_machine_name)) {
+    $vocabulary = taxonomy_vocabulary_load($term->vid);
+    $term->vocabulary_machine_name = $vocabulary->machine_name;
   }
 
   // Skip processing if the term has no pattern.
-  if (!pathauto_pattern_load_by_entity($module, $term->vid)) {
+  if (!pathauto_pattern_load_by_entity($module, $term->vocabulary_machine_name)) {
     return;
   }
 
   module_load_include('inc', 'pathauto');
   $uri = entity_uri('taxonomy_term', $term);
-  pathauto_create_alias($module, $op, $uri['path'], array('term' => $term), $term->vid);
+  pathauto_create_alias($module, $op, $uri['path'], array('term' => $term), $term->vocabulary_machine_name);
 
   if (!empty($options['alias children'])) {
     // For all children generate new alias.

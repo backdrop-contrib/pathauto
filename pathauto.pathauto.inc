@@ -142,15 +142,14 @@ function taxonomy_pathauto($op) {
       $settings['batch_file'] = drupal_get_path('module', 'pathauto') . '/pathauto.pathauto.inc';
 
       $vocabularies = taxonomy_get_vocabularies();
-      if (sizeof($vocabularies) > 0) {
+      if (count($vocabularies)) {
         $settings['patternitems'] = array();
-        $forum_vid = variable_get('forum_nav_vocabulary', '');
-        foreach ($vocabularies as $vocab) {
-          if ($vocab->vid != $forum_vid) {
-            $vocabname = $vocab->name;
-            $fieldlabel = t('Pattern for all %vocab-name paths', array('%vocab-name' => $vocabname));
-            $settings['patternitems'][$vocab->vid] = $fieldlabel;
+        foreach ($vocabularies as $vid => $vocabulary) {
+          if ($vid == variable_get('forum_nav_vocabulary', '')) {
+            // Skip the forum vocabulary.
+            continue;
           }
+          $settings['patternitems'][$vocabulary->machine_name] = t('Pattern for all %vocab-name paths', array('%vocab-name' => $vocabulary->name));
         }
       }
       return (object) $settings;

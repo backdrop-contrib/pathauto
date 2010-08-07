@@ -128,6 +128,25 @@ function pathauto_update_7001() {
 }
 
 /**
+ * Update pathauto_taxonomy_[vid]_pattern variables to pathauto_taxonomy_[machinename]_pattern.
+ */
+function pathauto_update_7002() {
+  if (module_exists('taxonomy')) {
+    $vocabularies = taxonomy_get_vocabularies();
+    foreach ($vocabularies as $vid => $vocabulary) {
+      if ($vid == variable_get('forum_nav_vocabulary', '')) {
+        // Skip the forum vocabulary.
+        continue;
+      }
+      if ($pattern = variable_get('pathauto_taxonomy_' . $vid . '_pattern')) {
+        variable_set('pathauto_taxonomy_' . $vocabulary->machine_name . '_pattern', $pattern);
+      }
+      variable_del('pathauto_taxonomy_' . $vid . '_pattern');
+    }
+  }
+}
+
+/**
  * Build a list of Drupal 6 tokens and their Drupal 7 token names.
  */
 function _pathauto_upgrade_token_list() {
