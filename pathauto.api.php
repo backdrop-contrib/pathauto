@@ -15,8 +15,5 @@ function hook_path_alias_types() {
 function hook_pathauto($op) {
 }
 
-function hook_pathauto_bulkupdate() {
-}
-
-function hook_pathauto_clean_alias($output) {
+function hook_pathauto_alias_alter(&$alias, array $context) {
 }

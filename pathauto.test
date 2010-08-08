@@ -85,6 +85,29 @@ class PathautoTestHelper extends DrupalWebTestCase {
     db_delete('url_alias')->execute();
     drupal_clear_path_cache();
   }
+
+  function addVocabulary(array $vocabulary = array()) {
+    $name = drupal_strtolower($this->randomName(5));
+    $vocabulary += array(
+      'name' => $name,
+      'machine_name' => $name,
+      'nodes' => array('article' => 'article'),
+    );
+    $vocabulary = (object) $vocabulary;
+    taxonomy_vocabulary_save($vocabulary);
+    return $vocabulary;
+  }
+
+  function addTerm(stdClass $vocabulary, array $term = array()) {
+    $term += array(
+      'name' => drupal_strtolower($this->randomName(5)),
+      'vocabulary_machine_name' => $vocabulary->machine_name,
+      'vid' => $vocabulary->vid,
+    );
+    $term = (object) $term;
+    taxonomy_term_save($term);
+    return $term;
+  }
 }
 
 /**
@@ -259,6 +282,24 @@ class PathautoUnitTestCase extends PathautoTestHelper {
     pathauto_node_update($node);
     $this->assertEntityAlias('node', $node, 'content/hello');
   }
+
+  /**
+   * Test the handling of path vs non-path tokens in pathauto_clean_token_values().
+   */
+  function testPathTokens() {
+    variable_set('pathauto_taxonomy_pattern', '[term:parent:path]/[term:name]');
+    $vocab = $this->addVocabulary();
+
+    $term1 = $this->addTerm($vocab, array('name' => 'Parent term'));
+    $this->assertEntityAlias('taxonomy_term', $term1, 'parent-term');
+
+    $term2 = $this->addTerm($vocab, array('name' => 'Child term', 'parent' => $term1->tid));
+    $this->assertEntityAlias('taxonomy_term', $term2, 'parent-term/child-term');
+
+    $this->saveEntityAlias('taxonomy_term', $term1, 'My Crazy/Alias/');
+    pathauto_taxonomy_term_update($term2);
+    $this->assertEntityAlias('taxonomy_term', $term2, 'My Crazy/Alias/child-term');
+  }
 }
 
 /**
@@ -364,7 +405,7 @@ class PathautoFunctionalTestCase extends PathautoFunctionalTestHelper {
     $node2 = $this->drupalCreateNode(array('title' => 'node2'));
 
     // Delete all current URL aliases.
-    db_delete('url_alias')->execute();
+    $this->deleteAllAliases();
 
     $edit = array(
       'operation' => 'pathauto_update_alias',
@@ -384,7 +425,7 @@ class PathautoFunctionalTestCase extends PathautoFunctionalTestHelper {
     $account = $this->drupalCreateUser();
 
     // Delete all current URL aliases.
-    db_delete('url_alias')->execute();
+    $this->deleteAllAliases();
 
     $edit = array(
       'operation' => 'pathauto_update_alias',

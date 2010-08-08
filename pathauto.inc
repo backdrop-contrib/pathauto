@@ -113,18 +113,28 @@ function _pathauto_existing_alias_data($source, $language = LANGUAGE_NONE) {
 }
 
 /**
- * Clean up a string value provided by a module.
+ * Clean up a string segment to be used in an URL alias.
  *
- * Resulting string contains only alphanumerics and separators.
+ * Peforms the following possible alterations:
+ * - Process the string through the transliteration module.
+ * - Replace or remove punctuation with the separator character.
+ * - Remove back-slashes.
+ * - Replace non-ascii and non-numeric characters with the separator.
+ * - Remove common words.
+ * - Replace whitespace with the separator character.
+ * - Trim duplicate, leading, and trailing separators.
+ * - Convert to lower-case.
+ * - Shorten to a desired length and logical position based on word boundries.
+ *
+ * This function should *not* be called on URL alias or path strings because it
+ * is assumed that they are already clean.
  *
  * @param $string
  *   A string to clean.
- * @param $clean_slash
- *   Whether to clean slashes from the given string.
  * @return
  *   The cleaned string.
  */
-function pathauto_cleanstring($string, $clean_slash = TRUE) {
+function pathauto_cleanstring($string) {
   $output = $string;
 
   // Optionally transliterate (by running through the Transliteration module)
@@ -148,14 +158,13 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
     }
   }
 
-  // If something is already urlsafe then don't remove slashes
-  if ($clean_slash) {
-    $output = str_replace('/', '', $output);
-  }
+  // Remove slashes.
+  // @todo Merge into punctuation replacement.
+  $output = str_replace('/', '', $output);
 
   // Reduce strings to letters and numbers
   if (variable_get('pathauto_reduce_ascii', FALSE)) {
-    $pattern = '/[^a-zA-Z0-9\/]+/ ';
+    $pattern = '/[^a-zA-Z0-9\/]+/';
     $output = preg_replace($pattern, $separator, $output);
   }
 
@@ -186,9 +195,14 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
   $output = preg_replace('/\s+/', $separator, $output);
 
   // Trim duplicates and remove trailing and leading separators.
-  $output = _pathauto_clean_separators($output, $separator);
+  $output = _pathauto_clean_separators($output);
 
-  // Enforce the maximum component length
+  // Optionally convert to lower case.
+  if (variable_get('pathauto_case', PATHAUTO_CASE_LOWER)) {
+    $output = drupal_strtolower($output);
+  }
+
+  // Shorten to a logical place based on word boundries.
   $maxlength = min(variable_get('pathauto_max_component_length', 100), _pathauto_get_schema_alias_maxlength());
   $output = truncate_utf8($output, $maxlength, TRUE);
 
@@ -196,9 +210,7 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
 }
 
 /**
- * Clean path separators from a given string.
- *
- * Trims duplicates and strips leading and trailing separators.
+ * Trims duplicate, leading, and trailing separators from a string.
  *
  * @param $string
  *   The string to clean path separators from.
@@ -213,8 +225,12 @@ function pathauto_cleanstring($string, $clean_slash = TRUE) {
 function _pathauto_clean_separators($string, $separator = NULL) {
   $output = $string;
 
+  if (!isset($separator)) {
+    $separator = variable_get('pathauto_separator', '-');
+  }
+
   // Clean duplicate or trailing separators.
-  if (isset($separator) && strlen($separator)) {
+  if (strlen($separator)) {
     // Escape the separator.
     $seppattern = preg_quote($separator, '/');
 
@@ -222,45 +238,42 @@ function _pathauto_clean_separators($string, $separator = NULL) {
     $output = preg_replace("/^$seppattern+|$seppattern+$/", '', $output);
 
     // Replace trailing separators around slashes.
-    $output = preg_replace("/$seppattern+\/|\/$seppattern+/", "/", $output);
+    if ($separator !== '/') {
+      $output = preg_replace("/$seppattern+\/|\/$seppattern+/", "/", $output);
+    }
 
     // Replace multiple separators with a single one.
     $output = preg_replace("/$seppattern+/", $separator, $output);
-  }
-
-  // Optionally convert to lower case.
-  if (variable_get('pathauto_case', PATHAUTO_CASE_LOWER)) {
-    $output = drupal_strtolower($output);
   }
 
   return $output;
 }
 
 /**
- * Clean up an alias.
+ * Clean up an URL alias.
  *
- * This strips leading and trailing separators from the alias, and invokes
- * hook_pathauto_clean_alias() for other modules to have their chance.
+ * Peforms the following alterations:
+ * - Trim duplicate, leading, and trailing back-slashes.
+ * - Trim duplicate, leading, and trailing separators.
+ * - Shorten to a desired length and logical position based on word boundries.
  *
  * @param $alias
- *   A path alias to clean.
- * @param $clean_slash
- *   Whether to clean slashes from the alias..
+ *   A string with the URL alias to clean up.
  * @return
- *   The cleaned alias.
+ *   The cleaned URL alias.
  */
 function pathauto_clean_alias($alias) {
   $output = $alias;
-  $separator = variable_get('pathauto_separator', '-');
 
-  // Trim duplicates and remove trailing and leading separators.
-  $output = _pathauto_clean_separators($output, $separator);
+  // Trim duplicate, leading, and trailing back-slashes.
+  $output = _pathauto_clean_separators($output, '/');
 
-  // Give other modules a chance to clean this alias.
-  foreach (module_implements('pathauto_clean_alias') as $module) {
-    $function = $module .'_pathauto_clean_alias';
-    $output = $function($output);
-  }
+  // Trim duplicate, leading, and trailing separators.
+  $output = _pathauto_clean_separators($output);
+
+  // Shorten to a logical place based on word boundries.
+  $maxlength = min(variable_get('pathauto_max_length', 100), _pathauto_get_schema_alias_maxlength());
+  $output = truncate_utf8($output, $maxlength, TRUE);
 
   return $output;
 }
@@ -337,20 +350,19 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
     return '';
   }
 
-  // Two or more slashes should be collapsed into one
-  $alias = preg_replace('/\/+/', '/', $alias);
-
-  // Trim any leading or trailing slashes
-  $alias = preg_replace('/^\/|\/+$/', '', $alias);
-
-  // Clean the alias.
   $alias = pathauto_clean_alias($alias);
 
-  // Shorten to a logical place based on the last separator.
-  // Make sure we're not ending the alias in the middle of a word.
-  $separator = variable_get('pathauto_separator', '-');
-  $maxlength = min(variable_get('pathauto_max_length', 100), _pathauto_get_schema_alias_maxlength());
-  $alias = truncate_utf8($alias, $maxlength, TRUE);
+  // Allow other modules to alter the alias.
+  $context = array(
+    'module' => $module,
+    'op' => $op,
+    'source' => $source,
+    'data' => $data,
+    'type' => $type,
+    'language' => $language,
+    'pattern' => $pattern,
+  );
+  drupal_alter('pathauto_alias', $alias, $context);
 
   // If we have arrived at an empty string, discontinue.
   if (!drupal_strlen($alias)) {
@@ -359,12 +371,18 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
 
   // If the alias already exists, generate a new, hopefully unique, variant
   if (_pathauto_alias_exists($alias, $source, $language)) {
+    $maxlength = min(variable_get('pathauto_max_length', 100), _pathauto_get_schema_alias_maxlength());
+    $separator = variable_get('pathauto_separator', '-');
     $original_alias = $alias;
-    for ($i = 0; _pathauto_alias_exists(drupal_substr($alias, 0, $maxlength - strlen($i)) . $separator . $i, $source, $language); $i++) {
-    }
-    // Make room for the sequence number
-    $alias = drupal_substr($alias, 0, $maxlength - drupal_strlen($i));
-    $alias = $alias . $separator . $i;
+
+    $i = 0;
+    do {
+      // Append an incrementing numeric suffix until we find a unique alias.
+      $unique_suffix = $separator . $i;
+      $alias = truncate_utf8($original_alias, $maxlength - drupal_strlen($unique_suffix, TRUE)) . $unique_suffix;
+      $i++;
+    } while (_pathauto_alias_exists($alias, $source, $language));
+
     // If verbose is on, alert the user why this happened
     if ($verbose) {
       drupal_set_message(t('The automatically generated alias %original_alias conflicted with an existing alias. Alias changed to %alias.',
@@ -511,25 +529,22 @@ function _pathauto_set_alias(array $path, $existing_alias = NULL, $verbose = FAL
 }
 
 /**
-* Clean tokens so they are URL friendly.
-*
-* @param $replacements
-*   An array of token replacements that need to be "cleaned" for use in the URL.
-* @param $data
-*   An array of objects used to generate the replacements.
-* @param $options
-*   An array of options used to generate the replacements.
-*/
+ * Clean tokens so they are URL friendly.
+ *
+ * @param $replacements
+ *   An array of token replacements that need to be "cleaned" for use in the URL.
+ * @param $data
+ *   An array of objects used to generate the replacements.
+ * @param $options
+ *   An array of options used to generate the replacements.
+ */
 function pathauto_clean_token_values(&$replacements, $data = array(), $options = array()) {
- foreach ($replacements as $token => $value) {
-   // If it's a "path" or "url friendly" token don't remove the "/" character
-   if (drupal_substr($token, -5, 4) === 'path' || drupal_substr($token, -6, 5) === 'alias') {
-     $replacements[$token] = pathauto_cleanstring($value, FALSE);
-   }
-   else {
-     $replacements[$token] = pathauto_cleanstring($value);
-   }
- }
+  foreach ($replacements as $token => $value) {
+    // Only clean non-path tokens.
+    if (!preg_match('/(path|alias|url|url-brief)\]$/', $token)) {
+      $replacements[$token] = pathauto_cleanstring($value);
+    }
+  }
 }
 
 /**
