@@ -589,7 +589,7 @@ function pathauto_punctuation_chars() {
     $punctuation['question_mark']      = array('value' => '?', 'name' => t('Question mark ?'));
     $punctuation['less_than']          = array('value' => '<', 'name' => t('Less than <'));
     $punctuation['greater_than']       = array('value' => '>', 'name' => t('Greater than >'));
-    $punctuation['slash']              = array('value' => '\/', 'name' => t('Slash /'));
+    $punctuation['slash']              = array('value' => '/', 'name' => t('Slash /'));
     $punctuation['back_slash']         = array('value' => '\\', 'name' => t('Backslash \\'));
   }
 
