@@ -631,6 +631,6 @@ function pathauto_blog_update_alias(stdClass $account, $op, array $options = arr
     pathauto_create_alias('blog', $op, "blog/{$account->uid}", array('user' => $account));
   }
   else {
-    pathauto_path_delete_all("blog/{$user->uid}");
+    pathauto_path_delete_all("blog/{$account->uid}");
   }
 }
