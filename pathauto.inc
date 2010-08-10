@@ -115,7 +115,7 @@ function _pathauto_existing_alias_data($source, $language = LANGUAGE_NONE) {
 /**
  * Clean up a string segment to be used in an URL alias.
  *
- * Peforms the following possible alterations:
+ * Performs the following possible alterations:
  * - Process the string through the transliteration module.
  * - Replace or remove punctuation with the separator character.
  * - Remove back-slashes.
@@ -124,7 +124,7 @@ function _pathauto_existing_alias_data($source, $language = LANGUAGE_NONE) {
  * - Replace whitespace with the separator character.
  * - Trim duplicate, leading, and trailing separators.
  * - Convert to lower-case.
- * - Shorten to a desired length and logical position based on word boundries.
+ * - Shorten to a desired length and logical position based on word boundaries.
  *
  * This function should *not* be called on URL alias or path strings because it
  * is assumed that they are already clean.
@@ -198,7 +198,7 @@ function pathauto_cleanstring($string) {
     $output = drupal_strtolower($output);
   }
 
-  // Shorten to a logical place based on word boundries.
+  // Shorten to a logical place based on word boundaries.
   $maxlength = min(variable_get('pathauto_max_component_length', 100), _pathauto_get_schema_alias_maxlength());
   $output = truncate_utf8($output, $maxlength, TRUE);
 
@@ -248,10 +248,10 @@ function _pathauto_clean_separators($string, $separator = NULL) {
 /**
  * Clean up an URL alias.
  *
- * Peforms the following alterations:
+ * Performs the following alterations:
  * - Trim duplicate, leading, and trailing back-slashes.
  * - Trim duplicate, leading, and trailing separators.
- * - Shorten to a desired length and logical position based on word boundries.
+ * - Shorten to a desired length and logical position based on word boundaries.
  *
  * @param $alias
  *   A string with the URL alias to clean up.
@@ -267,7 +267,7 @@ function pathauto_clean_alias($alias) {
   // Trim duplicate, leading, and trailing separators.
   $output = _pathauto_clean_separators($output);
 
-  // Shorten to a logical place based on word boundries.
+  // Shorten to a logical place based on word boundaries.
   $maxlength = min(variable_get('pathauto_max_length', 100), _pathauto_get_schema_alias_maxlength());
   $output = truncate_utf8($output, $maxlength, TRUE);
 
@@ -402,7 +402,7 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
   // Also create a related feed alias if requested and supported.
   $feedappend = trim(variable_get('pathauto_' . $module . '_applytofeeds', ''));
   if (drupal_strlen($feedappend)) {
-    // For forums and taxonomies, the source doesn't always form the base of the rss feed (ie. image galleries)
+    // For forums and taxonomies, the source doesn't always form the base of the RSS feed (i.e. image galleries)
     if (($module == 'taxonomy' || $module == 'forum') && !empty($data['term'])) {
       $source = 'taxonomy/term/' . $data['term']->tid;
     }
@@ -600,7 +600,7 @@ function pathauto_punctuation_chars() {
  * Fetch the maximum length of the {url_alias}.alias field from the schema.
  *
  * @return
- *   An integer of the maximum url alias length allowed by the database.
+ *   An integer of the maximum URL alias length allowed by the database.
  */
 function _pathauto_get_schema_alias_maxlength() {
   $maxlength = &drupal_static(__FUNCTION__);
