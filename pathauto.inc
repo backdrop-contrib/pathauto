@@ -303,13 +303,6 @@ function pathauto_clean_alias($alias) {
  * @see token_replace()
  */
 function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $language = LANGUAGE_NONE) {
-  if (($op != 'bulkupdate') and variable_get('pathauto_verbose', FALSE) && user_access('notify of path changes')) {
-    $verbose = TRUE;
-  }
-  else {
-    $verbose = FALSE;
-  }
-
   // Retrieve and apply the pattern for this content type.
   $pattern = pathauto_pattern_load_by_entity($module, $type, $language);
   if (empty($pattern)) {
@@ -379,11 +372,11 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
       $i++;
     } while (_pathauto_alias_exists($alias, $source, $language));
 
-    // If verbose is on, alert the user why this happened
-    if ($verbose) {
-      drupal_set_message(t('The automatically generated alias %original_alias conflicted with an existing alias. Alias changed to %alias.',
-        array('%original_alias' => $original_alias, '%alias' => $alias)));
-    }
+    // Alert the user why this happened.
+    _pathauto_verbose(t('The automatically generated alias %original_alias conflicted with an existing alias. Alias changed to %alias.', array(
+      '%original_alias' => $original_alias,
+      '%alias' => $alias,
+    )), $op);
   }
 
   // Return the generated alias if requested.
@@ -397,7 +390,7 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
     'alias' => $alias,
     'language' => $language,
   );
-  _pathauto_set_alias($path, $existing_alias, $verbose);
+  _pathauto_set_alias($path, $existing_alias);
 
   // Also create a related feed alias if requested and supported.
   $feedappend = trim(variable_get('pathauto_' . $module . '_applytofeeds', ''));
@@ -414,7 +407,7 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
       'language' => $language,
     );
     $existing_alias = _pathauto_existing_alias_data($path['source'], $path['language']);
-    _pathauto_set_alias($path, $existing_alias, $verbose);
+    _pathauto_set_alias($path, $existing_alias);
   }
 
   return $alias;
@@ -449,25 +442,25 @@ function _pathauto_path_is_callback($path) {
  *   - language: (optional) The language of the alias.
  * @param $existing_alias
  *   (optional) An associative array of the existing path alias.
- * @param $verbose
- *   If the admin has enabled verbose, should be TRUE. Else FALSE or NULL.
  * @return
  *   The saved path from path_save() or NULL if the path was not saved.
  *
  * @see path_save()
  */
-function _pathauto_set_alias(array $path, $existing_alias = NULL, $verbose = FALSE) {
+function _pathauto_set_alias(array $path, $existing_alias = NULL) {
+  $verbose = _pathauto_verbose();
+
   // Alert users that an existing callback cannot be overridden automatically
   if (_pathauto_path_is_callback($path['alias'])) {
-    if ($verbose && user_access('notify of path changes')) {
-      drupal_set_message(t('Ignoring alias %alias due to existing path conflict.', array('%alias' => $path['alias'])));
+    if ($verbose) {
+      _pathauto_verbose(t('Ignoring alias %alias due to existing path conflict.', array('%alias' => $path['alias'])));
     }
     return;
   }
   // Alert users if they are trying to create an alias that is the same as the internal path
   if ($path['source'] == $path['alias']) {
-    if ($verbose && user_access('notify of path changes')) {
-      drupal_set_message(t('Ignoring alias %alias because it is the same as the internal path.', array('%alias' => $path['alias'])));
+    if ($verbose) {
+      _pathauto_verbose(t('Ignoring alias %alias because it is the same as the internal path.', array('%alias' => $path['alias'])));
     }
     return;
   }
@@ -508,20 +501,54 @@ function _pathauto_set_alias(array $path, $existing_alias = NULL, $verbose = FAL
     // Save the path array.
     path_save($path);
 
-    if ($verbose && user_access('notify of path changes')) {
+    if ($verbose) {
       if (!empty($redirect)) {
-        drupal_set_message(t('Created new alias %alias for %source, replacing %old_alias. %old_alias now redirects to %alias.', array('%alias' => $path['alias'], '%source' => $path['source'], '%old_alias' => $existing_alias['alias'])));
+        _pathauto_verbose(t('Created new alias %alias for %source, replacing %old_alias. %old_alias now redirects to %alias.', array('%alias' => $path['alias'], '%source' => $path['source'], '%old_alias' => $existing_alias['alias'])));
       }
       elseif (!empty($existing_alias['pid'])) {
-        drupal_set_message(t('Created new alias %alias for %source, replacing %old_alias.', array('%alias' => $path['alias'], '%source' => $path['source'], '%old_alias' => $existing_alias['alias'])));
+        _pathauto_verbose(t('Created new alias %alias for %source, replacing %old_alias.', array('%alias' => $path['alias'], '%source' => $path['source'], '%old_alias' => $existing_alias['alias'])));
       }
       else {
-        drupal_set_message(t('Created new alias %alias for %source.', array('%alias' => $path['alias'], '%source' => $path['source'])));
+        _pathauto_verbose(t('Created new alias %alias for %source.', array('%alias' => $path['alias'], '%source' => $path['source'])));
       }
     }
 
     return $path;
   }
+}
+
+/**
+ * Output a helpful message if verbose output is enabled.
+ *
+ * Verbose output is only enabled when:
+ * - The 'pathauto_verbose' setting is enabled.
+ * - The current user has the 'notify of path changes' permission.
+ * - The $op parameter is anything but 'bulkupdate' or 'return'.
+ *
+ * @param $message
+ *   An optional string of the verbose message to display. This string should
+ *   already be run through t().
+ * @param $op
+ *   An optional string with the operation being performed.
+ * @return
+ *   TRUE if verbose output is enabled, or FALSE otherwise.
+ */
+function _pathauto_verbose($message = '', $op = NULL) {
+  static $verbose;
+
+  if (!isset($verbose)) {
+    $verbose = variable_get('pathauto_verbose', FALSE) && user_access('notify of path changes');
+  }
+
+  if (!$verbose || (isset($op) && in_array($op, array('bulkupdate', 'return')))) {
+    return FALSE;
+  }
+
+  if ($message) {
+    drupal_set_message($message);
+  }
+
+  return $verbose;
 }
 
 /**
