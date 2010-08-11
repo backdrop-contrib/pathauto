@@ -10,6 +10,5 @@ files[] = pathauto.module
 files[] = pathauto.install
 files[] = pathauto.test
 files[] = pathauto.pathauto.inc
-files[] = pathauto.tokens.inc
 configure = admin/config/search/path/patterns
 recommends[] = path_redirect
