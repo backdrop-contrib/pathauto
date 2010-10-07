@@ -328,7 +328,8 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
     'sanitize' => FALSE,
     'clear' => TRUE,
     'callback' => 'pathauto_clean_token_values',
-    'language' => (object) array('language' => $language)
+    'language' => (object) array('language' => $language),
+    'pathauto' => TRUE,
   ));
 
   // Check if the token replacement has not actually replaced any values. If
@@ -570,6 +571,7 @@ function pathauto_clean_token_values(&$replacements, $data = array(), $options =
     if (!preg_match('/(path|alias|url|url-brief)\]$/', $token)) {
       $replacements[$token] = pathauto_cleanstring($value);
     }
+    // @todo Clean up 'tree-style' tokens that are not actually URLs.
   }
 }
 
