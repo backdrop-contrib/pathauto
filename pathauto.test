@@ -364,7 +364,7 @@ class PathautoFunctionalTestCase extends PathautoFunctionalTestHelper {
 
     // Look for alias generated in the form.
     $this->drupalGet('node/' . $node->nid . '/edit');
-    $this->assertFieldChecked('edit-path-pathauto-perform-alias');
+    $this->assertFieldChecked('edit-path-pathauto');
     $this->assertFieldByName('path[alias]', $automatic_alias, 'Proper automated alias generated.');
 
     // Check whether the alias actually works.
@@ -374,7 +374,7 @@ class PathautoFunctionalTestCase extends PathautoFunctionalTestHelper {
     // Manually set the node's alias.
     $manual_alias = 'content/' . $node->nid;
     $edit = array(
-      'path[pathauto_perform_alias]' => FALSE,
+      'path[pathauto]' => FALSE,
       'path[alias]' => $manual_alias,
     );
     $this->drupalPost('node/' . $node->nid . '/edit', $edit, t('Save'));
@@ -382,7 +382,7 @@ class PathautoFunctionalTestCase extends PathautoFunctionalTestHelper {
 
     // Check that the automatic alias checkbox is now unchecked by default.
     $this->drupalGet('node/' . $node->nid . '/edit');
-    $this->assertNoFieldChecked('edit-path-pathauto-perform-alias');
+    $this->assertNoFieldChecked('edit-path-pathauto');
     $this->assertFieldByName('path[alias]', $manual_alias);
 
     // Submit the node form with the default values.
@@ -513,7 +513,7 @@ class PathautoLocaleTestCase extends PathautoFunctionalTestHelper {
       'body' => array('en' => array(array())),
       'path' => array(
         'alias' => 'english-node',
-        'pathauto_perform_alias' => FALSE,
+        'pathauto' => FALSE,
       ),
     );
     $node = $this->drupalCreateNode($node);
@@ -529,7 +529,7 @@ class PathautoLocaleTestCase extends PathautoFunctionalTestHelper {
     $this->saveAlias('node/invalid', 'content/english-node', LANGUAGE_NONE);
 
     // Update the node, triggering a change in the English alias.
-    $node->path['pathauto_perform_alias'] = TRUE;
+    $node->path['pathauto'] = TRUE;
     pathauto_node_update($node);
 
     // Check that the new English alias replaced the old one.
@@ -579,7 +579,7 @@ class PathautoBulkUpdateTestCase extends PathautoFunctionalTestHelper {
     $this->assertEntityAliasExists('user', $this->admin_user);
 
     // Add a new node.
-    $new_node = $this->drupalCreateNode(array('path' => array('alias' => '', 'pathauto_perform_alias' => FALSE)));
+    $new_node = $this->drupalCreateNode(array('path' => array('alias' => '', 'pathauto' => FALSE)));
 
     // Run the update again which should only run against the new node.
     $this->drupalPost('admin/config/search/path/update_bulk', $edit, t('Update'));

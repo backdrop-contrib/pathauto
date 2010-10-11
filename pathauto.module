@@ -247,7 +247,7 @@ function pathauto_entity_path_delete_all($entity_type, $entity, $default_uri = N
  */
 function pathauto_node_presave($node) {
   // About to be saved (before insert/update)
-  if (!empty($node->path['pathauto_perform_alias']) && isset($node->path['old_alias'])
+  if (!empty($node->path['pathauto']) && isset($node->path['old_alias'])
       && $node->path['alias'] == '' && $node->path['old_alias'] != '') {
     /**
      * There was an old alias, but when pathauto_perform_alias was checked
@@ -263,7 +263,7 @@ function pathauto_node_presave($node) {
  * Implements hook_node_insert().
  */
 function pathauto_node_insert($node) {
-  if (!isset($node->path['pathauto_perform_alias']) || !empty($node->path['pathauto_perform_alias'])) {
+  if (!isset($node->path['pathauto']) || !empty($node->path['pathauto'])) {
     pathauto_node_update_alias($node, 'insert');
   }
 }
@@ -272,7 +272,7 @@ function pathauto_node_insert($node) {
  * Implements hook_node_update().
  */
 function pathauto_node_update($node) {
-  if (!isset($node->path['pathauto_perform_alias']) || !empty($node->path['pathauto_perform_alias'])) {
+  if (!isset($node->path['pathauto']) || !empty($node->path['pathauto'])) {
     pathauto_node_update_alias($node, 'update');
   }
 }
@@ -302,7 +302,7 @@ function pathauto_form_alter(&$form, &$form_state, $form_id) {
 
     // If there is a pattern, show the automatic alias checkbox.
     if ($pattern) {
-      if (!isset($node->pathauto_perform_alias)) {
+      if (!isset($node->path['pathauto'])) {
         if (!empty($node->nid)) {
           // If this is not a new node, compare it's current alias to the
           // alias that would be genereted by pathauto. If they are the same,
@@ -311,36 +311,36 @@ function pathauto_form_alter(&$form, &$form_state, $form_id) {
           $uri = entity_uri('node', $node);
           $path = drupal_get_path_alias($uri['path'], $language);
           $pathauto_alias = pathauto_create_alias('node', 'return', $uri['path'], array('node' => $node), $node->type, $node->language);
-          $node->pathauto_perform_alias = $path != $uri['path'] && $path == $pathauto_alias;
+          $node->path['pathauto'] = $path != $uri['path'] && $path == $pathauto_alias;
         }
         else {
           // If this is a new node, enable the automatic alias.
-          $node->pathauto_perform_alias = TRUE;
+          $node->path['pathauto'] = TRUE;
         }
       }
 
       // Add JavaScript that will disable the path textfield when the automatic
       // alias checkbox is checked.
-      $form['path']['alias']['#states']['!enabled']['input[name="path[pathauto_perform_alias]"]'] = array('checked' => TRUE);
+      $form['path']['alias']['#states']['!enabled']['input[name="path[pathauto]"]'] = array('checked' => TRUE);
 
       // Override path.module's vertical tabs summary.
       $form['path']['#attached']['js'] = array(
         'vertical-tabs' => drupal_get_path('module', 'pathauto') . '/pathauto.js'
       );
 
-      $form['path']['pathauto_perform_alias'] = array(
+      $form['path']['pathauto'] = array(
         '#type' => 'checkbox',
         '#title' => t('Automatic alias'),
-        '#default_value' => $node->pathauto_perform_alias,
+        '#default_value' => $node->path['pathauto'],
         '#description' => t('An alias will be generated for you. If you wish to create your own alias below, uncheck this option.'),
         '#weight' => -1,
       );
 
       if (user_access('administer pathauto')) {
-        $form['path']['pathauto_perform_alias']['#description'] .= ' ' . t('To control the format of the generated aliases, see the <a href="@url-patterns">URL alias patterns</a>.', array('@url-patterns' => url('admin/config/search/path/patterns')));
+        $form['path']['pathauto']['#description'] .= ' ' . t('To control the format of the generated aliases, see the <a href="@url-patterns">URL alias patterns</a>.', array('@url-patterns' => url('admin/config/search/path/patterns')));
       }
 
-      if ($node->pathauto_perform_alias && !empty($node->old_alias) && empty($path['alias'])) {
+      if ($node->path['pathauto'] && !empty($node->old_alias) && empty($path['alias'])) {
         $form['path']['alias']['#default_value'] = $node->old_alias;
         $path['alias'] = $node->old_alias;
       }
