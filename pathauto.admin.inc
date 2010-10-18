@@ -76,7 +76,6 @@ function pathauto_patterns_form($form, $form_state) {
     $form[$module]['token_help']['help'] = array(
       '#theme' => 'token_tree',
       '#token_types' => array($settings->token_type),
-      '#global_types' => FALSE,
     );
 
     // If the module supports feeds, offer to generate aliases for them
