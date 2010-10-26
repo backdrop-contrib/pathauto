@@ -40,9 +40,10 @@ function pathauto_patterns_form($form, $form_state) {
       '#default_value' => variable_get($variable, $patterndefault),
       '#size' => 65,
       '#maxlength' => 1280,
-      '#element_validate' => array('_pathauto_validate_pattern_element'),
-      '#after_build' => array('_pathauto_validate_pattern_element'),
+      '#element_validate' => array('token_element_validate'),
+      '#after_build' => array('token_element_validate'),
       '#token_types' => array($settings->token_type),
+      '#min_tokens' => 1,
       '#parents' => array($variable),
     );
 
@@ -57,9 +58,10 @@ function pathauto_patterns_form($form, $form_state) {
           '#default_value' => variable_get($variable, ''),
           '#size' => 65,
           '#maxlength' => 1280,
-          '#element_validate' => array('_pathauto_validate_pattern_element'),
-          '#after_build' => array('_pathauto_validate_pattern_element'),
+          '#element_validate' => array('token_element_validate'),
+          '#after_build' => array('token_element_validate'),
           '#token_types' => array($settings->token_type),
+          '#min_tokens' => 1,
           '#parents' => array($variable),
         );
       }
@@ -229,34 +231,6 @@ function pathauto_settings_form($form) {
   }
 
   return system_settings_form($form);
-}
-
-/**
- * Element validation callback for URL alias patterns.
- *
- * This function performs the following validations:
- * - Checks if the pattern has at least one token.
- */
-function _pathauto_validate_pattern_element(&$element, &$form_state) {
-  // Get the current value of the element (since this can be used during both
-  // form display and validation).
-  $value = isset($element['#value']) ? $element['#value'] : $element['#default_value'];
-
-  // Empty patterns need no further validation.
-  if (!drupal_strlen($value)) {
-    return $element;
-  }
-
-  // Check for at least one token.
-  $tokens = token_scan($value);
-  if (empty($tokens)) {
-    form_error($element, t('The %name should contain at least one token to ensure unique URL aliases are created.', array('%name' => $element['#title'])));
-  }
-  else {
-    token_element_validate_token_context($element, $form_state);
-  }
-
-  return $element;
 }
 
 /**
