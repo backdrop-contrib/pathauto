@@ -7,7 +7,8 @@
  *
  * This also contains some constants giving human readable names to some numeric
  * settings; they're included here as they're only rarely used outside this file
- * anyway. Use _pathauto_include() if the constants need to be available.
+ * anyway. Use module_load_include('inc', 'pathauto') if the constants need to
+ * be available.
  *
  * @ingroup pathauto
  */
@@ -391,7 +392,7 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
     'alias' => $alias,
     'language' => $language,
   );
-  _pathauto_set_alias($path, $existing_alias, $op);
+  $path = _pathauto_set_alias($path, $existing_alias, $op);
 
   // Also create a related feed alias if requested and supported.
   $feedappend = trim(variable_get('pathauto_' . $module . '_applytofeeds', ''));
@@ -402,16 +403,16 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
     }
 
     // Build the feed path alias array and send it off to be created.
-    $path = array(
+    $feed_path = array(
       'source' => "$source/$feedappend",
       'alias' => "$alias/feed",
       'language' => $language,
     );
-    $existing_alias = _pathauto_existing_alias_data($path['source'], $path['language']);
-    _pathauto_set_alias($path, $existing_alias, $op);
+    $existing_alias = _pathauto_existing_alias_data($feed_path['source'], $feed_path['language']);
+    _pathauto_set_alias($feed_path, $existing_alias, $op);
   }
 
-  return $alias;
+  return $path;
 }
 
 /**
