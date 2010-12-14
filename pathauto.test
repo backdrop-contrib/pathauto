@@ -12,14 +12,10 @@
  * Helper test class with some added functions for testing.
  */
 class PathautoTestHelper extends DrupalWebTestCase {
-  function setUp() {
-    $args = func_get_args();
-
-    // Call parent::setUp() allowing test cases to pass further modules.
-    $modules = array('path', 'token', 'pathauto');
-    if (isset($args[0]) && is_array($args[0])) {
-      $modules = array_merge($modules, $args[0]);
-    }
+  function setUp(array $modules = array()) {
+    $modules[] = 'path';
+    $modules[] = 'token';
+    $modules[] = 'pathauto';
     parent::setUp($modules);
   }
 
@@ -123,8 +119,8 @@ class PathautoUnitTestCase extends PathautoTestHelper {
     );
   }
 
-  function setUp() {
-    parent::setUp();
+  function setUp(array $modules = array()) {
+    parent::setUp($modules);
     module_load_include('inc', 'pathauto');
   }
 
@@ -308,14 +304,7 @@ class PathautoUnitTestCase extends PathautoTestHelper {
 class PathautoFunctionalTestHelper extends PathautoTestHelper {
   protected $admin_user;
 
-  function setUp() {
-    $args = func_get_args();
-
-    // Call parent::setUp() allowing test cases to pass further modules.
-    $modules = array();
-    if (isset($args[0]) && is_array($args[0])) {
-      $modules = array_merge($modules, $args[0]);
-    }
+  function setUp(array $modules = array()) {
     parent::setUp($modules);
 
     // Set pathauto settings we assume to be as-is in this test.
@@ -331,8 +320,9 @@ class PathautoFunctionalTestHelper extends PathautoTestHelper {
       'access content overview',
       'administer users',
     );
-    if (isset($args[1]) && is_array($args[1])) {
-      $permissions = array_merge($permissions, $args[1]);
+    $arg = func_get_arg(1);
+    if (isset($arg) && is_array($arg)) {
+      $permissions = array_merge($permissions, $arg);
     }
     $this->admin_user = $this->drupalCreateUser($permissions);
 
@@ -493,8 +483,10 @@ class PathautoLocaleTestCase extends PathautoFunctionalTestHelper {
     );
   }
 
-  function setUp() {
-    parent::setUp(array('locale', 'translation'), array('administer languages'));
+  function setUp(array $modules = array()) {
+    $modules[] = 'locale';
+    $modules[] = 'translation';
+    parent::setUp($modules, array('administer languages'));
 
     // Add predefined French language and reset the locale cache.
     require_once DRUPAL_ROOT . '/includes/locale.inc';
