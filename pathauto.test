@@ -320,9 +320,9 @@ class PathautoFunctionalTestHelper extends PathautoTestHelper {
       'access content overview',
       'administer users',
     );
-    $arg = func_get_arg(1);
-    if (isset($arg) && is_array($arg)) {
-      $permissions = array_merge($permissions, $arg);
+    $args = func_get_args();
+    if (isset($args[1]) && is_array($args[1])) {
+      $permissions = array_merge($permissions, $args[1]);
     }
     $this->admin_user = $this->drupalCreateUser($permissions);
 
