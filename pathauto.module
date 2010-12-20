@@ -239,6 +239,33 @@ function pathauto_entity_path_delete_all($entity_type, $entity, $default_uri = N
   }
 }
 
+/**
+ * Implements hook_field_attach_rename_bundle().
+ *
+ * Respond to machine name changes for pattern variables.
+ */
+function pathauto_field_attach_rename_bundle($entity_type, $bundle_old, $bundle_new) {
+  $variables = db_query("SELECT name FROM {variable} WHERE name LIKE :pattern", array(':pattern' => db_like("pathauto_{$entity_type}_{$bundle_old}_") . '%'))->fetchCol();
+  foreach ($variables as $variable) {
+    $value = variable_get($variable, '');
+    variable_del($variable);
+    $variable = strtr($variable, array("{$entity_type}_{$bundle_old}" => "{$entity_type}_{$bundle_new}"));
+    variable_set($variable, $value);
+  }
+}
+
+/**
+ * Implements hook_field_attach_delete_bundle().
+ *
+ * Respond to sub-types being deleted, their patterns can be removed.
+ */
+function pathauto_field_attach_delete_bundle($entity_type, $bundle, $instances) {
+  $variables = db_query("SELECT name FROM {variable} WHERE name LIKE :pattern", array(':pattern' => db_like("pathauto_{$entity_type}_{$bundle}_") . '%'))->fetchCol();
+  foreach ($variables as $variable) {
+    variable_del($variable);
+  }
+}
+
 //==============================================================================
 // Some node related functions.
 
@@ -451,7 +478,7 @@ function pathauto_taxonomy_term_delete($term) {
 function pathauto_taxonomy_term_update_alias(stdClass $term, $op, array $options = array()) {
   $options += array('alias children' => FALSE);
 
-  $module = 'taxonomy';
+  $module = 'taxonomy_term';
   if ($term->vid == variable_get('forum_nav_vocabulary', '')) {
     if (module_exists('forum')) {
       $module = 'forum';

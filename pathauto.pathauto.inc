@@ -132,7 +132,7 @@ function taxonomy_pathauto($op) {
   switch ($op) {
     case 'settings':
       $settings = array();
-      $settings['module'] = 'taxonomy';
+      $settings['module'] = 'taxonomy_term';
       $settings['token_type'] = 'term';
       $settings['groupheader'] = t('Taxonomy term paths');
       $settings['patterndescr'] = t('Default path pattern (applies to all vocabularies with blank patterns below)');

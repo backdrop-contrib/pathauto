@@ -138,11 +138,24 @@ function pathauto_update_7002() {
         // Skip the forum vocabulary.
         continue;
       }
-      if ($pattern = variable_get('pathauto_taxonomy_' . $vid . '_pattern')) {
+      if ($pattern = variable_get('pathauto_taxonomy_' . $vid . '_pattern', '')) {
         variable_set('pathauto_taxonomy_' . $vocabulary->machine_name . '_pattern', $pattern);
       }
       variable_del('pathauto_taxonomy_' . $vid . '_pattern');
     }
+  }
+}
+
+/**
+ * Rename 'taxonomy' variables to use the entity type 'taxonomy_term'.
+ */
+function pathauto_update_7003() {
+  $variables = db_query("SELECT name FROM {variable} WHERE name LIKE :pattern AND name NOT LIKE :pattern2", array(':pattern' => db_like("pathauto_taxonomy_") . '%', ':pattern2' => db_like("pathauto_taxonomy_term_") . '%'))->fetchCol();
+  foreach ($variables as $variable) {
+    $value = variable_get($variable);
+    variable_del($variable);
+    $variable = strtr($variable, array('pathauto_taxonomy_' => 'pathauto_taxonomy_term_'));
+    variable_set($variable, $value);
   }
 }
 

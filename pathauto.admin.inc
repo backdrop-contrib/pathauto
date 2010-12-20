@@ -446,7 +446,7 @@ function pathauto_admin_delete_submit($form, &$form_state) {
       }
       $objects = module_invoke_all('path_alias_types');
       if (array_key_exists($key, $objects)) {
-        db_query("DELETE FROM {url_alias} WHERE source LIKE :src", array(':src' => "$key%"));
+        db_query("DELETE FROM {url_alias} WHERE source LIKE :source", array(':source' => db_like($key) . '%'));
         drupal_set_message(t('All of your %type path aliases have been deleted.', array('%type' => $objects[$key])));
       }
     }

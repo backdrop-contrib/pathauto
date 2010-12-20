@@ -104,6 +104,11 @@ class PathautoTestHelper extends DrupalWebTestCase {
     taxonomy_term_save($term);
     return $term;
   }
+
+  function assertEntityPattern($entity_type, $bundle, $language = LANGUAGE_NONE, $expected) {
+    $pattern = pathauto_pattern_load_by_entity($entity_type, $bundle, $language);
+    $this->assertIdentical($expected, $pattern);
+  }
 }
 
 /**
@@ -283,7 +288,7 @@ class PathautoUnitTestCase extends PathautoTestHelper {
    * Test the handling of path vs non-path tokens in pathauto_clean_token_values().
    */
   function testPathTokens() {
-    variable_set('pathauto_taxonomy_pattern', '[term:parent:path]/[term:name]');
+    variable_set('pathauto_taxonomy_term_pattern', '[term:parent:path]/[term:name]');
     $vocab = $this->addVocabulary();
 
     $term1 = $this->addTerm($vocab, array('name' => 'Parent term'));
@@ -295,6 +300,26 @@ class PathautoUnitTestCase extends PathautoTestHelper {
     $this->saveEntityAlias('taxonomy_term', $term1, 'My Crazy/Alias/');
     pathauto_taxonomy_term_update($term2);
     $this->assertEntityAlias('taxonomy_term', $term2, 'My Crazy/Alias/child-term');
+  }
+
+  function testEntityBundleRenamingDeleting() {
+    // Create a vocabulary and test that it's pattern variable works.
+    $vocab = $this->addVocabulary(array('machine_name' => 'old_name'));
+    variable_set('pathauto_taxonomy_term_pattern', 'base');
+    variable_set("pathauto_taxonomy_term_old_name_pattern", 'bundle');
+    $this->assertEntityPattern('taxonomy_term', 'old_name', LANGUAGE_NONE, 'bundle');
+
+    // Rename the vocabulary's machine name, which should cause its pattern
+    // variable to also be renamed.
+    $vocab->machine_name = 'new_name';
+    taxonomy_vocabulary_save($vocab);
+    $this->assertEntityPattern('taxonomy_term', 'new_name', LANGUAGE_NONE, 'bundle');
+    $this->assertEntityPattern('taxonomy_term', 'old_name', LANGUAGE_NONE, 'base');
+
+    // Delete the vocabulary, which should cause its pattern variable to also
+    // be deleted.
+    taxonomy_vocabulary_delete($vocab->vid);
+    $this->assertEntityPattern('taxonomy_term', 'new_name', LANGUAGE_NONE, 'base');
   }
 }
 
@@ -339,6 +364,7 @@ class PathautoFunctionalTestCase extends PathautoFunctionalTestHelper {
       'name' => 'Pathauto basic tests',
       'description' => 'Test basic pathauto functionality.',
       'group' => 'Pathauto',
+      'dependencies' => array('token'),
     );
   }
 
@@ -463,7 +489,7 @@ class PathautoFunctionalTestCase extends PathautoFunctionalTestHelper {
     $edit['pathauto_node_page_pattern'] = 'page';
     $this->drupalPost('admin/config/search/path/patterns', $edit, 'Save configuration');
     $this->assertText('The Default path pattern (applies to all node types with blank patterns below) is using the following invalid tokens: [user:name], [term:name].');
-    $this->assertText('The Pattern for all Basic page paths should contain at least one token to ensure unique URL aliases are created.');
+    $this->assertText('The Pattern for all Basic page paths cannot contain fewer than one token.');
     $this->assertNoText('The configuration options have been saved.');
 
     $edit['pathauto_node_pattern'] = '[node:title]';
@@ -480,6 +506,7 @@ class PathautoLocaleTestCase extends PathautoFunctionalTestHelper {
       'name' => 'Pathauto localization tests',
       'description' => 'Test pathauto functionality with localization and translation.',
       'group' => 'Pathauto',
+      'dependencies' => array('token'),
     );
   }
 
@@ -542,6 +569,7 @@ class PathautoBulkUpdateTestCase extends PathautoFunctionalTestHelper {
       'name' => 'Pathauto bulk updating',
       'description' => 'Tests bulk updating of URL aliases.',
       'group' => 'Pathauto',
+      'dependencies' => array('token'),
     );
   }
 

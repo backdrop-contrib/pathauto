@@ -73,7 +73,7 @@ define('PATHAUTO_PUNCTUATION_DO_NOTHING', 2);
  *   TRUE if an alias exists, FALSE if not.
  */
 function _pathauto_alias_exists($alias, $source, $language = LANGUAGE_NONE) {
-  $pid = db_query_range("SELECT pid, alias FROM {url_alias} WHERE source <> :source AND alias = :alias AND language IN (:language, :language_none) ORDER BY language DESC, pid DESC", 0, 1, array(
+  $pid = db_query_range("SELECT pid FROM {url_alias} WHERE source <> :source AND alias = :alias AND language IN (:language, :language_none) ORDER BY language DESC, pid DESC", 0, 1, array(
     ':source' => $source,
     ':alias' => $alias,
     ':language' => $language,
@@ -398,7 +398,7 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
   $feedappend = trim(variable_get('pathauto_' . $module . '_applytofeeds', ''));
   if (drupal_strlen($feedappend)) {
     // For forums and taxonomies, the source doesn't always form the base of the RSS feed (i.e. image galleries)
-    if (($module == 'taxonomy' || $module == 'forum') && !empty($data['term'])) {
+    if (($module == 'taxonomy_term' || $module == 'forum') && !empty($data['term'])) {
       $source = 'taxonomy/term/' . $data['term']->tid;
     }
 
