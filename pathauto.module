@@ -290,18 +290,14 @@ function pathauto_node_presave($node) {
  * Implements hook_node_insert().
  */
 function pathauto_node_insert($node) {
-  if (!isset($node->path['pathauto']) || !empty($node->path['pathauto'])) {
-    pathauto_node_update_alias($node, 'insert');
-  }
+  pathauto_node_update_alias($node, 'insert');
 }
 
 /**
  * Implements hook_node_update().
  */
 function pathauto_node_update($node) {
-  if (!isset($node->path['pathauto']) || !empty($node->path['pathauto'])) {
-    pathauto_node_update_alias($node, 'update');
-  }
+  pathauto_node_update_alias($node, 'update');
 }
 
 /**
@@ -406,6 +402,11 @@ function pathauto_node_operations() {
  *   An optional array of additional options.
  */
 function pathauto_node_update_alias(stdClass $node, $op, array $options = array()) {
+  // Skip processing if the user has disabled pathauto for the node.
+  if (isset($node->path['pathauto']) && empty($node->path['pathauto'])) {
+    return;
+  }
+
   // Skip processing if the term has no pattern.
   $language = isset($node->language) ? $node->language : LANGUAGE_NONE;
   if (!pathauto_pattern_load_by_entity('node', $node->type, $language)) {
@@ -476,6 +477,11 @@ function pathauto_taxonomy_term_delete($term) {
  *   An optional array of additional options.
  */
 function pathauto_taxonomy_term_update_alias(stdClass $term, $op, array $options = array()) {
+  // Skip processing if the user has disabled pathauto for the term.
+  if (isset($term->path['pathauto']) && empty($term->path['pathauto'])) {
+    return;
+  }
+
   $options += array('alias children' => FALSE);
 
   $module = 'taxonomy_term';
@@ -595,6 +601,11 @@ function pathauto_user_operations() {
  *   An optional array of additional options.
  */
 function pathauto_user_update_alias(stdClass $account, $op, array $options = array()) {
+  // Skip processing if the user has disabled pathauto for the account.
+  if (isset($account->path['pathauto']) && empty($account->path['pathauto'])) {
+    return;
+  }
+
   $options += array('alias blog' => module_exists('blog'));
 
   // Skip processing if the account has no pattern.
