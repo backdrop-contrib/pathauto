@@ -407,7 +407,7 @@ function pathauto_node_update_alias(stdClass $node, $op, array $options = array(
     return;
   }
 
-  // Skip processing if the term has no pattern.
+  // Skip processing if the node has no pattern.
   $language = isset($node->language) ? $node->language : LANGUAGE_NONE;
   if (!pathauto_pattern_load_by_entity('node', $node->type, $language)) {
     return;

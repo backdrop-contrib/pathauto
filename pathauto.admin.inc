@@ -441,12 +441,15 @@ function pathauto_admin_delete_submit($form, &$form_state) {
   foreach ($form_state['values'] as $key => $value) {
     if ($value) {
       if ($key === 'all_aliases') {
-        db_query('DELETE FROM {url_alias}');
+        db_delete('url_alias')
+          ->execute();
         drupal_set_message(t('All of your path aliases have been deleted.'));
       }
       $objects = module_invoke_all('path_alias_types');
       if (array_key_exists($key, $objects)) {
-        db_query("DELETE FROM {url_alias} WHERE source LIKE :source", array(':source' => db_like($key) . '%'));
+        db_delete('url_alias')
+          ->condition('source', db_like($key) . '%', 'LIKE')
+          ->execute();
         drupal_set_message(t('All of your %type path aliases have been deleted.', array('%type' => $objects[$key])));
       }
     }
