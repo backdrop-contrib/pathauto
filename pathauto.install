@@ -14,7 +14,7 @@
 function pathauto_install() {
   // Set some default variables necessary for the module to perform.
   variable_set('pathauto_node_pattern', 'content/[node:title]');
-  variable_set('pathauto_taxonomy_pattern', '[term:vocabulary]/[term:name]');
+  variable_set('pathauto_taxonomy_term_pattern', '[term:vocabulary]/[term:name]');
   variable_set('pathauto_forum_pattern', '[term:vocabulary]/[term:name]');
   variable_set('pathauto_user_pattern', 'users/[user:name]');
   variable_set('pathauto_blog_pattern', 'blogs/[user:name]');
