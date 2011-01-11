@@ -393,25 +393,6 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
     'language' => $language,
   );
   $path = _pathauto_set_alias($path, $existing_alias, $op);
-
-  // Also create a related feed alias if requested and supported.
-  $feedappend = trim(variable_get('pathauto_' . $module . '_applytofeeds', ''));
-  if (drupal_strlen($feedappend)) {
-    // For forums and taxonomies, the source doesn't always form the base of the RSS feed (i.e. image galleries)
-    if (($module == 'taxonomy_term' || $module == 'forum') && !empty($data['term'])) {
-      $source = 'taxonomy/term/' . $data['term']->tid;
-    }
-
-    // Build the feed path alias array and send it off to be created.
-    $feed_path = array(
-      'source' => "$source/$feedappend",
-      'alias' => "$alias/feed",
-      'language' => $language,
-    );
-    $existing_alias = _pathauto_existing_alias_data($feed_path['source'], $feed_path['language']);
-    _pathauto_set_alias($feed_path, $existing_alias, $op);
-  }
-
   return $path;
 }
 

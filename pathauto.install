@@ -119,6 +119,22 @@ function pathauto_update_7003() {
 }
 
 /**
+ * Remove obsolete variables for removed feed handling.
+ */
+function pathauto_update_7004() {
+  variable_del('pathauto_node_supportsfeeds');
+  variable_del('pathauto_node_applytofeeds');
+  variable_del('pathauto_taxonomy_supportsfeeds');
+  variable_del('pathauto_taxonomy_applytofeeds');
+  variable_del('pathauto_forum_supportsfeeds');
+  variable_del('pathauto_forum_applytofeeds');
+  variable_del('pathauto_user_supportsfeeds');
+  variable_del('pathauto_user_applytofeeds');
+  variable_del('pathauto_blog_supportsfeeds');
+  variable_del('pathauto_blog_applytofeeds');
+}
+
+/**
  * Build a list of Drupal 6 tokens and their Drupal 7 token names.
  */
 function _pathauto_upgrade_token_list() {

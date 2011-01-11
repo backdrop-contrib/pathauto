@@ -22,8 +22,6 @@ function pathauto_patterns_form($form, $form_state) {
     $patterndescr = $settings->patterndescr;
     $patterndefault = $settings->patterndefault;
     $groupheader = $settings->groupheader;
-    $supportsfeeds = isset($settings->supportsfeeds) ? $settings->supportsfeeds : NULL;
-    variable_set('pathauto_' . $module . '_supportsfeeds', $supportsfeeds);
 
     $form[$module] = array(
       '#type' => 'fieldset',
@@ -79,19 +77,6 @@ function pathauto_patterns_form($form, $form_state) {
       '#theme' => 'token_tree',
       '#token_types' => array($settings->token_type),
     );
-
-    // If the module supports feeds, offer to generate aliases for them
-    if ($supportsfeeds) {
-      $variable = 'pathauto_' . $module . '_applytofeeds';
-      $form[$module][$variable] = array(
-        '#type' => 'textfield',
-        '#title' => t('Internal feed alias text (leave blank to disable)'),
-        '#size' => 65,
-        '#maxlength' => 1280,
-        '#default_value' => variable_get($variable, $supportsfeeds),
-        '#description' => t('The text to use for aliases for RSS feeds. Examples are "0/feed" (used throughout Drupal core) and "feed" (used by some contributed Drupal modules, like Views).'),
-      );
-    }
   }
 
   return system_settings_form($form);

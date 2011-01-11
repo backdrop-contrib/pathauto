@@ -183,30 +183,6 @@ class PathautoUnitTestCase extends PathautoTestHelper {
   }
 
   /**
-   * Test the feed alias functionality of pathauto_create_alias().
-   */
-  function testFeedAliases() {
-    variable_set('pathauto_node_pattern', '[node:title]');
-    variable_set('pathauto_node_applytofeeds', '');
-
-    // Create a node with an empty title, which should not create an alias.
-    $node = $this->drupalCreateNode(array('title' => ''));
-    $this->assertNoAliasExists(array('source' => "node/{$node->nid}"));
-    $this->assertNoAliasExists(array('source' => "node/{$node->nid}/feed"));
-
-    // Add a title to the node. This should still not generate a feed alias.
-    $node->title = 'Node title';
-    pathauto_node_update($node);
-    $this->assertAliasExists(array('source' => "node/{$node->nid}", 'alias' => 'node-title'));
-    $this->assertNoAliasExists(array('source' => "node/{$node->nid}/feed"));
-
-    // Enable feeds for nodes. A feed alias should now be generated.
-    variable_set('pathauto_node_applytofeeds', ' feed ');
-    pathauto_node_update($node);
-    $this->assertAliasExists(array('source' => "node/{$node->nid}/feed", 'alias' => 'node-title/feed'));
-  }
-
-  /**
    * Test pathauto_path_delete_multiple().
    */
   function testPathDeleteMultiple() {
