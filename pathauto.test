@@ -349,16 +349,20 @@ class PathautoFunctionalTestCase extends PathautoFunctionalTestHelper {
    * Basic functional testing of Pathauto.
    */
   function testNodeEditing() {
-    // Create node for testing.
+    // Create node for testing by previewing and saving the node form.
     $random_title = $this->randomName(10);
     $title = ' Simpletest title ' . $random_title . ' [';
     $automatic_alias = 'content/simpletest-title-' . strtolower($random_title);
-    $node = $this->drupalCreateNode(array('title' => $title, 'type' => 'page'));
+    $this->drupalPost('node/add/page', array('title' => $title), 'Preview');
+    $this->drupalPost(NULL, array(), 'Save');
+
+    $node = $this->drupalGetNodeByTitle($title);
+    $this->assertEqual($this->getUrl(), url($automatic_alias, array('absolute' => TRUE)), 'Generated alias associated with the node.');
 
     // Look for alias generated in the form.
     $this->drupalGet('node/' . $node->nid . '/edit');
     $this->assertFieldChecked('edit-path-pathauto');
-    $this->assertFieldByName('path[alias]', $automatic_alias, 'Proper automated alias generated.');
+    $this->assertFieldByName('path[alias]', $automatic_alias, 'Generated alias visible in the path alias field.');
 
     // Check whether the alias actually works.
     $this->drupalGet($automatic_alias);

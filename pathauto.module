@@ -290,6 +290,8 @@ function pathauto_node_presave($node) {
  * Implements hook_node_insert().
  */
 function pathauto_node_insert($node) {
+  // @todo Remove the next line when http://drupal.org/node/1025870 is fixed.
+  unset($node->uri);
   pathauto_node_update_alias($node, 'insert');
 }
 
