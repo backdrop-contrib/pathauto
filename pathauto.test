@@ -465,7 +465,7 @@ class PathautoFunctionalTestCase extends PathautoFunctionalTestHelper {
     $edit['pathauto_node_pattern'] = '[node:title]/[user:name]/[term:name]';
     $edit['pathauto_node_page_pattern'] = 'page';
     $this->drupalPost('admin/config/search/path/patterns', $edit, 'Save configuration');
-    $this->assertText('The Default path pattern (applies to all node types with blank patterns below) is using the following invalid tokens: [user:name], [term:name].');
+    $this->assertText('The Default path pattern (applies to all content types with blank patterns below) is using the following invalid tokens: [user:name], [term:name].');
     $this->assertText('The Pattern for all Basic page paths cannot contain fewer than one token.');
     $this->assertNoText('The configuration options have been saved.');
 

@@ -137,7 +137,7 @@ function pathauto_menu() {
  * @param $entity
  *   An entity (e.g. node, taxonomy, user, etc.)
  * @param $bundle
- *   A bundle (e.g. node type, vocabulary ID, etc.)
+ *   A bundle (e.g. content type, vocabulary ID, etc.)
  * @param $language
  *   A language code, defaults to the LANGUAGE_NONE constant.
  */
@@ -319,7 +319,7 @@ function pathauto_form_alter(&$form, &$form_state, $form_id) {
   if (!empty($form['#node_edit_form'])) {
     $node = $form['#node'];
 
-    // Find if there is an automatic alias pattern for this node type.
+    // Find if there is an automatic alias pattern for this content type.
     $language = isset($node->language) ? $node->language : LANGUAGE_NONE;
     $pattern = pathauto_pattern_load_by_entity('node', $node->type, $language);
 

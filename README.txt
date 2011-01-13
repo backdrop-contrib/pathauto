@@ -26,16 +26,16 @@ enhanced.
 See the INSTALL.txt file.
 
 **Notices:
-Pathauto just adds URL aliases to nodes, users, and taxonomy terms. Because 
-it's an alias, the standard Drupal URL (for example node/123 or 
+Pathauto just adds URL aliases to content, users, and taxonomy terms.
+Because it's an alias, the standard Drupal URL (for example node/123 or 
 taxonomy/term/1) will still function as normal.  If you have external links 
 to your site pointing to standard Drupal URLs, or hardcoded links in a module, 
-template, node or menu which point to standard Drupal URLs it will bypass the 
-alias set by Pathauto.
+template, content or menu which point to standard Drupal URLs it will bypass
+the alias set by Pathauto.
 
 There are reasons you might not want two URLs for the same content on your 
 site. If this applies to you, please note that you will need to update any 
-hard coded links in your nodes or blocks. 
+hard coded links in your content or blocks. 
 
 If you use the "system path" (i.e. node/10) for menu items and settings like
 that, Drupal will replace it with the url_alias.
@@ -57,10 +57,10 @@ Drupal API instead:
 See http://api.drupal.org/api/HEAD/function/url and 
 http://api.drupal.org/api/HEAD/function/l for more information.
 
-** Disabling Pathauto for a specific node type (or taxonomy)
-When the pattern for a node type is left blank, the default pattern will be 
+** Disabling Pathauto for a specific content type (or taxonomy)
+When the pattern for a content type is left blank, the default pattern will be 
 used. But if the default pattern is also blank, Pathauto will be disabled 
-for that node type.
+for that content type.
 
 ** Bulk Updates Must be Run Multiple Times:
 As of 5.x-2.x Pathauto now performs bulk updates in a manner which is more 
