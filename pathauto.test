@@ -265,7 +265,7 @@ class PathautoUnitTestCase extends PathautoTestHelper {
    * Test the handling of path vs non-path tokens in pathauto_clean_token_values().
    */
   function testPathTokens() {
-    variable_set('pathauto_taxonomy_term_pattern', '[term:parent:path]/[term:name]');
+    variable_set('pathauto_taxonomy_term_pattern', '[term:parent:url:alias]/[term:name]');
     $vocab = $this->addVocabulary();
 
     $term1 = $this->addTerm($vocab, array('name' => 'Parent term'));
