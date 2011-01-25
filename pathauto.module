@@ -1,5 +1,4 @@
 <?php
-// $Id$
 
 /**
  * @defgroup pathauto Pathauto: Automatically generates aliases for content
@@ -562,21 +561,11 @@ function pathauto_user_update(&$edit, $account, $category) {
 }
 
 /**
- * Implements hook_user_cancel().
+ * Implements hook_user_delete().
  */
-function pathauto_user_cancel($edit, $account, $method) {
-  switch ($method) {
-    case 'user_cancel_block':
-    case 'user_cancel_block_unpublish':
-      // Don't remove aliases because the user may become active again later.
-      break;
-    case 'user_cancel_reassign':
-    case 'user_cancel_delete':
-      // Do remove aliases since the account will be deleted.
-      pathauto_entity_path_delete_all('user', $account, "user/{$account->uid}");
-      pathauto_path_delete_all("blog/{$account->uid}");
-      break;
-  }
+function pathauto_user_delete($account) {
+  pathauto_entity_path_delete_all('user', $account, "user/{$account->uid}");
+  pathauto_path_delete_all("blog/{$account->uid}");
 }
 
 /**
