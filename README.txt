@@ -8,8 +8,8 @@ The Pathauto module provides support functions for other modules to
 automatically generate aliases based on appropriate criteria, with a 
 central settings path for site administrators.
 
-Implementations are provided for core content types: nodes, taxonomy 
-terms, and users (including blogs and tracker pages).
+Implementations are provided for core entity types: content, taxonomy terms,
+and users (including blogs and tracker pages).
 
 Pathauto also provides a way to delete large numbers of aliases.  This feature 
 is available at  Administer > Site building > URL aliases > Delete aliases
