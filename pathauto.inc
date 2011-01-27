@@ -1,5 +1,4 @@
 <?php
-// $Id$
 
 /**
  * @file
@@ -39,13 +38,6 @@ define('PATHAUTO_UPDATE_ACTION_LEAVE', 1);
 define('PATHAUTO_UPDATE_ACTION_DELETE', 2);
 
 /**
- * "Create a new alias. Redirect from old alias."
- *
- * This is only available when the Path Redirect module is.
- */
-define('PATHAUTO_UPDATE_ACTION_REDIRECT', 3);
-
-/**
  * Remove the punctuation from the alias.
  */
 define('PATHAUTO_PUNCTUATION_REMOVE', 0);
@@ -80,20 +72,7 @@ function _pathauto_alias_exists($alias, $source, $language = LANGUAGE_NONE) {
     ':language_none' => LANGUAGE_NONE,
   ))->fetchField();
 
-  if (module_exists('path_redirect') && function_exists('path_redirect_delete_multiple')) {
-    // Delete from path_redirect the exact same alias to the same node.
-    path_redirect_delete_multiple(NULL, array('source' => $alias, 'redirect' => $source));
-
-    // If there still is this alias used in path_redirect, then create a different alias.
-    $redirects = path_redirect_load_multiple(NULL, array('source' => $alias));
-  }
-
-  if ($pid || !empty($redirects)) {
-    return TRUE;
-  }
-  else {
-    return FALSE;
-  }
+  return !empty($pid);
 }
 
 /**
@@ -110,7 +89,8 @@ function _pathauto_alias_exists($alias, $source, $language = LANGUAGE_NONE) {
  *   - alias: The URL alias.
  */
 function _pathauto_existing_alias_data($source, $language = LANGUAGE_NONE) {
-  return db_query_range("SELECT pid, alias FROM {url_alias} WHERE source = :source AND language IN (:language, :language_none) ORDER BY language DESC, pid DESC", 0, 1, array(':source' => $source, ':language' => $language, ':language_none' => LANGUAGE_NONE))->fetchAssoc();
+  $pid = db_query_range("SELECT pid FROM {url_alias} WHERE source = :source AND language IN (:language, :language_none) ORDER BY language DESC, pid DESC", 0, 1, array(':source' => $source, ':language' => $language, ':language_none' => LANGUAGE_NONE))->fetchField();
+  return path_load(array('pid' => $pid));
 }
 
 /**
@@ -453,7 +433,7 @@ function _pathauto_set_alias(array $path, $existing_alias = NULL, $op = NULL) {
 
   // Skip replacing the current alias with an identical alias
   if (empty($existing_alias) || $existing_alias['alias'] != $path['alias']) {
-    $path += array('pathauto' => TRUE);
+    $path += array('pathauto' => TRUE, 'original' => $existing_alias);
 
     // If there is already an alias, respect some update actions.
     if (!empty($existing_alias)) {
@@ -465,20 +445,8 @@ function _pathauto_set_alias(array $path, $existing_alias = NULL, $op = NULL) {
           // Create a new alias instead of overwriting the existing by leaving
           // $path['pid'] empty.
           break;
-        case PATHAUTO_UPDATE_ACTION_REDIRECT:
-          // Create a redirect
-          if (module_exists('path_redirect') && function_exists('path_redirect_save')) {
-            $redirect = array(
-              'source' => $existing_alias['alias'],
-              'redirect' => $path['source'],
-            );
-            path_redirect_save($redirect);
-          }
-          // Intentionally fall through to the next condition since we still
-          // want to replace the existing alias.
         case PATHAUTO_UPDATE_ACTION_DELETE:
-          // Both the redirect and delete actions should overwrite the existing
-          // alias.
+          // The delete actions should overwrite the existing alias.
           $path['pid'] = $existing_alias['pid'];
           break;
       }
@@ -488,10 +456,7 @@ function _pathauto_set_alias(array $path, $existing_alias = NULL, $op = NULL) {
     path_save($path);
 
     if ($verbose) {
-      if (!empty($redirect)) {
-        _pathauto_verbose(t('Created new alias %alias for %source, replacing %old_alias. %old_alias now redirects to %alias.', array('%alias' => $path['alias'], '%source' => $path['source'], '%old_alias' => $existing_alias['alias'])));
-      }
-      elseif (!empty($existing_alias['pid'])) {
+      if (!empty($existing_alias['pid'])) {
         _pathauto_verbose(t('Created new alias %alias for %source, replacing %old_alias.', array('%alias' => $path['alias'], '%source' => $path['source'], '%old_alias' => $existing_alias['alias'])));
       }
       else {

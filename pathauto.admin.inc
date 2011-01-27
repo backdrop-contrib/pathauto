@@ -141,6 +141,14 @@ function pathauto_settings_form($form) {
     '#element_validate' => array('_pathauto_validate_numeric_element'),
   );
 
+
+  $description = t('What should Pathauto do when updating an existing content item which already has an alias?');
+  if (module_exists('redirect')) {
+    $description .= ' ' . t('The <a href="!url">Redirect module settings</a> affect whether a redirect is created when an alias is deleted.', array('!url' => url('admin/config/search/redirect')));
+  }
+  else {
+    $description .= ' ' .t('Considering installing the <a href="!url">Redirect module</a> to get redirects when your aliases change.', array('!url' => 'http://drupal.org/project/redirect'));
+  }
   $form['pathauto_update_action'] = array(
     '#type' => 'radios',
     '#title' => t('Update action'),
@@ -149,30 +157,17 @@ function pathauto_settings_form($form) {
       PATHAUTO_UPDATE_ACTION_NO_NEW => t('Do nothing. Leave the old alias intact.'),
       PATHAUTO_UPDATE_ACTION_LEAVE => t('Create a new alias. Leave the existing alias functioning.'),
       PATHAUTO_UPDATE_ACTION_DELETE => t('Create a new alias. Delete the old alias.'),
-      PATHAUTO_UPDATE_ACTION_REDIRECT => t('Create a new alias. Redirect from old alias.'),
     ),
-    '#description' => t('What should Pathauto do when updating an existing content item which already has an alias?'),
+    '#description' => $description,
   );
-  if (!module_exists('path_redirect')) {
-    // Remove the redirection option if Path redirect is not enabled.
-    unset($form['pathauto_update_action']['#options'][PATHAUTO_UPDATE_ACTION_REDIRECT]);
-    if (variable_get('pathauto_update_action', NULL) == PATHAUTO_UPDATE_ACTION_REDIRECT) {
-      // Fix the current update action variable as well.
-      variable_set('pathauto_update_action', PATHAUTO_UPDATE_ACTION_DELETE);
-    }
-  }
 
   $form['pathauto_transliterate'] = array(
     '#type' => 'checkbox',
     '#title' => t('Transliterate prior to creating alias'),
-    '#default_value' => variable_get('pathauto_transliterate', FALSE),
+    '#default_value' => variable_get('pathauto_transliterate', FALSE) && module_exists('transliteration'),
     '#description' => t('When a pattern includes certain characters (such as those with accents) should Pathauto attempt to transliterate them into the ASCII-96 alphabet? Transliteration is handled by the Transliteration module.'),
+    '#access' => module_exists('transliteration'),
   );
-  if (!module_exists('transliteration')) {
-    // Remove the redirection option if Transliteration is not enabled.
-    $form['pathauto_transliterate']['#access'] = FALSE;
-    variable_set('pathauto_transliterate', FALSE);
-  }
 
   $form['pathauto_reduce_ascii'] = array(
     '#type' => 'checkbox',
