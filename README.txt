@@ -92,4 +92,3 @@ Current maintainers:
 **Changes:
 See the CHANGELOG.txt file.
 
-$Id$

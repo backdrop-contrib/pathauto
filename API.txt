@@ -1,4 +1,3 @@
-$Id$
 
 This document explains how to provide "Pathauto integration" in a
 module. You need this if you would like to provide additional tokens
