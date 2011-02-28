@@ -90,8 +90,7 @@ function node_pathauto_bulk_update_batch_process(&$context) {
   }
 
   $query = db_select('node', 'n');
-  $concat = _pathauto_sql_concat("'node/'", 'n.nid');
-  $query->leftJoin('url_alias', 'ua', "$concat = ua.source");
+  $query->leftJoin('url_alias', 'ua', "CONCAT('node/', n.nid) = ua.source");
   $query->addField('n', 'nid');
   $query->isNull('ua.source');
   $query->condition('n.nid', $context['sandbox']['current'], '>');
@@ -165,8 +164,7 @@ function taxonomy_pathauto_bulk_update_batch_process(&$context) {
   }
 
   $query = db_select('taxonomy_term_data', 'td');
-  $concat = _pathauto_sql_concat("'taxonomy/term/'", 'td.tid');
-  $query->leftJoin('url_alias', 'ua', "$concat = ua.source");
+  $query->leftJoin('url_alias', 'ua', "CONCAT('taxonomy/term/', td.tid) = ua.source");
   $query->addField('td', 'tid');
   $query->isNull('ua.source');
   // Exclude the forums terms.
@@ -231,8 +229,7 @@ function forum_pathauto_bulk_update_batch_process(&$context) {
   }
 
   $query = db_select('taxonomy_term_data', 'td');
-  $concat = _pathauto_sql_concat("'forum/'", 'td.tid');
-  $query->leftJoin('url_alias', 'ua', "$concat = ua.source");
+  $query->leftJoin('url_alias', 'ua', "CONCAT('forum/', td.tid) = ua.source");
   $query->addField('td', 'tid');
   $query->isNull('ua.source');
   $query->condition('vid', variable_get('forum_nav_vocabulary', ''));
@@ -294,8 +291,7 @@ function user_pathauto_bulk_update_batch_process(&$context) {
   }
 
   $query = db_select('users', 'u');
-  $concat = _pathauto_sql_concat("'user/'", 'u.uid');
-  $query->leftJoin('url_alias', 'ua', "$concat = ua.source");
+  $query->leftJoin('url_alias', 'ua', "CONCAT('user/', u.uid) = ua.source");
   $query->addField('u', 'uid');
   $query->isNull('ua.source');
   $query->condition('u.uid', $context['sandbox']['current'], '>');
@@ -357,8 +353,7 @@ function blog_pathauto_bulk_update_batch_process(&$context) {
   }
 
   $query = db_select('users', 'u');
-  $concat = _pathauto_sql_concat("'blog/'", 'u.uid');
-  $query->leftJoin('url_alias', 'ua', "$concat = ua.source");
+  $query->leftJoin('url_alias', 'ua', "CONCAT('blog/', u.uid) = ua.source");
   $query->addField('u', 'uid');
   $query->isNull('ua.source');
   $query->condition('u.uid', $context['sandbox']['current'], '>');
