@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * Documentation for pathauto API.

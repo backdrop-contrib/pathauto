@@ -1,4 +1,3 @@
-
 **Installation:
 
 Pathauto is an extension to the path module, which must be enabled.
