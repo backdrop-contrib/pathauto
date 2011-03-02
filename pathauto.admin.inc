@@ -146,7 +146,7 @@ function pathauto_settings_form($form) {
     $description .= ' ' . t('The <a href="!url">Redirect module settings</a> affect whether a redirect is created when an alias is deleted.', array('!url' => url('admin/config/search/redirect')));
   }
   else {
-    $description .= ' ' .t('Considering installing the <a href="!url">Redirect module</a> to get redirects when your aliases change.', array('!url' => 'http://drupal.org/project/redirect'));
+    $description .= ' ' . t('Considering installing the <a href="!url">Redirect module</a> to get redirects when your aliases change.', array('!url' => 'http://drupal.org/project/redirect'));
   }
   $form['pathauto_update_action'] = array(
     '#type' => 'radios',
@@ -349,7 +349,7 @@ function pathauto_bulk_update_batch_finished($success, $results, $operations) {
       drupal_set_message(format_plural($results['count_changed'], 'Generated 1 URL alias.', 'Generated @count URL aliases.'));
     }
     else {
-      drupal_set_message('No new URL aliases to generate.');
+      drupal_set_message(t('No new URL aliases to generate.'));
     }
   }
   else {
