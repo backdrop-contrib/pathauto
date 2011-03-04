@@ -344,16 +344,16 @@ function pathauto_form_alter(&$form, &$form_state, $form_id) {
         $form['path']['pathauto']['#description'] .= ' ' . t('To control the format of the generated aliases, see the <a href="@url-patterns">URL alias patterns</a>.', array('@url-patterns' => url('admin/config/search/path/patterns')));
       }
 
-      if ($node->path['pathauto'] && !empty($node->old_alias) && empty($path['alias'])) {
+      if ($node->path['pathauto'] && !empty($node->old_alias) && empty($node->path['alias'])) {
         $form['path']['alias']['#default_value'] = $node->old_alias;
-        $path['alias'] = $node->old_alias;
+        $node->path['alias'] = $node->old_alias;
       }
 
       // For Pathauto to remember the old alias and prevent the Path-module from deleteing it when Pathauto wants to preserve it
-      if (!empty($path['alias'])) {
+      if (!empty($node->path['alias'])) {
         $form['path']['old_alias'] = array(
           '#type' => 'value',
-          '#value' => $path['alias'],
+          '#value' => $node->path['alias'],
         );
       }
     }
