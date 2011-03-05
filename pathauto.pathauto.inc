@@ -253,7 +253,7 @@ function forum_pathauto_bulk_update_batch_process(&$context) {
   pathauto_taxonomy_term_update_alias_multiple($tids, 'bulkupdate');
   $context['sandbox']['count'] += count($tids);
   $context['sandbox']['current'] = max($tids);
-  $context['message'] = t('Updated alias for fourm @tid.', array('@tid' => end($tids)));
+  $context['message'] = t('Updated alias for forum @tid.', array('@tid' => end($tids)));
 
   if ($context['sandbox']['count'] != $context['sandbox']['total']) {
     $context['finished'] = $context['sandbox']['count'] / $context['sandbox']['total'];
