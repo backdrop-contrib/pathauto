@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @defgroup pathauto Pathauto: Automatically generates aliases for content
  *

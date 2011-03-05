@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Pathauto integration for core modules.

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Miscellaneous functions for Pathauto.
