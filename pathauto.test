@@ -175,6 +175,9 @@ class PathautoUnitTestCase extends PathautoTestHelper {
     // Test length truncation and duplicate separator removal.
     $tests[' - Pathauto is the greatest - module ever in Drupal history - '] = 'pathauto-greatest';
 
+    // Test that HTML tags are removed.
+    $tests['This <span class="text">text</span> has <br /><a href="http://example.com"><strong>HTML tags</strong></a>.'] = 'text-has-html-tags';
+
     foreach ($tests as $input => $expected) {
       $output = pathauto_cleanstring($input);
       $this->assertEqual($output, $expected, t("pathauto_cleanstring('@input') expected '@expected', actual '@output'", array('@input' => $input, '@expected' => $expected, '@output' => $output)));

@@ -118,6 +118,9 @@ function _pathauto_existing_alias_data($source, $language = LANGUAGE_NONE) {
 function pathauto_cleanstring($string) {
   $output = $string;
 
+  // Remove all HTML tags from the string.
+  $output = strip_tags($string);
+
   // Optionally transliterate (by running through the Transliteration module)
   if (variable_get('pathauto_transliterate', FALSE)) {
     if (module_exists('transliteration')) {
