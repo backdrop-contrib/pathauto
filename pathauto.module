@@ -225,7 +225,11 @@ function pathauto_entity_path_delete_all($entity_type, $entity, $default_uri = N
  * Respond to machine name changes for pattern variables.
  */
 function pathauto_field_attach_rename_bundle($entity_type, $bundle_old, $bundle_new) {
-  $variables = db_query("SELECT name FROM {variable} WHERE name LIKE :pattern", array(':pattern' => db_like("pathauto_{$entity_type}_{$bundle_old}_") . '%'))->fetchCol();
+  $variables = db_select('variable', 'v')
+    ->fields('v', array('name'))
+    ->condition('name', db_like("pathauto_{$entity_type}_{$bundle_old}_") . '%', 'LIKE')
+    ->execute()
+    ->fetchCol();
   foreach ($variables as $variable) {
     $value = variable_get($variable, '');
     variable_del($variable);
@@ -240,7 +244,11 @@ function pathauto_field_attach_rename_bundle($entity_type, $bundle_old, $bundle_
  * Respond to sub-types being deleted, their patterns can be removed.
  */
 function pathauto_field_attach_delete_bundle($entity_type, $bundle) {
-  $variables = db_query("SELECT name FROM {variable} WHERE name LIKE :pattern", array(':pattern' => db_like("pathauto_{$entity_type}_{$bundle}_") . '%'))->fetchCol();
+  $variables = db_select('variable', 'v')
+    ->fields('v', array('name'))
+    ->condition('name', db_like("pathauto_{$entity_type}_{$bundle}_") . '%', 'LIKE')
+    ->execute()
+    ->fetchCol();
   foreach ($variables as $variable) {
     variable_del($variable);
   }
