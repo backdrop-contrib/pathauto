@@ -349,6 +349,38 @@ function pathauto_entity_presave($entity, $type) {
   }
 }
 
+/**
+ * Implements hook_field_extra_fields_alter().
+ *
+ * Add support for the 'URL path settings' to be re-ordered by the user on the
+ * 'Manage Fields' tab of content types and vocabularies. We use the alter hook
+ * so that we don't cause problems if other modules provide support for this.
+ */
+function pathauto_field_extra_fields_alter(&$info) {
+  foreach (node_type_get_types() as $node_type) {
+    if (!isset($info['node'][$node_type->type]['form']['path'])) {
+      $info['node'][$node_type->type]['form']['path'] = array(
+        'label' => t('URL path settings'),
+        'description' => t('Path module form elements'),
+        'weight' => 30,
+      );
+    }
+  }
+
+  if (module_exists('taxonomy')) {
+    $vocabularies = taxonomy_get_vocabularies();
+    foreach ($vocabularies as $vocabulary) {
+      if (!isset($info['taxonomy_term'][$vocabulary->machine_name]['form']['path'])) {
+        $info['taxonomy_term'][$vocabulary->machine_name]['form']['path'] = array(
+          'label' => t('URL path settings'),
+          'description' => t('Path module form elements'),
+          'weight' => 30,
+        );
+      }
+    }
+  }
+}
+
 //==============================================================================
 // Some node related functions.
 
