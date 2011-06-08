@@ -117,7 +117,23 @@ function _pathauto_existing_alias_data($source, $language = LANGUAGE_NONE) {
  *   The cleaned string.
  */
 function pathauto_cleanstring($string) {
-  $output = $string;
+  // Use the advanced drupal_static() pattern, since this is called very often.
+  static $drupal_static_fast;
+  if (!isset($drupal_static_fast)) {
+    $drupal_static_fast['strings'] = &drupal_static(__FUNCTION__);
+  }
+  $strings = &$drupal_static_fast['strings'];
+
+  // Empty strings do not need any proccessing.
+  if ($string === '' || $string === NULL) {
+    return '';
+  }
+
+  // Check if the string has already been processed, and if so return the
+  // cached result.
+  if (isset($strings[$string])) {
+    return $strings[$string];
+  }
 
   // Remove all HTML tags from the string.
   $output = strip_tags($string);
@@ -186,6 +202,9 @@ function pathauto_cleanstring($string) {
   // Shorten to a logical place based on word boundaries.
   $maxlength = min(variable_get('pathauto_max_component_length', 100), _pathauto_get_schema_alias_maxlength());
   $output = truncate_utf8($output, $maxlength, TRUE);
+
+  // Cache this result in the static array.
+  $strings[$string] = $output;
 
   return $output;
 }
