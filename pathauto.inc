@@ -120,9 +120,55 @@ function pathauto_cleanstring($string) {
   // Use the advanced drupal_static() pattern, since this is called very often.
   static $drupal_static_fast;
   if (!isset($drupal_static_fast)) {
-    $drupal_static_fast['strings'] = &drupal_static(__FUNCTION__);
+    $drupal_static_fast['cache'] = &drupal_static(__FUNCTION__);
   }
-  $strings = &$drupal_static_fast['strings'];
+  $cache = &$drupal_static_fast['cache'];
+
+  // Generate and cache variables used in this function so that on the second
+  // call to pathauto_cleanstring() we focus on processing.
+  if (!isset($cache)) {
+    $cache = array(
+      'separator' => variable_get('pathauto_separator', '-'),
+      'strings' => array(),
+      'transliterate' => variable_get('pathauto_transliterate', FALSE) && module_exists('transliteration'),
+      'punctuation' => array(),
+      'reduce_ascii' => (bool) variable_get('pathauto_reduce_ascii', FALSE),
+      'ignore_words_regex' => FALSE,
+      'lowercase' => (bool) variable_get('pathauto_case', PATHAUTO_CASE_LOWER),
+      'maxlength' => min(variable_get('pathauto_max_component_length', 100), _pathauto_get_schema_alias_maxlength()),
+    );
+
+    // Generate and cache the punctuation replacements for strtr().
+    $punctuation = pathauto_punctuation_chars();
+    foreach ($punctuation as $name => $details) {
+      $action = variable_get('pathauto_punctuation_' . $name, PATHAUTO_PUNCTUATION_REMOVE);
+      switch ($action) {
+        case PATHAUTO_PUNCTUATION_REMOVE:
+          $cache['punctuation'][$details['value']] = '';
+          break;
+        case PATHAUTO_PUNCTUATION_REPLACE:
+          $cache['punctuation'][$details['value']] = $cache['separator'];
+          break;
+        case PATHAUTO_PUNCTUATION_DO_NOTHING:
+          // Literally do nothing.
+          break;
+      }
+    }
+
+    // Generate and cache the ignored words regular expression.
+    $ignore_words = variable_get('pathauto_ignore_words', PATHAUTO_IGNORE_WORDS);
+    $ignore_words_regex = preg_replace(array('/^[,\s]+|[,\s]+$/', '/[,\s]+/'), array('', '\b|\b'), $ignore_words);
+    if ($ignore_words_regex) {
+      $cache['ignore_words_regex'] = '\b' . $ignore_words_regex . '\b';
+      if (function_exists('mb_eregi_replace')) {
+        $cache['ignore_words_callback'] = 'mb_eregi_replace';
+      }
+      else {
+        $cache['ignore_words_callback'] = 'preg_replace';
+        $cache['ignore_words_regex'] = '/' . $cache['ignore_words_regex'] . '/i';
+      }
+    }
+  }
 
   // Empty strings do not need any proccessing.
   if ($string === '' || $string === NULL) {
@@ -131,80 +177,50 @@ function pathauto_cleanstring($string) {
 
   // Check if the string has already been processed, and if so return the
   // cached result.
-  if (isset($strings[$string])) {
-    return $strings[$string];
+  if (isset($cache['strings'][$string])) {
+    return $cache['strings'][$string];
   }
 
   // Remove all HTML tags from the string.
   $output = strip_tags($string);
 
   // Optionally transliterate (by running through the Transliteration module)
-  if (variable_get('pathauto_transliterate', FALSE)) {
-    if (module_exists('transliteration')) {
-      $output = transliteration_get($output);
-    }
-    else {
-      drupal_set_message(t('Pathauto could not transliterate the path, as the Transliteration module has been disabled.'), 'error');
-    }
+  if ($cache['can_transliterate']) {
+    $output = transliteration_get($output);
   }
 
   // Replace or drop punctuation based on user settings
-  $separator = variable_get('pathauto_separator', '-');
-  $punctuation = pathauto_punctuation_chars();
-  foreach ($punctuation as $name => $details) {
-    $action = variable_get('pathauto_punctuation_' . $name, PATHAUTO_PUNCTUATION_REMOVE);
-    if ($action != PATHAUTO_PUNCTUATION_DO_NOTHING) {
-      // Slightly tricky inline if which either replaces with the separator or nothing
-      $output = str_replace($details['value'], ($action ? $separator : ''), $output);
-    }
-  }
+  $output = strtr($output, $cache['punctuation']);
 
   // Reduce strings to letters and numbers
-  if (variable_get('pathauto_reduce_ascii', FALSE)) {
-    $pattern = '/[^a-zA-Z0-9\/]+/';
-    $output = preg_replace($pattern, $separator, $output);
-  }
-
-  // Calculate and statically cache the ignored words regex expression.
-  $ignore_words_regex = &drupal_static('pathauto_cleanstring:ignore_words_regex');
-  if (!isset($ignore_words_regex)) {
-    $ignore_words = variable_get('pathauto_ignore_words', PATHAUTO_IGNORE_WORDS);
-    $ignore_words_regex = preg_replace(array('/^[,\s]+|[,\s]+$/', '/[,\s]+/'), array('', '\b|\b'), $ignore_words);
-    if ($ignore_words_regex) {
-      $ignore_words_regex = '\b' . $ignore_words_regex . '\b';
-    }
+  if ($cache['reduce_ascii']) {
+    $output = preg_replace('/[^a-zA-Z0-9\/]+/', $cache['separator'], $output);
   }
 
   // Get rid of words that are on the ignore list
-  if ($ignore_words_regex) {
-    if (function_exists('mb_eregi_replace')) {
-      $words_removed = mb_eregi_replace($ignore_words_regex, '', $output);
-    }
-    else {
-      $words_removed = preg_replace("/$ignore_words_regex/i", '', $output);
-    }
+  if ($cache['ignore_words_regex']) {
+    $words_removed = $cache['ignore_words_callback']($cache['ignore_words_regex'], '', $output);
     if (drupal_strlen(trim($words_removed)) > 0) {
       $output = $words_removed;
     }
   }
 
   // Always replace whitespace with the separator.
-  $output = preg_replace('/\s+/', $separator, $output);
+  $output = preg_replace('/\s+/', $cache['separator'], $output);
 
   // Trim duplicates and remove trailing and leading separators.
-  $output = _pathauto_clean_separators($output);
+  $output = _pathauto_clean_separators($output, $cache['separator']);
 
   // Optionally convert to lower case.
-  if (variable_get('pathauto_case', PATHAUTO_CASE_LOWER)) {
+  if ($cache['lowercase']) {
     $output = drupal_strtolower($output);
   }
 
   // Shorten to a logical place based on word boundaries.
-  $maxlength = min(variable_get('pathauto_max_component_length', 100), _pathauto_get_schema_alias_maxlength());
-  $output = truncate_utf8($output, $maxlength, TRUE);
+  $output = truncate_utf8($output, $cache['maxlength'], TRUE);
 
   // Cache this result in the static array.
-  $strings[$string] = $output;
+  $cache['strings'][$string] = $output;
 
   return $output;
 }
@@ -223,11 +239,16 @@ function pathauto_cleanstring($string) {
  * @see pathauto_clean_alias()
  */
 function _pathauto_clean_separators($string, $separator = NULL) {
-  $output = $string;
+  static $default_separator;
 
   if (!isset($separator)) {
-    $separator = variable_get('pathauto_separator', '-');
+    if (!isset($default_separator)) {
+      $default_separator = variable_get('pathauto_separator', '-');
+    }
+    $separator = $default_separator;
   }
+
+  $output = $string;
 
   // Clean duplicate or trailing separators.
   if (strlen($separator)) {
