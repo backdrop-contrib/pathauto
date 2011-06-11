@@ -185,7 +185,7 @@ function pathauto_cleanstring($string) {
   $output = strip_tags($string);
 
   // Optionally transliterate (by running through the Transliteration module)
-  if ($cache['can_transliterate']) {
+  if ($cache['transliterate']) {
     $output = transliteration_get($output);
   }
 
