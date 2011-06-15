@@ -284,6 +284,14 @@ function _pathauto_clean_separators($string, $separator = NULL) {
  *   The cleaned URL alias.
  */
 function pathauto_clean_alias($alias) {
+  $cache = &drupal_static(__FUNCTION__);
+
+  if (!isset($cache)) {
+    $cache = array(
+      'maxlength' => min(variable_get('pathauto_max_length', 100), _pathauto_get_schema_alias_maxlength()),
+    );
+  }
+
   $output = $alias;
 
   // Trim duplicate, leading, and trailing back-slashes.
@@ -293,8 +301,7 @@ function pathauto_clean_alias($alias) {
   $output = _pathauto_clean_separators($output);
 
   // Shorten to a logical place based on word boundaries.
-  $maxlength = min(variable_get('pathauto_max_length', 100), _pathauto_get_schema_alias_maxlength());
-  $output = truncate_utf8($output, $maxlength, TRUE);
+  $output = truncate_utf8($output, $cache['maxlength'], TRUE);
 
   return $output;
 }
