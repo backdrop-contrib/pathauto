@@ -435,6 +435,12 @@ function _pathauto_path_is_callback($path) {
   if (isset($menu['path']) && $menu['path'] == $path) {
     return TRUE;
   }
+  elseif (is_file(DRUPAL_ROOT . '/' . $path) || is_dir(DRUPAL_ROOT . '/' . $path)) {
+    // Do not allow existing files or directories to get assigned an automatic
+    // alias. Note that we do not need to use is_link() to check for symbolic
+    // links since this returns TRUE for either is_file() or is_dir() already.
+    return TRUE;
+  }
   return FALSE;
 }
 
