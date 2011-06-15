@@ -389,8 +389,10 @@ function pathauto_field_extra_fields_alter(&$info) {
   }
 }
 
-//==============================================================================
-// Some node related functions.
+/**
+ * @name pathauto_node Pathauto integration for the core node module.
+ * @{
+ */
 
 /**
  * Implements hook_node_insert().
@@ -488,8 +490,14 @@ function pathauto_node_update_alias_multiple(array $nids, $op, array $options = 
   }
 }
 
-//==============================================================================
-// Taxonomy related functions.
+/**
+ * @} End of "name pathauto_node".
+ */
+
+/**
+ * @name pathauto_taxonomy Pathauto integration for the core taxonomy module.
+ * @{
+ */
 
 /**
  * Implements hook_taxonomy_term_insert().
@@ -599,8 +607,14 @@ function pathauto_taxonomy_term_update_alias_multiple(array $tids, $op, array $o
   }
 }
 
-//==============================================================================
-// User related functions. For users, trackers, and blogs.
+/**
+ * @} End of "name pathauto_taxonomy".
+ */
+
+/**
+ * @name pathauto_user Pathauto integration for the core user and blog modules.
+ * @{
+ */
 
 /**
  * Implements hook_user_insert().
@@ -719,3 +733,7 @@ function pathauto_blog_update_alias(stdClass $account, $op, array $options = arr
     pathauto_path_delete_all("blog/{$account->uid}");
   }
 }
+
+/**
+ * @} End of "name pathauto_user".
+ */
