@@ -438,7 +438,16 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
  *   TRUE if the path already exists.
  */
 function _pathauto_path_is_callback($path) {
-  $menu = menu_get_item($path);
+  // We need to use a try/catch here because of a core bug which will throw an
+  // exception if $path is something like 'node/foo/bar'.
+  // @todo Remove when http://drupal.org/node/1302158 is fixed in core.
+  try {
+    $menu = menu_get_item($path);
+  }
+  catch (Exception $e) {
+    return FALSE;
+  }
+
   if (isset($menu['path']) && $menu['path'] == $path) {
     return TRUE;
   }
@@ -575,7 +584,6 @@ function pathauto_clean_token_values(&$replacements, $data = array(), $options =
     if (!preg_match('/(path|alias|url|url-brief)\]$/', $token)) {
       $replacements[$token] = pathauto_cleanstring($value);
     }
-    // @todo Clean up 'tree-style' tokens that are not actually URLs.
   }
 }
 
