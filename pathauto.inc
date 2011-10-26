@@ -391,20 +391,10 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
     return '';
   }
 
-  // If the alias already exists, generate a new, hopefully unique, variant
-  if (_pathauto_alias_exists($alias, $source, $language)) {
-    $maxlength = min(variable_get('pathauto_max_length', 100), _pathauto_get_schema_alias_maxlength());
-    $separator = variable_get('pathauto_separator', '-');
-    $original_alias = $alias;
-
-    $i = 0;
-    do {
-      // Append an incrementing numeric suffix until we find a unique alias.
-      $unique_suffix = $separator . $i;
-      $alias = truncate_utf8($original_alias, $maxlength - drupal_strlen($unique_suffix, TRUE)) . $unique_suffix;
-      $i++;
-    } while (_pathauto_alias_exists($alias, $source, $language));
-
+  // If the alias already exists, generate a new, hopefully unique, variant.
+  $original_alias = $alias;
+  pathauto_alias_uniquify($alias, $source, $language);
+  if ($original_alias != $alias) {
     // Alert the user why this happened.
     _pathauto_verbose(t('The automatically generated alias %original_alias conflicted with an existing alias. Alias changed to %alias.', array(
       '%original_alias' => $original_alias,
@@ -425,6 +415,39 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
   );
   $path = _pathauto_set_alias($path, $existing_alias, $op);
   return $path;
+}
+
+/**
+ * Check to ensure a path alias is unique and add suffix variants if necessary.
+ *
+ * Given an alias 'content/test' if a path alias with the exact alias already
+ * exists, the function will change the alias to 'content/test-0' and will
+ * increase the number suffix until it finds a unique alias.
+ *
+ * @param $alias
+ *   A string with the alias. Can be altered by reference.
+ * @param $source
+ *   A string with the path source.
+ * @param $langcode
+ *   A string with a language code.
+ */
+function pathauto_alias_uniquify(&$alias, $source, $langcode) {
+  if (!_pathauto_alias_exists($alias, $source, $langcode)) {
+    return;
+  }
+
+  // If the alias already exists, generate a new, hopefully unique, variant
+  $maxlength = min(variable_get('pathauto_max_length', 100), _pathauto_get_schema_alias_maxlength());
+  $separator = variable_get('pathauto_separator', '-');
+  $original_alias = $alias;
+
+  $i = 0;
+  do {
+    // Append an incrementing numeric suffix until we find a unique alias.
+    $unique_suffix = $separator . $i;
+    $alias = truncate_utf8($original_alias, $maxlength - drupal_strlen($unique_suffix, TRUE)) . $unique_suffix;
+    $i++;
+  } while (_pathauto_alias_exists($alias, $source, $langcode));
 }
 
 /**
