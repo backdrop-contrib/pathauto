@@ -315,14 +315,15 @@ function pathauto_field_attach_form($entity_type, $entity, &$form, &$form_state,
 
   $form['path']['pathauto'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Automatic alias'),
+    '#title' => t('Generate automatic URL alias'),
     '#default_value' => $entity->path['pathauto'],
-    '#description' => t('An alias will be generated for you. If you wish to create your own alias below, uncheck this option.'),
+    '#description' => t('Uncheck this to create a custom alias below.'),
     '#weight' => -1,
   );
 
-  if (user_access('administer pathauto')) {
-    $form['path']['pathauto']['#description'] .= ' ' . t('To control the format of the generated aliases, see the <a href="@url-patterns">URL alias patterns</a>.', array('@url-patterns' => url('admin/config/search/path/patterns')));
+  // Add a shortcut link to configure URL alias patterns.
+  if (drupal_valid_path('admin/config/search/path/patterns')) {
+    $form['path']['pathauto']['#description'] .= ' ' . l(t('Configure URL alias patterns.'), 'admin/config/search/path/patterns');
   }
 
   if ($entity->path['pathauto'] && !empty($entity->old_alias) && empty($entity->path['alias'])) {
