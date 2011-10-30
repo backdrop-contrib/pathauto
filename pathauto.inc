@@ -378,10 +378,10 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
   $context = array(
     'module' => $module,
     'op' => $op,
-    'source' => $source,
+    'source' => &$source,
     'data' => $data,
     'type' => $type,
-    'language' => $language,
+    'language' => &$language,
     'pattern' => $pattern,
   );
   drupal_alter('pathauto_alias', $alias, $context);
