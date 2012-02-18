@@ -287,7 +287,7 @@ function pathauto_field_attach_form($entity_type, $entity, &$form, &$form_state,
   }
 
   $pattern = pathauto_pattern_load_by_entity($entity_type, $bundle, $langcode);
-  if (!$pattern) {
+  if (empty($pattern)) {
     return;
   }
 
@@ -462,7 +462,7 @@ function pathauto_node_update_alias(stdClass $node, $op, array $options = array(
   }
 
   $options += array(
-    'language' => isset($node->language) ? $node->language : LANGUAGE_NONE,
+    'language' => !empty($node->language) ? $node->language : LANGUAGE_NONE,
   );
 
   // Skip processing if the node has no pattern.
@@ -536,7 +536,7 @@ function pathauto_taxonomy_term_delete($term) {
  */
 function pathauto_form_taxonomy_form_term_alter(&$form, $form_state) {
   $term = $form_state['term'];
-  $langcode = isset($term->language) ? $term->language : LANGUAGE_NONE;
+  $langcode = !empty($term->language) ? $term->language : LANGUAGE_NONE;
   pathauto_field_attach_form('taxonomy_term', $term, $form, $form_state, $langcode);
 }
 
@@ -558,7 +558,7 @@ function pathauto_taxonomy_term_update_alias(stdClass $term, $op, array $options
 
   $options += array(
     'alias children' => FALSE,
-    'language' => isset($term->language) ? $term->language : LANGUAGE_NONE,
+    'language' => !empty($term->language) ? $term->language : LANGUAGE_NONE,
   );
 
   $module = 'taxonomy_term';
