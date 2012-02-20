@@ -385,10 +385,17 @@ class PathautoFunctionalTestCase extends PathautoFunctionalTestHelper {
    * Basic functional testing of Pathauto.
    */
   function testNodeEditing() {
+    // Delete the default node pattern. Only the page content type will have a pattern.
+    variable_del('pathauto_node_pattern');
+
+    // Ensure that the Pathauto checkbox is checked by default on the node add form.
+    $this->drupalGet('node/add/page');
+    $this->assertFieldChecked('edit-path-pathauto');
+
     // Create node for testing by previewing and saving the node form.
     $title = ' Testing: node title [';
     $automatic_alias = 'content/testing-node-title';
-    $this->drupalPost('node/add/page', array('title' => $title), 'Preview');
+    $this->drupalPost(NULL, array('title' => $title), 'Preview');
     $this->drupalPost(NULL, array(), 'Save');
     $node = $this->drupalGetNodeByTitle($title);
 
@@ -425,6 +432,23 @@ class PathautoFunctionalTestCase extends PathautoFunctionalTestHelper {
     $this->assertResponse(404, 'Node not accessible through automatic alias.');
     $this->drupalGet($manual_alias);
     $this->assertText($title, 'Node accessible through manual alias.');
+
+    // Now attempt to create a node that has no pattern (article content type).
+    // The Pathauto checkbox should not exist.
+    $this->drupalGet('node/add/article');
+    $this->assertNoFieldById('edit-path-pathauto');
+    $this->assertFieldByName('path[alias]', '');
+
+    $edit = array();
+    $edit['title'] = 'My test article';
+    $this->drupalPost(NULL, $edit, t('Save'));
+    $node = $this->drupalGetNodeByTitle($edit['title']);
+
+    // Pathauto checkbox should still not exist.
+    $this->drupalGet('node/' . $node->nid . '/edit');
+    $this->assertNoFieldById('edit-path-pathauto');
+    $this->assertFieldByName('path[alias]', '');
+    $this->assertNoEntityAlias('node', $node);
   }
 
   /**
@@ -496,6 +520,15 @@ class PathautoFunctionalTestCase extends PathautoFunctionalTestHelper {
     $this->assertResponse(404, 'Term not accessible through automatic alias.');
     $this->drupalGet($manual_alias);
     $this->assertText($name, 'Term accessible through manual alias.');
+  }
+
+  /**
+   * Basic functional testing of Pathauto with users.
+   */
+  function testUserEditing() {
+    // There should be no Pathauto checkbox on user forms.
+    $this->drupalGet('user/' . $this->admin_user->uid . '/edit');
+    $this->assertNoFieldById('edit-path-pathauto');
   }
 
   /**
