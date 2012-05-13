@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @file
+ * Token integration for the Pathauto module.
+ */
+
+/**
  * Implements hook_token_info().
  */
 function pathauto_token_info() {
