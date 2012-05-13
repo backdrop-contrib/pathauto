@@ -358,6 +358,29 @@ function pathauto_entity_presave($entity, $type) {
   }
 }
 
+/**
+ * Implements hook_action_info().
+ */
+function pathauto_action_info() {
+  $info['pathauto_node_update_action'] = array(
+    'type' => 'node',
+    'label' => t('Update node alias'),
+    'configurable' => FALSE,
+  );
+  $info['pathauto_taxonomy_term_update_action'] = array(
+    'type' => 'taxonomy_term',
+    'label' => t('Update taxonomy term alias'),
+    'configurable' => FALSE,
+  );
+  $info['pathauto_user_update_action'] = array(
+    'type' => 'user',
+    'label' => t('Update user alias'),
+    'configurable' => FALSE,
+  );
+
+  return $info;
+}
+
 if (!function_exists('path_field_extra_fields')) {
 /**
  * Implements hook_field_extra_fields() on behalf of path.module.
@@ -500,6 +523,13 @@ function pathauto_node_update_alias_multiple(array $nids, $op, array $options = 
 }
 
 /**
+ * Update action wrapper for pathauto_node_update_alias().
+ */
+function pathauto_node_update_action($node, $context = array()) {
+  pathauto_node_update_alias($node, 'bulkupdate', array('message' => TRUE));
+}
+
+/**
  * @} End of "name pathauto_node".
  */
 
@@ -621,6 +651,13 @@ function pathauto_taxonomy_term_update_alias_multiple(array $tids, $op, array $o
 }
 
 /**
+ * Update action wrapper for pathauto_taxonomy_term_update_alias().
+ */
+function pathauto_taxonomy_term_update_action($term, $context = array()) {
+  pathauto_taxonomy_term_update_alias($term, 'bulkupdate', array('message' => TRUE));
+}
+
+/**
  * @} End of "name pathauto_taxonomy".
  */
 
@@ -722,6 +759,13 @@ function pathauto_user_update_alias_multiple(array $uids, $op, array $options = 
   if (!empty($options['message'])) {
     drupal_set_message(format_plural(count($uids), 'Updated URL alias for 1 user account.', 'Updated URL aliases for @count user accounts.'));
   }
+}
+
+/**
+ * Update action wrapper for pathauto_user_update_alias().
+ */
+function pathauto_user_update_action($user, $context = array()) {
+  pathauto_user_update_alias($user, 'bulkupdate', array('message' => TRUE));
 }
 
 /**
