@@ -356,6 +356,14 @@ function pathauto_entity_presave($entity, $type) {
      */
     $entity->path['alias'] = $entity->path['old_alias'];
   }
+
+  // Help prevent errors with progromatically creating entities by defining
+  // path['alias'] as an empty string.
+  // @see http://drupal.org/node/1328180
+  // @see http://drupal.org/node/1576552
+  if (isset($entity->path['pathauto']) && !isset($entity->path['alias'])) {
+    $entity->path['alias'] = '';
+  }
 }
 
 /**

@@ -595,6 +595,26 @@ class PathautoFunctionalTestCase extends PathautoFunctionalTestHelper {
     $this->drupalPost('admin/config/search/path/patterns', $edit, 'Save configuration');
     $this->assertText('The configuration options have been saved.');
   }
+
+  /**
+   * Test programmatic entity creation for aliases.
+   */
+  function testProgrammaticEntityCreation() {
+    $node = $this->drupalCreateNode(array('title' => 'Test node', 'path' => array('pathauto' => TRUE)));
+    $this->assertEntityAlias('node', $node, 'content/test-node');
+
+    $vocabulary = $this->addVocabulary(array('name' => 'Tags'));
+    $term = $this->addTerm($vocabulary, array('name' => 'Test term', 'path' => array('pathauto' => TRUE)));
+    $this->assertEntityAlias('taxonomy_term', $term, 'tags/test-term');
+
+    $edit['name'] = 'Test user';
+    $edit['mail'] = 'test-user@example.com';
+    $edit['pass']   = user_password();
+    $edit['path'] = array('pathauto' => TRUE);
+    $edit['status'] = 1;
+    $account = user_save(drupal_anonymous_user(), $edit);
+    $this->assertEntityAlias('user', $account, 'users/test-user');
+  }
 }
 
 class PathautoLocaleTestCase extends PathautoFunctionalTestHelper {
