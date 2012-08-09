@@ -772,8 +772,8 @@ function pathauto_user_update_alias_multiple(array $uids, $op, array $options = 
 /**
  * Update action wrapper for pathauto_user_update_alias().
  */
-function pathauto_user_update_action($user, $context = array()) {
-  pathauto_user_update_alias($user, 'bulkupdate', array('message' => TRUE));
+function pathauto_user_update_action($account, $context = array()) {
+  pathauto_user_update_alias($account, 'bulkupdate', array('message' => TRUE));
 }
 
 /**
