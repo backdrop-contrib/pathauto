@@ -374,16 +374,19 @@ function pathauto_action_info() {
     'type' => 'node',
     'label' => t('Update node alias'),
     'configurable' => FALSE,
+    'triggers' => array(),
   );
   $info['pathauto_taxonomy_term_update_action'] = array(
     'type' => 'taxonomy_term',
     'label' => t('Update taxonomy term alias'),
     'configurable' => FALSE,
+    'triggers' => array(),
   );
   $info['pathauto_user_update_action'] = array(
     'type' => 'user',
     'label' => t('Update user alias'),
     'configurable' => FALSE,
+    'triggers' => array(),
   );
 
   return $info;
