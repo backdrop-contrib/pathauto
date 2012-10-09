@@ -113,10 +113,15 @@ function _pathauto_existing_alias_data($source, $language = LANGUAGE_NONE) {
  *
  * @param $string
  *   A string to clean.
+ * @param $options
+ *   (optional) A keyed array of settings and flags to control the Pathauto
+ *   clean string replacement process. Supported options are:
+ *   - langcode: A language code to be used when translating strings.
+ *
  * @return
  *   The cleaned string.
  */
-function pathauto_cleanstring($string) {
+function pathauto_cleanstring($string, array $options = array()) {
   // Use the advanced drupal_static() pattern, since this is called very often.
   static $drupal_static_fast;
   if (!isset($drupal_static_fast)) {
@@ -175,10 +180,12 @@ function pathauto_cleanstring($string) {
     return '';
   }
 
+  $langcode = isset($options['langcode']) ? $options['langcode'] : NULL;
+
   // Check if the string has already been processed, and if so return the
   // cached result.
-  if (isset($cache['strings'][$string])) {
-    return $cache['strings'][$string];
+  if (isset($cache['strings'][$langcode][$string])) {
+    return $cache['strings'][$langcode][$string];
   }
 
   // Remove all HTML tags from the string.
@@ -186,7 +193,10 @@ function pathauto_cleanstring($string) {
 
   // Optionally transliterate (by running through the Transliteration module)
   if ($cache['transliterate']) {
-    $output = transliteration_get($output);
+    // If the reduce strings to letters and numbers is enabled, don't bother
+    // replacing unknown characters with a question mark. Use an empty string
+    // instead.
+    $output = transliteration_get($output, $cache['reduce_ascii'] ? '' : '?', $langcode);
   }
 
   // Replace or drop punctuation based on user settings
@@ -220,7 +230,7 @@ function pathauto_cleanstring($string) {
   $output = truncate_utf8($output, $cache['maxlength'], TRUE);
 
   // Cache this result in the static array.
-  $cache['strings'][$string] = $output;
+  $cache['strings'][$langcode][$string] = $output;
 
   return $output;
 }
@@ -605,7 +615,11 @@ function pathauto_clean_token_values(&$replacements, $data = array(), $options =
   foreach ($replacements as $token => $value) {
     // Only clean non-path tokens.
     if (!preg_match('/(path|alias|url|url-brief)\]$/', $token)) {
-      $replacements[$token] = pathauto_cleanstring($value);
+      // Convert language object into language code before pathauto_cleanstring().
+      if (isset($options['language']->language)) {
+        $options['langcode'] = $options['language']->language;
+      }
+      $replacements[$token] = pathauto_cleanstring($value, $options);
     }
   }
 }
