@@ -533,7 +533,7 @@ function pathauto_node_update_alias(stdClass $node, $op, array $options = array(
 
   module_load_include('inc', 'pathauto');
   $uri = entity_uri('node', $node);
-  pathauto_create_alias('node', $op, $uri['path'], array('node' => $node), $node->type, $options['language']);
+  return pathauto_create_alias('node', $op, $uri['path'], array('node' => $node), $node->type, $options['language']);
 }
 
 /**
@@ -652,7 +652,7 @@ function pathauto_taxonomy_term_update_alias(stdClass $term, $op, array $options
 
   module_load_include('inc', 'pathauto');
   $uri = entity_uri('taxonomy_term', $term);
-  pathauto_create_alias($module, $op, $uri['path'], array('term' => $term), $term->vocabulary_machine_name, $options['language']);
+  $result = pathauto_create_alias($module, $op, $uri['path'], array('term' => $term), $term->vocabulary_machine_name, $options['language']);
 
   if (!empty($options['alias children'])) {
     // For all children generate new aliases.
@@ -662,6 +662,8 @@ function pathauto_taxonomy_term_update_alias(stdClass $term, $op, array $options
       pathauto_taxonomy_term_update_alias($subterm, $op, $options);
     }
   }
+
+  return $result;
 }
 
 /**
@@ -769,12 +771,14 @@ function pathauto_user_update_alias(stdClass $account, $op, array $options = arr
 
   module_load_include('inc', 'pathauto');
   $uri = entity_uri('user', $account);
-  pathauto_create_alias('user', $op, $uri['path'], array('user' => $account), NULL, $options['language']);
+  $return = pathauto_create_alias('user', $op, $uri['path'], array('user' => $account), NULL, $options['language']);
 
   // Because blogs are also associated with users, also generate the blog paths.
   if (!empty($options['alias blog'])) {
     pathauto_blog_update_alias($account, $op, $options);
   }
+
+  return $return;
 }
 
 /**
