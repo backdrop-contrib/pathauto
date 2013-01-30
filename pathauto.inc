@@ -260,21 +260,20 @@ function _pathauto_clean_separators($string, $separator = NULL) {
 
   $output = $string;
 
-  // Clean duplicate or trailing separators.
   if (strlen($separator)) {
-    // Escape the separator.
-    $seppattern = preg_quote($separator, '/');
-
     // Trim any leading or trailing separators.
-    $output = preg_replace("/^$seppattern+|$seppattern+$/", '', $output);
+    $output = trim($output, $separator);
 
-    // Replace trailing separators around slashes.
-    if ($separator !== '/') {
-      $output = preg_replace("/$seppattern+\/|\/$seppattern+/", "/", $output);
-    }
+    // Escape the separator for use in regular expressions.
+    $seppattern = preg_quote($separator, '/');
 
     // Replace multiple separators with a single one.
     $output = preg_replace("/$seppattern+/", $separator, $output);
+
+    // Replace trailing separators around slashes.
+    if ($separator !== '/') {
+      $output = preg_replace("/\/+$seppattern\/+|$seppattern\/+|\/+$seppattern/", "/", $output);
+    }
   }
 
   return $output;
@@ -304,11 +303,14 @@ function pathauto_clean_alias($alias) {
 
   $output = $alias;
 
-  // Trim duplicate, leading, and trailing back-slashes.
-  $output = _pathauto_clean_separators($output, '/');
-
-  // Trim duplicate, leading, and trailing separators.
+  // Trim duplicate, leading, and trailing separators. Do this before cleaning
+  // backslashes since a pattern like "[token1]/[token2]-[token3]/[token4]"
+  // could end up like "value1/-/value2" and if backslashes were cleaned first
+  // this would result in a duplicate blackslash.
   $output = _pathauto_clean_separators($output);
+
+  // Trim duplicate, leading, and trailing backslashes.
+  $output = _pathauto_clean_separators($output, '/');
 
   // Shorten to a logical place based on word boundaries.
   $output = truncate_utf8($output, $cache['maxlength'], TRUE);
