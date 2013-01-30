@@ -835,7 +835,7 @@ function pathauto_blog_update_alias(stdClass $account, $op, array $options = arr
 
   module_load_include('inc', 'pathauto');
   if (node_access('create', 'blog', $account)) {
-    pathauto_create_alias('blog', $op, "blog/{$account->uid}", array('user' => $account), NULL, $options['language']);
+    return pathauto_create_alias('blog', $op, "blog/{$account->uid}", array('user' => $account), NULL, $options['language']);
   }
   else {
     pathauto_path_delete_all("blog/{$account->uid}");
