@@ -59,20 +59,15 @@ define('PATHAUTO_PUNCTUATION_DO_NOTHING', 2);
  *   A string alias.
  * @param $source
  *   A string that is the internal path.
- * @param $language
+ * @param $langcode
  *   A string indicating the path's language.
  * @return
  *   TRUE if an alias exists, FALSE if not.
+ *
+ * @deprecated Use path_pathauto_is_alias_reserved() instead.
  */
-function _pathauto_alias_exists($alias, $source, $language = LANGUAGE_NONE) {
-  $pid = db_query_range("SELECT pid FROM {url_alias} WHERE source <> :source AND alias = :alias AND language IN (:language, :language_none) ORDER BY language DESC, pid DESC", 0, 1, array(
-    ':source' => $source,
-    ':alias' => $alias,
-    ':language' => $language,
-    ':language_none' => LANGUAGE_NONE,
-  ))->fetchField();
-
-  return !empty($pid);
+function _pathauto_alias_exists($alias, $source, $langcode = LANGUAGE_NONE) {
+  return path_pathauto_is_alias_reserved();
 }
 
 /**
@@ -444,7 +439,7 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
  *   A string with a language code.
  */
 function pathauto_alias_uniquify(&$alias, $source, $langcode) {
-  if (!_pathauto_alias_exists($alias, $source, $langcode)) {
+  if (!pathauto_is_alias_reserved($alias, $source, $langcode)) {
     return;
   }
 
@@ -459,7 +454,7 @@ function pathauto_alias_uniquify(&$alias, $source, $langcode) {
     $unique_suffix = $separator . $i;
     $alias = truncate_utf8($original_alias, $maxlength - drupal_strlen($unique_suffix, TRUE)) . $unique_suffix;
     $i++;
-  } while (_pathauto_alias_exists($alias, $source, $langcode));
+  } while (pathauto_is_alias_reserved($alias, $source, $langcode));
 }
 
 /**
@@ -517,13 +512,6 @@ function _pathauto_path_is_callback($path) {
 function _pathauto_set_alias(array $path, $existing_alias = NULL, $op = NULL) {
   $verbose = _pathauto_verbose(NULL, $op);
 
-  // Alert users that an existing callback cannot be overridden automatically
-  if (_pathauto_path_is_callback($path['alias'])) {
-    if ($verbose) {
-      _pathauto_verbose(t('Ignoring alias %alias due to existing path conflict.', array('%alias' => $path['alias'])));
-    }
-    return;
-  }
   // Alert users if they are trying to create an alias that is the same as the internal path
   if ($path['source'] == $path['alias']) {
     if ($verbose) {

@@ -26,9 +26,13 @@ define('PATHAUTO_IGNORE_WORDS', 'a, an, as, at, before, but, by, for, from, is, 
  * Implements hook_hook_info().
  */
 function pathauto_hook_info() {
-  $info['pathauto'] = array('group' => 'pathauto');
-  $info['path_alias_types'] = array('group' => 'pathauto');
-  return $info;
+  $hooks = array(
+    'pathauto',
+    'path_alias_types',
+    'pathauto_alias_alter',
+    'pathauto_is_alias_reserved',
+  );
+  return array_fill_keys($hooks, array('group' => 'pathauto'));
 }
 
 /**
@@ -37,8 +41,7 @@ function pathauto_hook_info() {
  * Adds pathauto support for core modules.
  */
 function pathauto_module_implements_alter(&$implementations, $hook) {
-  $hooks = pathauto_hook_info();
-  if (isset($hooks[$hook])) {
+  if (in_array($hook, array('pathauto', 'path_alias_types'))) {
     $modules = array('node', 'taxonomy', 'user', 'forum', 'blog');
     foreach ($modules as $module) {
       if (module_exists($module)) {
@@ -421,6 +424,39 @@ function pathauto_entity_language($entity_type, $entity, $check_language_propert
   }
 
   return !empty($langcode) ? $langcode : LANGUAGE_NONE;
+}
+
+function pathauto_is_alias_reserved($alias, $source, $langcode = LANGUAGE_NONE) {
+  foreach (module_implements('pathauto_is_alias_reserved') as $module) {
+    $result = module_invoke($module, 'pathauto_is_alias_reserved', $alias, $source, $langcode);
+    if (!empty($result)) {
+      // As soon as the first module says that an alias is in fact reserved,
+      // then there is no point in checking the rest of the modules.
+      return TRUE;
+    }
+  }
+
+  return FALSE;
+}
+
+/**
+ * Implements hook_pathauto_is_alias_reserved() on behalf of path.module.
+ */
+function path_pathauto_is_alias_reserved($alias, $source, $langcode) {
+  return (bool) db_query_range("SELECT pid FROM {url_alias} WHERE source <> :source AND alias = :alias AND language IN (:language, :language_none) ORDER BY language DESC, pid DESC", 0, 1, array(
+    ':source' => $source,
+    ':alias' => $alias,
+    ':language' => $langcode,
+    ':language_none' => LANGUAGE_NONE,
+  ))->fetchField();
+}
+
+/**
+ * Implements hook_pathauto_is_alias_reserved().
+ */
+function pathauto_pathauto_is_alias_reserved($alias, $source, $langcode) {
+  module_load_include('inc', 'pathauto');
+  return _pathauto_path_is_callback($alias);
 }
 
 if (!function_exists('path_field_extra_fields')) {

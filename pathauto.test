@@ -332,17 +332,17 @@ class PathautoUnitTestCase extends PathautoTestHelper {
 
     // Check that Pathauto does not create an alias of '/admin'.
     $node = $this->drupalCreateNode(array('title' => 'Admin', 'type' => 'page'));
-    $this->assertNoEntityAlias('node', $node);
+    $this->assertEntityAlias('node', $node, 'admin-0');
 
     // Check that Pathauto does not create an alias of '/modules'.
     $node->title = 'Modules';
     node_save($node);
-    $this->assertNoEntityAlias('node', $node);
+    $this->assertEntityAlias('node', $node, 'modules-0');
 
     // Check that Pathauto does not create an alias of '/index.php'.
     $node->title = 'index.php';
     node_save($node);
-    $this->assertNoEntityAlias('node', $node);
+    $this->assertEntityAlias('node', $node, 'index.php-0');
 
     // Check that a safe value gets an automatic alias. This is also a control
     // to ensure the above tests work properly.
