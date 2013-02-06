@@ -344,6 +344,18 @@ function pathauto_clean_alias($alias) {
 function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $language = LANGUAGE_NONE) {
   // Retrieve and apply the pattern for this content type.
   $pattern = pathauto_pattern_load_by_entity($module, $type, $language);
+
+  // Allow other modules to alter the pattern.
+  $context = array(
+    'module' => $module,
+    'op' => $op,
+    'source' => $source,
+    'data' => $data,
+    'type' => $type,
+    'language' => &$language,
+  );
+  drupal_alter('pathauto_pattern', $pattern, $context);
+
   if (empty($pattern)) {
     // No pattern? Do nothing (otherwise we may blow away existing aliases...)
     return '';
@@ -382,15 +394,8 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
   $alias = pathauto_clean_alias($alias);
 
   // Allow other modules to alter the alias.
-  $context = array(
-    'module' => $module,
-    'op' => $op,
-    'source' => &$source,
-    'data' => $data,
-    'type' => $type,
-    'language' => &$language,
-    'pattern' => $pattern,
-  );
+  $context['source'] = &$source;
+  $context['pattern'] = $pattern;
   drupal_alter('pathauto_alias', $alias, $context);
 
   // If we have arrived at an empty string, discontinue.

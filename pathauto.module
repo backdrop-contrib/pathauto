@@ -29,6 +29,7 @@ function pathauto_hook_info() {
   $hooks = array(
     'pathauto',
     'path_alias_types',
+    'pathauto_pattern_alter',
     'pathauto_alias_alter',
     'pathauto_is_alias_reserved',
   );
