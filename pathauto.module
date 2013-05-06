@@ -37,26 +37,6 @@ function pathauto_hook_info() {
 }
 
 /**
- * Implements hook_module_implements_alter().
- *
- * Adds pathauto support for core modules.
- */
-function pathauto_module_implements_alter(&$implementations, $hook) {
-  if (in_array($hook, array('pathauto', 'path_alias_types'))) {
-    $modules = array('node', 'taxonomy', 'user', 'forum', 'blog');
-    foreach ($modules as $module) {
-      if (module_exists($module)) {
-        $implementations[$module] = TRUE;
-      }
-    }
-    // Move pathauto.module to get included first since it is responsible for
-    // other modules.
-    unset($implementations['pathauto']);
-    $implementations = array_merge(array('pathauto' => 'pathauto'), $implementations);
-  }
-}
-
-/**
  * Implements hook_help().
  */
 function pathauto_help($path, $arg) {
@@ -503,6 +483,47 @@ function path_field_extra_fields() {
  */
 
 /**
+ * Implements hook_path_alias_types() on behalf of node module.
+ */
+function node_path_alias_types() {
+  return array('node/' => t('Content'));
+}
+
+/**
+ * Implements hook_pathauto().
+ */
+function node_pathauto($op) {
+  if ($op == 'settings') {
+    $settings = array();
+    $settings['module'] = 'node';
+    $settings['token_type'] = 'node';
+    $settings['groupheader'] = t('Content paths');
+    $settings['patterndescr'] = t('Default path pattern (applies to all content types with blank patterns below)');
+    $settings['patterndefault'] = 'content/[node:title]';
+    $settings['batch_update_callback'] = 'node_pathauto_bulk_update_batch_process';
+    $settings['batch_file'] = drupal_get_path('module', 'pathauto') . '/pathauto.pathauto.inc';
+
+    $languages = array();
+    if (module_exists('locale')) {
+      $languages = array(LANGUAGE_NONE => t('language neutral')) + locale_language_list('name');
+    }
+
+    foreach (node_type_get_names() as $node_type => $node_name) {
+      if (count($languages) && variable_get('language_content_type_' . $node_type, 0)) {
+        $settings['patternitems'][$node_type] = t('Default path pattern for @node_type (applies to all @node_type content types with blank patterns below)', array('@node_type' => $node_name));
+        foreach ($languages as $lang_code => $lang_name) {
+          $settings['patternitems'][$node_type . '_' . $lang_code] = t('Pattern for all @language @node_type paths', array('@node_type' => $node_name, '@language' => $lang_name));
+        }
+      }
+      else {
+        $settings['patternitems'][$node_type] = t('Pattern for all @node_type paths', array('@node_type' => $node_name));
+      }
+    }
+    return (object) $settings;
+  }
+}
+
+/**
  * Implements hook_node_insert().
  */
 function pathauto_node_insert($node) {
@@ -615,6 +636,42 @@ function pathauto_node_update_action($node, $context = array()) {
  * @name pathauto_taxonomy Pathauto integration for the core taxonomy module.
  * @{
  */
+
+/**
+ * Implements hook_path_alias_types() on behalf of taxonomy module.
+ */
+function taxonomy_path_alias_types() {
+  return array('taxonomy/term/' => t('Taxonomy terms'));
+}
+
+/**
+ * Implements hook_pathauto().
+ */
+function taxonomy_pathauto($op) {
+  if ($op == 'settings') {
+    $settings = array();
+    $settings['module'] = 'taxonomy_term';
+    $settings['token_type'] = 'term';
+    $settings['groupheader'] = t('Taxonomy term paths');
+    $settings['patterndescr'] = t('Default path pattern (applies to all vocabularies with blank patterns below)');
+    $settings['patterndefault'] = '[term:vocabulary]/[term:name]';
+    $settings['batch_update_callback'] = 'taxonomy_pathauto_bulk_update_batch_process';
+    $settings['batch_file'] = drupal_get_path('module', 'pathauto') . '/pathauto.pathauto.inc';
+
+    $vocabularies = taxonomy_get_vocabularies();
+    if (count($vocabularies)) {
+      $settings['patternitems'] = array();
+      foreach ($vocabularies as $vid => $vocabulary) {
+        if ($vid == variable_get('forum_nav_vocabulary', '')) {
+          // Skip the forum vocabulary.
+          continue;
+        }
+        $settings['patternitems'][$vocabulary->machine_name] = t('Pattern for all %vocab-name paths', array('%vocab-name' => $vocabulary->name));
+      }
+    }
+    return (object) $settings;
+  }
+}
 
 /**
  * Implements hook_taxonomy_term_insert().
@@ -742,9 +799,66 @@ function pathauto_taxonomy_term_update_action($term, $context = array()) {
  */
 
 /**
+ * @name pathauto_forum Pathauto integration for the core forum module.
+ * @{
+ */
+
+/**
+ * Implements hook_path_alias_types() on behalf of taxonomy module.
+ */
+function forum_path_alias_types() {
+  return array('forum/' => t('Forums'));
+}
+
+/**
+ * Implements hook_pathauto() for forum module.
+ */
+function forum_pathauto($op) {
+  if ($op == 'settings') {
+    $settings = array();
+    $settings['module'] = 'forum';
+    $settings['token_type'] = 'term';
+    $settings['groupheader'] = t('Forum paths');
+    $settings['patterndescr'] = t('Pattern for forums and forum containers');
+    $settings['patterndefault'] = '[term:vocabulary]/[term:name]';
+    $settings['batch_update_callback'] = 'forum_pathauto_bulk_update_batch_process';
+    $settings['batch_file'] = drupal_get_path('module', 'pathauto') . '/pathauto.pathauto.inc';
+    return (object) $settings;
+  }
+}
+
+/**
+ * @} End of "name pathauto_forum".
+ */
+
+/**
  * @name pathauto_user Pathauto integration for the core user and blog modules.
  * @{
  */
+
+/**
+ * Implements hook_path_alias_types() on behalf of user module.
+ */
+function user_path_alias_types() {
+  return array('user/' => t('Users'));
+}
+
+/**
+ * Implements hook_pathauto().
+ */
+function user_pathauto($op) {
+  if ($op == 'settings') {
+    $settings = array();
+    $settings['module'] = 'user';
+    $settings['token_type'] = 'user';
+    $settings['groupheader'] = t('User paths');
+    $settings['patterndescr'] = t('Pattern for user account page paths');
+    $settings['patterndefault'] = 'users/[user:name]';
+    $settings['batch_update_callback'] = 'user_pathauto_bulk_update_batch_process';
+    $settings['batch_file'] = drupal_get_path('module', 'pathauto') . '/pathauto.pathauto.inc';
+    return (object) $settings;
+  }
+}
 
 /**
  * Implements hook_user_insert().
@@ -853,6 +967,39 @@ function pathauto_user_update_action($account, $context = array()) {
 }
 
 /**
+ * @} End of "name pathauto_user".
+ */
+
+/**
+ * @name pathauto_blog Pathauto integration for the core blog module.
+ * @{
+ */
+
+/**
+ * Implements hook_path_alias_types() on behalf of blog module.
+ */
+function blog_path_alias_types() {
+  return array('blog/' => t('User blogs'));
+}
+
+/**
+ * Implements hook_pathauto().
+ */
+function blog_pathauto($op) {
+  if ($op == 'settings') {
+    $settings = array();
+    $settings['module'] = 'blog';
+    $settings['token_type'] = 'user';
+    $settings['groupheader'] = t('Blog paths');
+    $settings['patterndescr'] = t('Pattern for blog page paths');
+    $settings['patterndefault'] = 'blogs/[user:name]';
+    $settings['batch_update_callback'] = 'blog_pathauto_bulk_update_batch_process';
+    $settings['batch_file'] = drupal_get_path('module', 'pathauto') . '/pathauto.pathauto.inc';
+    return (object) $settings;
+  }
+}
+
+/**
  * Update the blog URL aliases for an individual user account.
  *
  * @param $account
@@ -883,5 +1030,5 @@ function pathauto_blog_update_alias(stdClass $account, $op, array $options = arr
 }
 
 /**
- * @} End of "name pathauto_user".
+ * @} End of "name pathauto_blog".
  */
