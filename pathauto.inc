@@ -475,7 +475,7 @@ function pathauto_alias_uniquify(&$alias, $source, $langcode) {
 function _pathauto_path_is_callback($path) {
   // We need to use a try/catch here because of a core bug which will throw an
   // exception if $path is something like 'node/foo/bar'.
-  // @todo Remove when http://drupal.org/node/1003788 is fixed in core.
+  // @todo Remove when http://drupal.org/node/1302158 is fixed in core.
   try {
     $menu = menu_get_item($path);
   }
