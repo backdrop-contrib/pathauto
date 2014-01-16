@@ -175,7 +175,13 @@ function pathauto_cleanstring($string, array $options = array()) {
     return '';
   }
 
-  $langcode = isset($options['langcode']) ? $options['langcode'] : NULL;
+  $langcode = NULL;
+  if (!empty($options['language']->language)) {
+    $langcode = $options['language']->language;
+  }
+  elseif (!empty($options['langcode'])) {
+    $langcode = $options['langcode'];
+  }
 
   // Check if the string has already been processed, and if so return the
   // cached result.
@@ -607,11 +613,6 @@ function _pathauto_verbose($message = NULL, $op = NULL) {
  *   An array of options used to generate the replacements.
  */
 function pathauto_clean_token_values(&$replacements, $data = array(), $options = array()) {
-  // Convert language object into language code before pathauto_cleanstring().
-  if (isset($options['language']->language)) {
-    $options['langcode'] = $options['language']->language;
-  }
-
   foreach ($replacements as $token => $value) {
     // Only clean non-path tokens.
     if (!preg_match('/(path|alias|url|url-brief)\]$/', $token)) {
