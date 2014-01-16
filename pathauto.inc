@@ -108,7 +108,7 @@ function _pathauto_existing_alias_data($source, $language = LANGUAGE_NONE) {
  *
  * @param $string
  *   A string to clean.
- * @param $options
+ * @param array $options
  *   (optional) A keyed array of settings and flags to control the Pathauto
  *   clean string replacement process. Supported options are:
  *   - langcode: A language code to be used when translating strings.
@@ -607,13 +607,14 @@ function _pathauto_verbose($message = NULL, $op = NULL) {
  *   An array of options used to generate the replacements.
  */
 function pathauto_clean_token_values(&$replacements, $data = array(), $options = array()) {
+  // Convert language object into language code before pathauto_cleanstring().
+  if (isset($options['language']->language)) {
+    $options['langcode'] = $options['language']->language;
+  }
+
   foreach ($replacements as $token => $value) {
     // Only clean non-path tokens.
     if (!preg_match('/(path|alias|url|url-brief)\]$/', $token)) {
-      // Convert language object into language code before pathauto_cleanstring().
-      if (isset($options['language']->language)) {
-        $options['langcode'] = $options['language']->language;
-      }
       $replacements[$token] = pathauto_cleanstring($value, $options);
     }
   }
