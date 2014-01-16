@@ -165,7 +165,7 @@ function pathauto_settings_form($form) {
     '#type' => 'checkbox',
     '#title' => t('Transliterate prior to creating alias'),
     '#default_value' => variable_get('pathauto_transliterate', FALSE) && module_exists('transliteration'),
-    '#description' => t('When a pattern includes certain characters (such as those with accents) should Pathauto attempt to transliterate them into the ASCII-96 alphabet? Transliteration is handled by the Transliteration module.'),
+    '#description' => t('When a pattern includes certain characters (such as those with accents) should Pathauto attempt to transliterate them into the US-ASCII alphabet? Transliteration is handled by the Transliteration module.'),
     '#access' => module_exists('transliteration'),
   );
 
