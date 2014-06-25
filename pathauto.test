@@ -425,11 +425,12 @@ class PathautoFunctionalTestCase extends PathautoFunctionalTestHelper {
     $this->drupalGet($automatic_alias);
     $this->assertText($title, 'Node accessible through automatic alias.');
 
-    // Disable the update action.
+    // Disable the update action. The checkbox should not be visible.
     variable_set('pathauto_update_action', 0);
     $this->drupalGet("node/{$node->nid}/edit");
-    $this->assertNoFieldChecked('edit-path-pathauto');
+    $this->assertNoFieldById('edit-path-pathauto');
 
+    // Reset the update action back to default. The checkbox should be visible.
     variable_del('pathauto_update_action');
     $this->drupalGet("node/{$node->nid}/edit");
     $this->assertFieldChecked('edit-path-pathauto');
@@ -475,6 +476,26 @@ class PathautoFunctionalTestCase extends PathautoFunctionalTestHelper {
     $this->assertNoFieldById('edit-path-pathauto');
     $this->assertFieldByName('path[alias]', '');
     $this->assertNoEntityAlias('node', $node);
+
+    // Set the page pattern to use only tokens so we can test the checkbox
+    // behavior if none of the tokens have a value currently.
+    variable_set('pathauto_node_page_pattern', '[node:title]');
+
+    // Create a node with an empty title. The Pathauto checkbox should still be
+    // visible but unchecked.
+    $node = $this->drupalCreateNode(array('type' => 'page', 'title' => ''));
+    $this->drupalGet('node/' . $node->nid . '/edit');
+    $this->assertNoFieldChecked('edit-path-pathauto');
+    $this->assertFieldByName('path[alias]', '');
+    $this->assertNoEntityAlias('node', $node);
+
+    $edit = array();
+    $edit['title'] = 'Valid title';
+    $edit['path[pathauto]'] = TRUE;
+    $this->drupalPost(NULL, $edit, t('Save'));
+    $this->drupalGet('node/' . $node->nid . '/edit');
+    $this->assertFieldChecked('edit-path-pathauto');
+    $this->assertFieldByName('path[alias]', 'valid-title');
   }
 
   /**

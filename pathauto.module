@@ -302,12 +302,18 @@ function pathauto_field_attach_form($entity_type, $entity, &$form, &$form_state,
     if (!empty($id)) {
       module_load_include('inc', 'pathauto');
       $uri = entity_uri($entity_type, $entity);
-      if ($pathauto_alias = pathauto_create_alias($entity_type, 'return', $uri['path'], array($entity_type => $entity), $bundle, $langcode)) {
-        $path = drupal_get_path_alias($uri['path'], $langcode);
-        $entity->path['pathauto'] = ($path != $uri['path'] && $path == $pathauto_alias);
+      $pathauto_alias = pathauto_create_alias($entity_type, 'return', $uri['path'], array($entity_type => $entity), $bundle, $langcode);
+      if ($pathauto_alias === FALSE) {
+        // If Pathauto is not going to be able to generate an alias, then we
+        // should not bother to show the checkbox since it wouldn't do anything.
+        // Note that if a pattern does apply, but all the tokens currently
+        // evaluate to empty strings, then $pathauto_alias would equal null and
+        // not false.
+        return;
       }
       else {
-        $entity->path['pathauto'] = FALSE;
+        $path = drupal_get_path_alias($uri['path'], $langcode);
+        $entity->path['pathauto'] = ($path != $uri['path'] && $path == $pathauto_alias);
       }
     }
     else {
@@ -565,14 +571,14 @@ function pathauto_node_operations() {
 function pathauto_node_update_alias(stdClass $node, $op, array $options = array()) {
   // Skip processing if the user has disabled pathauto for the node.
   if (isset($node->path['pathauto']) && empty($node->path['pathauto']) && empty($options['force'])) {
-    return;
+    return FALSE;
   }
 
   $options += array('language' => pathauto_entity_language('node', $node));
 
   // Skip processing if the node has no pattern.
   if (!pathauto_pattern_load_by_entity('node', $node->type, $options['language'])) {
-    return;
+    return FALSE;
   }
 
   module_load_include('inc', 'pathauto');
@@ -665,7 +671,7 @@ function pathauto_form_taxonomy_form_term_alter(&$form, $form_state) {
 function pathauto_taxonomy_term_update_alias(stdClass $term, $op, array $options = array()) {
   // Skip processing if the user has disabled pathauto for the term.
   if (isset($term->path['pathauto']) && empty($term->path['pathauto']) && empty($options['force'])) {
-    return;
+    return FALSE;
   }
 
   $module = 'taxonomy_term';
@@ -674,7 +680,7 @@ function pathauto_taxonomy_term_update_alias(stdClass $term, $op, array $options
       $module = 'forum';
     }
     else {
-      return;
+      return FALSE;
     }
   }
 
@@ -691,7 +697,7 @@ function pathauto_taxonomy_term_update_alias(stdClass $term, $op, array $options
 
   // Skip processing if the term has no pattern.
   if (!pathauto_pattern_load_by_entity($module, $term->vocabulary_machine_name)) {
-    return;
+    return FALSE;
   }
 
   module_load_include('inc', 'pathauto');
@@ -798,7 +804,7 @@ function pathauto_user_operations() {
 function pathauto_user_update_alias(stdClass $account, $op, array $options = array()) {
   // Skip processing if the user has disabled pathauto for the account.
   if (isset($account->path['pathauto']) && empty($account->path['pathauto']) && empty($options['force'])) {
-    return;
+    return FALSE;
   }
 
   $options += array(
@@ -810,7 +816,7 @@ function pathauto_user_update_alias(stdClass $account, $op, array $options = arr
 
   // Skip processing if the account has no pattern.
   if (!pathauto_pattern_load_by_entity('user', '', $options['language'])) {
-    return;
+    return FALSE;
   }
 
   module_load_include('inc', 'pathauto');
@@ -870,7 +876,7 @@ function pathauto_user_update_action($account, $context = array()) {
 function pathauto_blog_update_alias(stdClass $account, $op, array $options = array()) {
   // Skip processing if the blog has no pattern.
   if (!pathauto_pattern_load_by_entity('blog')) {
-    return;
+    return FALSE;
   }
 
   $options += array(
