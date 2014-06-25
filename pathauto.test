@@ -261,7 +261,7 @@ class PathautoUnitTestCase extends PathautoTestHelper {
     $node->title = 'Fifth title';
     pathauto_node_update($node);
     $this->assertEntityAlias('node', $node, 'content/fourth-title');
-    $this->assertNoAliasExists(array('alias' => 'content/fith-title'));
+    $this->assertNoAliasExists(array('alias' => 'content/fifth-title'));
 
     // Test PATHAUTO_UPDATE_ACTION_NO_NEW with unaliased node and 'update'.
     $this->deleteAllAliases();
@@ -425,13 +425,22 @@ class PathautoFunctionalTestCase extends PathautoFunctionalTestHelper {
     $this->drupalGet($automatic_alias);
     $this->assertText($title, 'Node accessible through automatic alias.');
 
+    // Disable the update action.
+    variable_set('pathauto_update_action', 0);
+    $this->drupalGet("node/{$node->nid}/edit");
+    $this->assertNoFieldChecked('edit-path-pathauto');
+
+    variable_del('pathauto_update_action');
+    $this->drupalGet("node/{$node->nid}/edit");
+    $this->assertFieldChecked('edit-path-pathauto');
+
     // Manually set the node's alias.
     $manual_alias = 'content/' . $node->nid;
     $edit = array(
       'path[pathauto]' => FALSE,
       'path[alias]' => $manual_alias,
     );
-    $this->drupalPost("node/{$node->nid}/edit", $edit, t('Save'));
+    $this->drupalPost(NULL, $edit, t('Save'));
     $this->assertText("Basic page $title has been updated.");
 
     // Check that the automatic alias checkbox is now unchecked by default.

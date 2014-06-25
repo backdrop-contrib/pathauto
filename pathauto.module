@@ -302,9 +302,13 @@ function pathauto_field_attach_form($entity_type, $entity, &$form, &$form_state,
     if (!empty($id)) {
       module_load_include('inc', 'pathauto');
       $uri = entity_uri($entity_type, $entity);
-      $path = drupal_get_path_alias($uri['path'], $langcode);
-      $pathauto_alias = pathauto_create_alias($entity_type, 'return', $uri['path'], array($entity_type => $entity), $bundle, $langcode);
-      $entity->path['pathauto'] = ($path != $uri['path'] && $path == $pathauto_alias);
+      if ($pathauto_alias = pathauto_create_alias($entity_type, 'return', $uri['path'], array($entity_type => $entity), $bundle, $langcode)) {
+        $path = drupal_get_path_alias($uri['path'], $langcode);
+        $entity->path['pathauto'] = ($path != $uri['path'] && $path == $pathauto_alias);
+      }
+      else {
+        $entity->path['pathauto'] = FALSE;
+      }
     }
     else {
       $entity->path['pathauto'] = TRUE;

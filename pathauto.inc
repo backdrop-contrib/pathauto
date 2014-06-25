@@ -369,7 +369,7 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
 
   // Special handling when updating an item which is already aliased.
   $existing_alias = NULL;
-  if ($op == 'update' || $op == 'bulkupdate') {
+  if ($op != 'insert') {
     if ($existing_alias = _pathauto_existing_alias_data($source, $language)) {
       switch (variable_get('pathauto_update_action', PATHAUTO_UPDATE_ACTION_DELETE)) {
         case PATHAUTO_UPDATE_ACTION_NO_NEW:
