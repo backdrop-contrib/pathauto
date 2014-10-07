@@ -58,7 +58,7 @@ function hook_pathauto_is_alias_reserved($alias, $source, $langcode) {
  */
 function hook_pathauto_pattern_alter(&$pattern, array &$context) {
   // Switch out any [node:created:*] tokens with [node:updated:*] on update.
-  if ($module == 'node' && ($context['op'] == 'update')) {
+  if ($context['module'] == 'node' && ($context['op'] == 'update')) {
     $pattern = preg_replace('/\[node:created(\:[^]]*)?\]/', '[node:updated$1]', $pattern);
   }
 }
