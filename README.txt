@@ -27,10 +27,10 @@ See the INSTALL.txt file.
 
 **Notices:
 Pathauto just adds URL aliases to content, users, and taxonomy terms.
-Because it's an alias, the standard Drupal URL (for example node/123 or
+Because it's an alias, the standard Backdrop URL (for example node/123 or
 taxonomy/term/1) will still function as normal.  If you have external links
-to your site pointing to standard Drupal URLs, or hardcoded links in a module,
-template, content or menu which point to standard Drupal URLs it will bypass
+to your site pointing to standard Backdrop URLs, or hardcoded links in a module,
+template, content or menu which point to standard Backdrop URLs it will bypass
 the alias set by Pathauto.
 
 There are reasons you might not want two URLs for the same content on your
@@ -38,18 +38,18 @@ site. If this applies to you, please note that you will need to update any
 hard coded links in your content or blocks.
 
 If you use the "system path" (i.e. node/10) for menu items and settings like
-that, Drupal will replace it with the url_alias.
+that, Backdrop will replace it with the url_alias.
 
 For external links, you might want to consider the Path Redirect or
 Global Redirect modules, which allow you to set forwarding either per item or
 across the site to your aliased URLs.
 
 URLs (not) Getting Replaced With Aliases:
-Please bear in mind that only URLs passed through Drupal's l() or url()
+Please bear in mind that only URLs passed through Backdrop's l() or url()
 functions will be replaced with their aliases during page output. If a module
 or your template contains hardcoded links, such as 'href="node/$node->nid"'
 those won't get replaced with their corresponding aliases. Use the
-Drupal API instead:
+Backdrop API instead:
 
 * 'href="'. url("node/$node->nid") .'"' or
 * l("Your link title", "node/$node->nid")
@@ -82,7 +82,7 @@ Significant enhancements were contributed by jdmquin @ www.bcdems.net.
 
 Matt England added the tracker support.
 
-Other suggestions and patches contributed by the Drupal community.
+Other suggestions and patches contributed by the Backdrop community.
 
 Current maintainers:
   Dave Reid - http://www.davereid.net

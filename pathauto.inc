@@ -74,7 +74,7 @@ function _pathauto_alias_exists($alias, $source, $langcode = LANGUAGE_NONE) {
  * Fetches an existing URL alias given a path and optional language.
  *
  * @param $source
- *   An internal Drupal path.
+ *   An internal Backdrop path.
  * @param $language
  *   An optional language code to look up the path in.
  * @return
@@ -84,7 +84,7 @@ function _pathauto_alias_exists($alias, $source, $langcode = LANGUAGE_NONE) {
  *   - alias: The URL alias.
  */
 function _pathauto_existing_alias_data($source, $language = LANGUAGE_NONE) {
-  $pid = db_query_range("SELECT pid FROM {url_alias} WHERE source = :source AND language IN (:language, :language_none) ORDER BY language DESC, pid DESC", 0, 1, array(':source' => $source, ':language' => $language, ':language_none' => LANGUAGE_NONE))->fetchField();
+  $pid = db_query_range("SELECT pid FROM {url_alias} WHERE source = :source AND langcode IN (:language, :language_none) ORDER BY langcode DESC, pid DESC", 0, 1, array(':source' => $source, ':language' => $language, ':language_none' => LANGUAGE_NONE))->fetchField();
   return path_load(array('pid' => $pid));
 }
 
@@ -117,31 +117,32 @@ function _pathauto_existing_alias_data($source, $language = LANGUAGE_NONE) {
  *   The cleaned string.
  */
 function pathauto_cleanstring($string, array $options = array()) {
-  // Use the advanced drupal_static() pattern, since this is called very often.
-  static $drupal_static_fast;
-  if (!isset($drupal_static_fast)) {
-    $drupal_static_fast['cache'] = &drupal_static(__FUNCTION__);
+  $config = config('pathauto.settings');
+  // Use the advanced backdrop_static() pattern, since this is called very often.
+  static $backdrop_static_fast;
+  if (!isset($backdrop_static_fast)) {
+    $backdrop_static_fast['cache'] = &backdrop_static(__FUNCTION__);
   }
-  $cache = &$drupal_static_fast['cache'];
+  $cache = &$backdrop_static_fast['cache'];
 
   // Generate and cache variables used in this function so that on the second
   // call to pathauto_cleanstring() we focus on processing.
   if (!isset($cache)) {
     $cache = array(
-      'separator' => variable_get('pathauto_separator', '-'),
+      'separator' => $config->get('separator'),
       'strings' => array(),
-      'transliterate' => variable_get('pathauto_transliterate', FALSE) && module_exists('transliteration'),
+      'transliterate' => $config->get('transliterate') && module_exists('transliteration'),
       'punctuation' => array(),
-      'reduce_ascii' => (bool) variable_get('pathauto_reduce_ascii', FALSE),
+      'reduce_ascii' => (bool) $config->get('reduce_ascii'),
       'ignore_words_regex' => FALSE,
-      'lowercase' => (bool) variable_get('pathauto_case', PATHAUTO_CASE_LOWER),
-      'maxlength' => min(variable_get('pathauto_max_component_length', 100), _pathauto_get_schema_alias_maxlength()),
+      'lowercase' => (bool) $config->get('case'),
+      'maxlength' => min($config->get('max_component_length'), _pathauto_get_schema_alias_maxlength()),
     );
 
     // Generate and cache the punctuation replacements for strtr().
     $punctuation = pathauto_punctuation_chars();
     foreach ($punctuation as $name => $details) {
-      $action = variable_get('pathauto_punctuation_' . $name, PATHAUTO_PUNCTUATION_REMOVE);
+      $action = $config->get('punctuation_' . $name);
       switch ($action) {
         case PATHAUTO_PUNCTUATION_REMOVE:
           $cache['punctuation'][$details['value']] = '';
@@ -156,7 +157,7 @@ function pathauto_cleanstring($string, array $options = array()) {
     }
 
     // Generate and cache the ignored words regular expression.
-    $ignore_words = variable_get('pathauto_ignore_words', PATHAUTO_IGNORE_WORDS);
+    $ignore_words = $config->get('ignore_words');
     $ignore_words_regex = preg_replace(array('/^[,\s]+|[,\s]+$/', '/[,\s]+/'), array('', '\b|\b'), $ignore_words);
     if ($ignore_words_regex) {
       $cache['ignore_words_regex'] = '\b' . $ignore_words_regex . '\b';
@@ -176,8 +177,8 @@ function pathauto_cleanstring($string, array $options = array()) {
   }
 
   $langcode = NULL;
-  if (!empty($options['language']->language)) {
-    $langcode = $options['language']->language;
+  if (!empty($options['language']->$langcode)) {
+    $langcode = $options['language']->$langcode;
   }
   elseif (!empty($options['langcode'])) {
     $langcode = $options['langcode'];
@@ -211,7 +212,7 @@ function pathauto_cleanstring($string, array $options = array()) {
   // Get rid of words that are on the ignore list
   if ($cache['ignore_words_regex']) {
     $words_removed = $cache['ignore_words_callback']($cache['ignore_words_regex'], '', $output);
-    if (drupal_strlen(trim($words_removed)) > 0) {
+    if (backdrop_strlen(trim($words_removed)) > 0) {
       $output = $words_removed;
     }
   }
@@ -224,7 +225,7 @@ function pathauto_cleanstring($string, array $options = array()) {
 
   // Optionally convert to lower case.
   if ($cache['lowercase']) {
-    $output = drupal_strtolower($output);
+    $output = backdrop_strtolower($output);
   }
 
   // Shorten to a logical place based on word boundaries.
@@ -250,11 +251,12 @@ function pathauto_cleanstring($string, array $options = array()) {
  * @see pathauto_clean_alias()
  */
 function _pathauto_clean_separators($string, $separator = NULL) {
+  $config = config('pathauto.settings');
   static $default_separator;
 
   if (!isset($separator)) {
     if (!isset($default_separator)) {
-      $default_separator = variable_get('pathauto_separator', '-');
+      $default_separator = $config->get('separator');
     }
     $separator = $default_separator;
   }
@@ -294,11 +296,12 @@ function _pathauto_clean_separators($string, $separator = NULL) {
  *   The cleaned URL alias.
  */
 function pathauto_clean_alias($alias) {
-  $cache = &drupal_static(__FUNCTION__);
+  $config = config('pathauto.settings');
+  $cache = &backdrop_static(__FUNCTION__);
 
   if (!isset($cache)) {
     $cache = array(
-      'maxlength' => min(variable_get('pathauto_max_length', 100), _pathauto_get_schema_alias_maxlength()),
+      'maxlength' => min($config->get('max_length'), _pathauto_get_schema_alias_maxlength()),
     );
   }
 
@@ -328,7 +331,7 @@ function pathauto_clean_alias($alias) {
  *   Operation being performed on the content being aliased
  *   ('insert', 'update', 'return', or 'bulkupdate').
  * @param $source
- *   An internal Drupal path to be aliased.
+ *   An internal Backdrop path to be aliased.
  * @param $data
  *   An array of keyed objects to pass to token_replace(). For simple
  *   replacement scenarios 'node', 'user', and others are common keys, with an
@@ -350,6 +353,7 @@ function pathauto_clean_alias($alias) {
  * @see token_replace()
  */
 function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $language = LANGUAGE_NONE) {
+  $config = config('pathauto.settings');
   // Retrieve and apply the pattern for this content type.
   $pattern = pathauto_pattern_load_by_entity($module, $type, $language);
 
@@ -362,7 +366,7 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
     'type' => $type,
     'language' => &$language,
   );
-  drupal_alter('pathauto_pattern', $pattern, $context);
+  backdrop_alter('pathauto_pattern', $pattern, $context);
 
   if (empty($pattern)) {
     // No pattern? Do nothing (otherwise we may blow away existing aliases...)
@@ -373,7 +377,7 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
   $existing_alias = NULL;
   if ($op != 'insert') {
     if ($existing_alias = _pathauto_existing_alias_data($source, $language)) {
-      switch (variable_get('pathauto_update_action', PATHAUTO_UPDATE_ACTION_DELETE)) {
+      switch ($config->get('update_action')) {
         case PATHAUTO_UPDATE_ACTION_NO_NEW:
           // If an alias already exists, and the update action is set to do nothing,
           // then gosh-darn it, do nothing.
@@ -387,7 +391,7 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
     'sanitize' => FALSE,
     'clear' => TRUE,
     'callback' => 'pathauto_clean_token_values',
-    'language' => (object) array('language' => $language),
+    'langcode' => (object) array('language' => $language),
     'pathauto' => TRUE,
   ));
 
@@ -404,10 +408,10 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
   // Allow other modules to alter the alias.
   $context['source'] = &$source;
   $context['pattern'] = $pattern;
-  drupal_alter('pathauto_alias', $alias, $context);
+  backdrop_alter('pathauto_alias', $alias, $context);
 
   // If we have arrived at an empty string, discontinue.
-  if (!drupal_strlen($alias)) {
+  if (!backdrop_strlen($alias)) {
     return;
   }
 
@@ -452,20 +456,21 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
  *   A string with a language code.
  */
 function pathauto_alias_uniquify(&$alias, $source, $langcode) {
+  $config = config('pathauto.settings');
   if (!pathauto_is_alias_reserved($alias, $source, $langcode)) {
     return;
   }
 
   // If the alias already exists, generate a new, hopefully unique, variant
-  $maxlength = min(variable_get('pathauto_max_length', 100), _pathauto_get_schema_alias_maxlength());
-  $separator = variable_get('pathauto_separator', '-');
+  $maxlength = min($config->get('max_length'), _pathauto_get_schema_alias_maxlength());
+  $separator = $config->get('separator');
   $original_alias = $alias;
 
   $i = 0;
   do {
     // Append an incrementing numeric suffix until we find a unique alias.
     $unique_suffix = $separator . $i;
-    $alias = truncate_utf8($original_alias, $maxlength - drupal_strlen($unique_suffix, TRUE)) . $unique_suffix;
+    $alias = truncate_utf8($original_alias, $maxlength - backdrop_strlen($unique_suffix, TRUE)) . $unique_suffix;
     $i++;
   } while (pathauto_is_alias_reserved($alias, $source, $langcode));
 }
@@ -494,7 +499,7 @@ function _pathauto_path_is_callback($path) {
   if (isset($menu['path']) && $menu['path'] == $path) {
     return TRUE;
   }
-  elseif (is_file(DRUPAL_ROOT . '/' . $path) || is_dir(DRUPAL_ROOT . '/' . $path)) {
+  elseif (is_file(BACKDROP_ROOT . '/' . $path) || is_dir(BACKDROP_ROOT . '/' . $path)) {
     // Do not allow existing files or directories to get assigned an automatic
     // alias. Note that we do not need to use is_link() to check for symbolic
     // links since this returns TRUE for either is_file() or is_dir() already.
@@ -523,6 +528,7 @@ function _pathauto_path_is_callback($path) {
  * @see path_save()
  */
 function _pathauto_set_alias(array $path, $existing_alias = NULL, $op = NULL) {
+  $config = config('pathauto.settings');
   $verbose = _pathauto_verbose(NULL, $op);
 
   // Alert users if they are trying to create an alias that is the same as the internal path
@@ -539,7 +545,7 @@ function _pathauto_set_alias(array $path, $existing_alias = NULL, $op = NULL) {
 
     // If there is already an alias, respect some update actions.
     if (!empty($existing_alias)) {
-      switch (variable_get('pathauto_update_action', PATHAUTO_UPDATE_ACTION_DELETE)) {
+      switch ($config->get('update_action')) {
         case PATHAUTO_UPDATE_ACTION_NO_NEW:
           // Do not create the alias.
           return FALSE;
@@ -587,10 +593,11 @@ function _pathauto_set_alias(array $path, $existing_alias = NULL, $op = NULL) {
  *   TRUE if verbose output is enabled, or FALSE otherwise.
  */
 function _pathauto_verbose($message = NULL, $op = NULL) {
+  $config = config('pathauto.settings');
   static $verbose;
 
   if (!isset($verbose)) {
-    $verbose = variable_get('pathauto_verbose', FALSE) && user_access('notify of path changes');
+    $verbose = $config->get('verbose') && user_access('notify of path changes');
   }
 
   if (!$verbose || (isset($op) && in_array($op, array('bulkupdate', 'return')))) {
@@ -598,7 +605,7 @@ function _pathauto_verbose($message = NULL, $op = NULL) {
   }
 
   if ($message) {
-    drupal_set_message($message);
+    backdrop_set_message($message);
   }
 
   return $verbose;
@@ -635,11 +642,14 @@ function pathauto_clean_token_values(&$replacements, $data = array(), $options =
  *   value and a textual description.
  */
 function pathauto_punctuation_chars() {
-  $punctuation = &drupal_static(__FUNCTION__);
+  global $language_content;
+  $punctuation = &backdrop_static(__FUNCTION__);
+  $cache_pathauto = cache('pathauto');
+
 
   if (!isset($punctuation)) {
-    $cid = 'pathauto:punctuation:' . $GLOBALS['language']->language;
-    if ($cache = cache_get($cid)) {
+    $cid = 'pathauto:punctuation:' . $language_content->langcode;
+    if ($cache = $cache_pathauto->get($cid)) {
       $punctuation = $cache->data;
     }
     else {
@@ -678,8 +688,8 @@ function pathauto_punctuation_chars() {
       $punctuation['back_slash']         = array('value' => '\\', 'name' => t('Backslash'));
 
       // Allow modules to alter the punctuation list and cache the result.
-      drupal_alter('pathauto_punctuation_chars', $punctuation);
-      cache_set($cid, $punctuation);
+      backdrop_alter('pathauto_punctuation_chars', $punctuation);
+      $cache_pathauto->set($cid, $punctuation);
     }
   }
 
@@ -693,9 +703,9 @@ function pathauto_punctuation_chars() {
  *   An integer of the maximum URL alias length allowed by the database.
  */
 function _pathauto_get_schema_alias_maxlength() {
-  $maxlength = &drupal_static(__FUNCTION__);
+  $maxlength = &backdrop_static(__FUNCTION__);
   if (!isset($maxlength)) {
-    $schema = drupal_get_schema('url_alias');
+    $schema = backdrop_get_schema('url_alias');
     $maxlength = $schema['fields']['alias']['length'];
   }
   return $maxlength;

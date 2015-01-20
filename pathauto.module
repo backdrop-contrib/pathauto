@@ -99,7 +99,7 @@ function pathauto_permission() {
 function pathauto_menu() {
   $items['admin/config/search/path/patterns'] = array(
     'title' => 'Patterns',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => array('pathauto_patterns_form'),
     'access arguments' => array('administer pathauto'),
     'type' => MENU_LOCAL_TASK,
@@ -108,7 +108,7 @@ function pathauto_menu() {
   );
   $items['admin/config/search/path/settings'] = array(
     'title' => 'Settings',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => array('pathauto_settings_form'),
     'access arguments' => array('administer pathauto'),
     'type' => MENU_LOCAL_TASK,
@@ -117,7 +117,7 @@ function pathauto_menu() {
   );
   $items['admin/config/search/path/update_bulk'] = array(
     'title' => 'Bulk generate',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => array('pathauto_bulk_update_form'),
     'access arguments' => array('administer url aliases'),
     'type' => MENU_LOCAL_TASK,
@@ -126,7 +126,7 @@ function pathauto_menu() {
   );
   $items['admin/config/search/path/delete_bulk'] = array(
     'title' => 'Delete aliases',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => array('pathauto_admin_delete'),
     'access arguments' => array('administer url aliases'),
     'type' => MENU_LOCAL_TASK,
@@ -148,21 +148,23 @@ function pathauto_menu() {
  *   A language code, defaults to the LANGUAGE_NONE constant.
  */
 function pathauto_pattern_load_by_entity($entity, $bundle = '', $language = LANGUAGE_NONE) {
-  $patterns = &drupal_static(__FUNCTION__, array());
+  $config = config('pathauto.settings');
+  $patterns = &backdrop_static(__FUNCTION__, array());
 
   $pattern_id = "$entity:$bundle:$language";
+
   if (!isset($patterns[$pattern_id])) {
     $variables = array();
     if ($language != LANGUAGE_NONE) {
-      $variables[] = "pathauto_{$entity}_{$bundle}_{$language}_pattern";
+      $variables[] = "{$entity}_{$bundle}_{$language}_pattern";
     }
     if ($bundle) {
-      $variables[] = "pathauto_{$entity}_{$bundle}_pattern";
+      $variables[] = "{$entity}_{$bundle}_pattern";
     }
-    $variables[] = "pathauto_{$entity}_pattern";
+    $variables[] = "{$entity}_pattern";
 
     foreach ($variables as $variable) {
-      if ($pattern = trim(variable_get($variable, ''))) {
+      if ($pattern = trim($config->get($variable))) {
         break;
       }
     }
@@ -177,7 +179,7 @@ function pathauto_pattern_load_by_entity($entity, $bundle = '', $language = LANG
  * Delete multiple URL aliases.
  *
  * Intent of this is to abstract a potential path_delete_multiple() function
- * for Drupal 7 or 8.
+ * for Backdrop.
  *
  * @param $pids
  *   An array of path IDs to delete.
@@ -232,17 +234,19 @@ function pathauto_entity_path_delete_all($entity_type, $entity, $default_uri = N
  * Respond to machine name changes for pattern variables.
  */
 function pathauto_field_attach_rename_bundle($entity_type, $bundle_old, $bundle_new) {
+  $config = config('pathauto.settings');
   $variables = db_select('variable', 'v')
     ->fields('v', array('name'))
     ->condition('name', db_like("pathauto_{$entity_type}_{$bundle_old}_") . '%', 'LIKE')
     ->execute()
     ->fetchCol();
   foreach ($variables as $variable) {
-    $value = variable_get($variable, '');
-    variable_del($variable);
+    $value = $config->get($variable);
+    $config->clear($variable);
     $variable = strtr($variable, array("{$entity_type}_{$bundle_old}" => "{$entity_type}_{$bundle_new}"));
-    variable_set($variable, $value);
+    $config->set($variable, $value);
   }
+  $config->save();
 }
 
 /**
@@ -251,13 +255,14 @@ function pathauto_field_attach_rename_bundle($entity_type, $bundle_old, $bundle_
  * Respond to sub-types being deleted, their patterns can be removed.
  */
 function pathauto_field_attach_delete_bundle($entity_type, $bundle) {
+  $config = config('pathauto.settings');
   $variables = db_select('variable', 'v')
     ->fields('v', array('name'))
     ->condition('name', db_like("pathauto_{$entity_type}_{$bundle}_") . '%', 'LIKE')
     ->execute()
     ->fetchCol();
   foreach ($variables as $variable) {
-    variable_del($variable);
+    $config->clear($variable);
   }
 }
 
@@ -312,7 +317,7 @@ function pathauto_field_attach_form($entity_type, $entity, &$form, &$form_state,
         return;
       }
       else {
-        $path = drupal_get_path_alias($uri['path'], $langcode);
+        $path = backdrop_get_path_alias($uri['path'], $langcode);
         $entity->path['pathauto'] = ($path != $uri['path'] && $path == $pathauto_alias);
       }
     }
@@ -327,7 +332,7 @@ function pathauto_field_attach_form($entity_type, $entity, &$form, &$form_state,
 
   // Override path.module's vertical tabs summary.
   $form['path']['#attached']['js'] = array(
-    'vertical-tabs' => drupal_get_path('module', 'pathauto') . '/pathauto.js'
+    'vertical-tabs' => backdrop_get_path('module', 'pathauto') . '/pathauto.js'
   );
 
   $form['path']['pathauto'] = array(
@@ -339,7 +344,7 @@ function pathauto_field_attach_form($entity_type, $entity, &$form, &$form_state,
   );
 
   // Add a shortcut link to configure URL alias patterns.
-  if (drupal_valid_path('admin/config/search/path/patterns')) {
+  if (backdrop_valid_path('admin/config/search/path/patterns')) {
     $form['path']['pathauto']['#description'] .= ' ' . l(t('Configure URL alias patterns.'), 'admin/config/search/path/patterns');
   }
 
@@ -454,7 +459,7 @@ function pathauto_is_alias_reserved($alias, $source, $langcode = LANGUAGE_NONE) 
  * Implements hook_pathauto_is_alias_reserved() on behalf of path.module.
  */
 function path_pathauto_is_alias_reserved($alias, $source, $langcode) {
-  return (bool) db_query_range("SELECT pid FROM {url_alias} WHERE source <> :source AND alias = :alias AND language IN (:language, :language_none) ORDER BY language DESC, pid DESC", 0, 1, array(
+  return (bool) db_query_range("SELECT pid FROM {url_alias} WHERE source <> :source AND alias = :alias AND langcode IN (:language, :language_none) ORDER BY langcode DESC, pid DESC", 0, 1, array(
     ':source' => $source,
     ':alias' => $alias,
     ':language' => $langcode,
@@ -568,7 +573,7 @@ function pathauto_node_operations() {
  * @param $options
  *   An optional array of additional options.
  */
-function pathauto_node_update_alias(stdClass $node, $op, array $options = array()) {
+function pathauto_node_update_alias(Node $node, $op, array $options = array()) {
   // Skip processing if the user has disabled pathauto for the node.
   if (isset($node->path['pathauto']) && empty($node->path['pathauto']) && empty($options['force'])) {
     return FALSE;
@@ -606,7 +611,7 @@ function pathauto_node_update_alias_multiple(array $nids, $op, array $options = 
   }
 
   if (!empty($options['message'])) {
-    drupal_set_message(format_plural(count($nids), 'Updated URL alias for 1 node.', 'Updated URL aliases for @count nodes.'));
+    backdrop_set_message(format_plural(count($nids), 'Updated URL alias for 1 node.', 'Updated URL aliases for @count nodes.'));
   }
 }
 
@@ -736,7 +741,7 @@ function pathauto_taxonomy_term_update_alias_multiple(array $tids, $op, array $o
   }
 
   if (!empty($options['message'])) {
-    drupal_set_message(format_plural(count($tids), 'Updated URL alias for 1 term.', 'Updated URL aliases for @count terms.'));
+    backdrop_set_message(format_plural(count($tids), 'Updated URL alias for 1 term.', 'Updated URL aliases for @count terms.'));
   }
 }
 
@@ -801,7 +806,7 @@ function pathauto_user_operations() {
  * @param $options
  *   An optional array of additional options.
  */
-function pathauto_user_update_alias(stdClass $account, $op, array $options = array()) {
+function pathauto_user_update_alias(User $account, $op, array $options = array()) {
   // Skip processing if the user has disabled pathauto for the account.
   if (isset($account->path['pathauto']) && empty($account->path['pathauto']) && empty($options['force'])) {
     return FALSE;
@@ -851,7 +856,7 @@ function pathauto_user_update_alias_multiple(array $uids, $op, array $options = 
   }
 
   if (!empty($options['message'])) {
-    drupal_set_message(format_plural(count($uids), 'Updated URL alias for 1 user account.', 'Updated URL aliases for @count user accounts.'));
+    backdrop_set_message(format_plural(count($uids), 'Updated URL alias for 1 user account.', 'Updated URL aliases for @count user accounts.'));
   }
 }
 
@@ -890,6 +895,17 @@ function pathauto_blog_update_alias(stdClass $account, $op, array $options = arr
   else {
     pathauto_path_delete_all("blog/{$account->uid}");
   }
+}
+
+/**
+ * Implements hook_config_info().
+ */
+function pathauto_config_info() {
+  $prefixes['pathauto.settings'] = array(
+    'label' => t('Pathauto Settings'),
+    'group' => t('Configuration'),
+  );
+  return $prefixes;
 }
 
 /**

@@ -14,12 +14,12 @@
  * @see system_settings_form()
  */
 function pathauto_patterns_form($form, $form_state) {
+  $config = config('pathauto.settings');
   // Call the hook on all modules - an array of 'settings' objects is returned
   $all_settings = module_invoke_all('pathauto', 'settings');
   foreach ($all_settings as $settings) {
     $module = $settings->module;
     $patterndescr = $settings->patterndescr;
-    $patterndefault = $settings->patterndefault;
     $groupheader = $settings->groupheader;
 
     $form[$module] = array(
@@ -30,11 +30,11 @@ function pathauto_patterns_form($form, $form_state) {
     );
 
     // Prompt for the default pattern for this module
-    $variable = 'pathauto_' . $module . '_pattern';
+    $variable = $module . '_pattern';
     $form[$module][$variable] = array(
       '#type' => 'textfield',
       '#title' => $patterndescr,
-      '#default_value' => variable_get($variable, $patterndefault),
+      '#default_value' => $config->get($variable),
       '#size' => 65,
       '#maxlength' => 1280,
       '#element_validate' => array('token_element_validate'),
@@ -48,11 +48,11 @@ function pathauto_patterns_form($form, $form_state) {
     // them up here
     if (isset($settings->patternitems)) {
       foreach ($settings->patternitems as $itemname => $itemlabel) {
-        $variable = 'pathauto_' . $module . '_' . $itemname . '_pattern';
+        $variable = $module . '_' . $itemname . '_pattern';
         $form[$module][$variable] = array(
           '#type' => 'textfield',
           '#title' => $itemlabel,
-          '#default_value' => variable_get($variable, ''),
+          '#default_value' => $config->get($variable),
           '#size' => 65,
           '#maxlength' => 1280,
           '#element_validate' => array('token_element_validate'),
@@ -78,7 +78,37 @@ function pathauto_patterns_form($form, $form_state) {
     );
   }
 
-  return system_settings_form($form);
+  $form['actions']['#type'] = 'actions';
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save configuration'),
+  );
+
+  return $form;
+}
+
+
+function pathauto_patterns_form_submit($form, &$form_state) {
+  $config = config('pathauto.settings');
+  $values = $form_state['values'];
+
+  $all_settings = module_invoke_all('pathauto', 'settings');
+  foreach ($all_settings as $settings) {
+    $module = $settings->module;
+    // Save default pattern per module
+    $variable = $module . '_pattern';
+    $config->set($variable, $values[$variable]);
+
+    // Save specialized patterns per module
+    if (isset($settings->patternitems)) {
+      foreach ($settings->patternitems as $itemname => $itemlabel) {
+        $variable = $module . '_' . $itemname . '_pattern';
+        $config->set($variable, $values[$variable]);
+      }
+    }
+  }
+
+  $config->save();
 }
 
 /**
@@ -89,27 +119,28 @@ function pathauto_patterns_form($form, $form_state) {
  */
 function pathauto_settings_form($form) {
   module_load_include('inc', 'pathauto');
+  $config = config('pathauto.settings');
 
-  $form['pathauto_verbose'] = array(
+  $form['verbose'] = array(
     '#type' => 'checkbox',
     '#title' => t('Verbose'),
-    '#default_value' => variable_get('pathauto_verbose', FALSE),
+    '#default_value' => $config->get('verbose'),
     '#description' => t('Display alias changes (except during bulk updates).'),
   );
 
-  $form['pathauto_separator'] = array(
+  $form['separator'] = array(
     '#type' => 'textfield',
     '#title' => t('Separator'),
     '#size' => 1,
     '#maxlength' => 1,
-    '#default_value' => variable_get('pathauto_separator', '-'),
+    '#default_value' => $config->get('separator'),
     '#description' => t('Character used to separate words in titles. This will replace any spaces and punctuation characters. Using a space or + character can cause unexpected results.'),
   );
 
-  $form['pathauto_case'] = array(
+  $form['case'] = array(
     '#type' => 'radios',
     '#title' => t('Character case'),
-    '#default_value' => variable_get('pathauto_case', PATHAUTO_CASE_LOWER),
+    '#default_value' => $config->get('case'),
     '#options' => array(
       PATHAUTO_CASE_LEAVE_ASIS => t('Leave case the same as source token values.'),
       PATHAUTO_CASE_LOWER => t('Change to lower case'),
@@ -118,23 +149,23 @@ function pathauto_settings_form($form) {
 
   $max_length = _pathauto_get_schema_alias_maxlength();
 
-  $form['pathauto_max_length'] = array(
+  $form['max_length'] = array(
     '#type' => 'textfield',
     '#title' => t('Maximum alias length'),
     '#size' => 3,
     '#maxlength' => 3,
-    '#default_value' => variable_get('pathauto_max_length', 100),
+    '#default_value' => $config->get('max_length'),
     '#min_value' => 1,
     '#max_value' => $max_length,
     '#description' => t('Maximum length of aliases to generate. 100 is the recommended length. @max is the maximum possible length. See <a href="@pathauto-help">Pathauto help</a> for details.', array('@pathauto-help' => url('admin/help/pathauto'), '@max' => $max_length)),
     '#element_validate' => array('_pathauto_validate_numeric_element'),
   );
-  $form['pathauto_max_component_length'] = array(
+  $form['component_length'] = array(
     '#type' => 'textfield',
     '#title' => t('Maximum component length'),
     '#size' => 3,
     '#maxlength' => 3,
-    '#default_value' => variable_get('pathauto_max_component_length', 100),
+    '#default_value' => $config->get('max_component_length'),
     '#min_value' => 1,
     '#max_value' => $max_length,
     '#description' => t('Maximum text length of any component in the alias (e.g., [title]). 100 is the recommended length. @max is the maximum possible length. See <a href="@pathauto-help">Pathauto help</a> for details.', array('@pathauto-help' => url('admin/help/pathauto'), '@max' => $max_length)),
@@ -149,10 +180,10 @@ function pathauto_settings_form($form) {
   else {
     $description .= ' ' . t('Considering installing the <a href="!url">Redirect module</a> to get redirects when your aliases change.', array('!url' => 'http://drupal.org/project/redirect'));
   }
-  $form['pathauto_update_action'] = array(
+  $form['update_action'] = array(
     '#type' => 'radios',
     '#title' => t('Update action'),
-    '#default_value' => variable_get('pathauto_update_action', PATHAUTO_UPDATE_ACTION_DELETE),
+    '#default_value' => $config->get('update_action'),
     '#options' => array(
       PATHAUTO_UPDATE_ACTION_NO_NEW => t('Do nothing. Leave the old alias intact.'),
       PATHAUTO_UPDATE_ACTION_LEAVE => t('Create a new alias. Leave the existing alias functioning.'),
@@ -161,25 +192,25 @@ function pathauto_settings_form($form) {
     '#description' => $description,
   );
 
-  $form['pathauto_transliterate'] = array(
+  $form['transliterate'] = array(
     '#type' => 'checkbox',
     '#title' => t('Transliterate prior to creating alias'),
-    '#default_value' => variable_get('pathauto_transliterate', FALSE) && module_exists('transliteration'),
+    '#default_value' => $config->get('transliterate') && module_exists('transliteration'),
     '#description' => t('When a pattern includes certain characters (such as those with accents) should Pathauto attempt to transliterate them into the US-ASCII alphabet? Transliteration is handled by the Transliteration module.'),
     '#access' => module_exists('transliteration'),
   );
 
-  $form['pathauto_reduce_ascii'] = array(
+  $form['reduce_ascii'] = array(
     '#type' => 'checkbox',
     '#title' => t('Reduce strings to letters and numbers'),
-    '#default_value' => variable_get('pathauto_reduce_ascii', FALSE),
+    '#default_value' => $config->get('reduce_ascii'),
     '#description' => t('Filters the new alias to only letters and numbers found in the ASCII-96 set.'),
   );
 
-  $form['pathauto_ignore_words'] = array(
+  $form['ignore_words'] = array(
     '#type' => 'textarea',
     '#title' => t('Strings to Remove'),
-    '#default_value' => variable_get('pathauto_ignore_words', PATHAUTO_IGNORE_WORDS),
+    '#default_value' => $config->get('ignore_words'),
     '#description' => t('Words to strip out of the URL alias, separated by commas. Do not use this to remove punctuation.'),
     '#wysiwyg' => FALSE,
   );
@@ -194,13 +225,13 @@ function pathauto_settings_form($form) {
   $punctuation = pathauto_punctuation_chars();
   foreach ($punctuation as $name => $details) {
     $details['default'] = PATHAUTO_PUNCTUATION_REMOVE;
-    if ($details['value'] == variable_get('pathauto_separator', '-')) {
+    if ($details['value'] == $config->get('pathauto_separator')) {
       $details['default'] = PATHAUTO_PUNCTUATION_REPLACE;
     }
-    $form['punctuation']['pathauto_punctuation_' . $name] = array(
+    $form['punctuation']['punctuation_' . $name] = array(
       '#type' => 'select',
       '#title' => $details['name'] . ' (<code>' . check_plain($details['value']) . '</code>)',
-      '#default_value' => variable_get('pathauto_punctuation_' . $name, $details['default']),
+      '#default_value' => ($config->get('punctuation_' . $name)) ? $config->get('punctuation_' . $name): $details['default'],
       '#options' => array(
         PATHAUTO_PUNCTUATION_REMOVE => t('Remove'),
         PATHAUTO_PUNCTUATION_REPLACE => t('Replace by separator'),
@@ -209,7 +240,34 @@ function pathauto_settings_form($form) {
     );
   }
 
-  return system_settings_form($form);
+  $form['actions']['#type'] = 'actions';
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save configuration'),
+  );
+
+  return $form;
+}
+
+function pathauto_settings_form_submit($form, &$form_state) {
+  $config = config('pathauto.settings');
+  $values = $form_state['values'];
+  $config->set('verbose', $values['verbose']);
+  $config->set('separator', $values['separator']);
+  $config->set('case', $values['case']);
+  $config->set('max_length', $values['max_length']);
+  $config->set('component_length', $values['component_length']);
+  $config->set('update_action', $values['update_action']);
+  $config->set('transliterate', $values['transliterate']);
+  $config->set('reduce_ascii', $values['reduce_ascii']);
+  $config->set('ignore_words', $values['ignore_words']);
+
+  $punctuation = pathauto_punctuation_chars();
+  foreach ($punctuation as $name => $details) {
+    $config->set('punctuation_' . $name, $values['punctuation_' . $name]);
+  }
+
+  $config->save();
 }
 
 /**
@@ -236,19 +294,19 @@ function pathauto_settings_form_validate($form, &$form_state) {
   module_load_include('inc', 'pathauto');
 
   // Perform a basic check for HTML characters in the strings to remove field.
-  if (strip_tags($form_state['values']['pathauto_ignore_words']) != $form_state['values']['pathauto_ignore_words']) {
-    form_set_error('pathauto_ignore_words', t('The <em>Strings to remove</em> field must not contain HTML. Make sure to disable any WYSIWYG editors for this field.'));
+  if (strip_tags($form_state['values']['ignore_words']) != $form_state['values']['ignore_words']) {
+    form_set_error('ignore_words', t('The <em>Strings to remove</em> field must not contain HTML. Make sure to disable any WYSIWYG editors for this field.'));
   }
 
   // Validate that the separator is not set to be removed per http://drupal.org/node/184119
   // This isn't really all that bad so warn, but still allow them to save the value.
-  $separator = $form_state['values']['pathauto_separator'];
+  $separator = $form_state['values']['separator'];
   $punctuation = pathauto_punctuation_chars();
   foreach ($punctuation as $name => $details) {
     if ($details['value'] == $separator) {
-      $action = $form_state['values']['pathauto_punctuation_' . $name];
+      $action = $form_state['values']['punctuation_' . $name];
       if ($action == PATHAUTO_PUNCTUATION_REMOVE) {
-        drupal_set_message(t('You have configured the @name to be the separator and to be removed when encountered in strings. This can cause problems with your patterns and especially with the term:path token. You should probably set the action for @name to be "replace by separator".', array('@name' => $details['name'])), 'error');
+        backdrop_set_message(t('You have configured the @name to be the separator and to be removed when encountered in strings. This can cause problems with your patterns and especially with the term:path token. You should probably set the action for @name to be "replace by separator".', array('@name' => $details['name'])), 'error');
       }
     }
   }
@@ -300,7 +358,7 @@ function pathauto_bulk_update_form_submit($form, &$form_state) {
       array('pathauto_bulk_update_batch_start', array()),
     ),
     'finished' => 'pathauto_bulk_update_batch_finished',
-    'file' => drupal_get_path('module', 'pathauto') . '/pathauto.admin.inc',
+    'file' => backdrop_get_path('module', 'pathauto') . '/pathauto.admin.inc',
   );
 
   foreach ($form_state['values']['update'] as $callback) {
@@ -332,7 +390,7 @@ function pathauto_bulk_update_batch_start(&$context) {
  */
 function pathauto_bulk_update_batch_process($callback, $settings, &$context) {
   if (!empty($settings->batch_file)) {
-    require_once DRUPAL_ROOT . '/' . $settings->batch_file;
+    require_once BACKDROP_ROOT . '/' . $settings->batch_file;
   }
   return $callback($context);
 }
@@ -347,15 +405,15 @@ function pathauto_bulk_update_batch_finished($success, $results, $operations) {
     $results['count_after'] = db_select('url_alias')->countQuery()->execute()->fetchField();
     $results['count_changed'] = max($results['count_after'] - $results['count_before'], 0);
     if ($results['count_changed']) {
-      drupal_set_message(format_plural($results['count_changed'], 'Generated 1 URL alias.', 'Generated @count URL aliases.'));
+      backdrop_set_message(format_plural($results['count_changed'], 'Generated 1 URL alias.', 'Generated @count URL aliases.'));
     }
     else {
-      drupal_set_message(t('No new URL aliases to generate.'));
+      backdrop_set_message(t('No new URL aliases to generate.'));
     }
   }
   else {
     $error_operation = reset($operations);
-    drupal_set_message(t('An error occurred while processing @operation with arguments : @args', array('@operation' => $error_operation[0], '@args' => print_r($error_operation[0], TRUE))));
+    backdrop_set_message(t('An error occurred while processing @operation with arguments : @args', array('@operation' => $error_operation[0], '@args' => print_r($error_operation[0], TRUE))));
   }
 }
 
@@ -422,14 +480,14 @@ function pathauto_admin_delete_submit($form, &$form_state) {
       if ($key === 'all_aliases') {
         db_delete('url_alias')
           ->execute();
-        drupal_set_message(t('All of your path aliases have been deleted.'));
+        backdrop_set_message(t('All of your path aliases have been deleted.'));
       }
       $objects = module_invoke_all('path_alias_types');
       if (array_key_exists($key, $objects)) {
         db_delete('url_alias')
           ->condition('source', db_like($key) . '%', 'LIKE')
           ->execute();
-        drupal_set_message(t('All of your %type path aliases have been deleted.', array('%type' => $objects[$key])));
+        backdrop_set_message(t('All of your %type path aliases have been deleted.', array('%type' => $objects[$key])));
       }
     }
   }

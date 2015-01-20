@@ -6,10 +6,10 @@ Pathauto also relies on the Token module, which must be downloaded and
 enabled separately.
 
 1. Unpack the Pathauto folder and contents in the appropriate modules
-directory of your Drupal installation.  This is probably
+directory of your Backdrop installation.  This is probably
   sites/all/modules/
 2. Enable the Pathauto module in the administration tools.
-3. If you're not using Drupal's default administrative account, make
+3. If you're not using Backdrop's default administrative account, make
 sure "administer pathauto" is enabled through access control administration.
 4. Visit the Pathauto settings page and make appropriate configurations
    For 5.x: Administer > Site configuration > Pathauto
