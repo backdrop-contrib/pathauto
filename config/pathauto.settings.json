@@ -48,6 +48,5 @@
   "user_pattern": "users/[user:name]",
   "node_story_en_pattern": "story/en/[node:title]",
   "node_story_pattern": "story/[node:title]",
-  "": "",
-
+  "": ""
 }
