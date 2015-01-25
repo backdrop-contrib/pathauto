@@ -673,7 +673,7 @@ function pathauto_form_taxonomy_form_term_alter(&$form, $form_state) {
  * @param $options
  *   An optional array of additional options.
  */
-function pathauto_taxonomy_term_update_alias(stdClass $term, $op, array $options = array()) {
+function pathauto_taxonomy_term_update_alias($term, $op, array $options = array()) {
   // Skip processing if the user has disabled pathauto for the term.
   if (isset($term->path['pathauto']) && empty($term->path['pathauto']) && empty($options['force'])) {
     return FALSE;
