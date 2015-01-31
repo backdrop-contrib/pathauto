@@ -764,14 +764,14 @@ function pathauto_taxonomy_term_update_action($term, $context = array()) {
 /**
  * Implements hook_user_insert().
  */
-function pathauto_user_insert(&$edit, $account, $category) {
+function pathauto_user_insert($account) {
   pathauto_user_update_alias($account, 'insert');
 }
 
 /**
  * Implements hook_user_update().
  */
-function pathauto_user_update(&$edit, $account, $category) {
+function pathauto_user_update($account) {
   pathauto_user_update_alias($account, 'update');
 }
 
