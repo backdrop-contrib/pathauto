@@ -176,9 +176,9 @@ function pathauto_cleanstring($string, array $options = array()) {
     return '';
   }
 
-  $langcode = NULL;
-  if (!empty($options['language']->$langcode)) {
-    $langcode = $options['language']->$langcode;
+  $langcode = LANGUAGE_NONE;
+  if (!empty($options['language']->langcode)) {
+    $langcode = $options['language']->langcode;
   }
   elseif (!empty($options['langcode'])) {
     $langcode = $options['langcode'];
