@@ -17,13 +17,12 @@ function pathauto_install() {
   $config->set('taxonomy_term_pattern', '[term:vocabulary]/[term:name]');
   $config->set('forum_pattern', '[term:vocabulary]/[term:name]');
   $config->set('user_pattern', 'users/[user:name]');
-  $config->set('blog_pattern', 'blogs/[user:name]');
 
   // Set the default separator character to replace instead of remove (default).
   $config->set('punctuation_hyphen', 1);
   $config->save();
 
-  // Set the weight to 1
+  // Set the weight to 1.
   db_update('system')
     ->fields(array('weight' => 1))
     ->condition('type', 'module')
@@ -41,145 +40,81 @@ function pathauto_uninstall() {
 }
 
 /**
- * Remove the unsupported user/%/contact and user/%/tracker pattern variables.
+ * Implements hook_update_last_removed().
  */
-function pathauto_update_6200() {
+function pathauto_update_last_removed() {
+  return 7005;
+}
+
+/**
+ * Upgrades Pathauto settings from variables to config.
+ */
+function pathauto_update_1000() {
   $config = config('pathauto.settings');
-  update_variable_del('pathauto_contact_bulkupdate');
-  update_variable_del('pathauto_contact_pattern');
-  update_variable_del('pathauto_contact_supportsfeeds');
-  update_variable_del('pathauto_contact_applytofeeds');
-  update_variable_del('pathauto_tracker_bulkupdate');
-  update_variable_del('pathauto_tracker_pattern');
-  update_variable_del('pathauto_tracker_supportsfeeds');
-  update_variable_del('pathauto_tracker_applytofeeds');
-}
 
-/**
- * Empty update since it is handled by pathauto_update_7000().
- */
-function pathauto_update_6201() {
-}
+  // Set defaults that previously were variables.
+  $config->set('verbose', FALSE);
+  $config->set('separator', '-');
+  $config->set('transliterate', FALSE);
+  $config->set('reduce_ascii', FALSE);
 
-/**
- * Empty update since it is handled by pathauto_update_7004().
- */
-function pathauto_update_6202() {
-}
+  $config->set('case', 1);
+  $config->set('update_action', 2);
+  $config->set('ignore_words', 'a, an, as, at, before, but, by, for, from, is, in, into, like, of, off, on, onto, per, since, than, the, this, that, to, up, via, with');
+  $config->set('max_component_length', 100);
+  $config->set('max_length', 100);
 
-/**
- * Remove obsolete variables since batch API is now used.
- */
-function pathauto_update_7000() {
-  update_variable_del('pathauto_max_bulk_update');
-  update_variable_del('pathauto_node_bulkupdate');
-  update_variable_del('pathauto_taxonomy_bulkupdate');
-  update_variable_del('pathauto_forum_bulkupdate');
-  update_variable_del('pathauto_user_bulkupdate');
-  update_variable_del('pathauto_blog_bulkupdate');
-  update_variable_del('pathauto_modulelist');
-  update_variable_del('pathauto_indexaliases');
-  update_variable_del('pathauto_indexaliases_bulkupdate');
-}
+  $config->set('punctuation_ampersand', 0);
+  $config->set('punctuation_asterisk', 0);
+  $config->set('punctuation_at', 0);
+  $config->set('punctuation_backtick', 0);
+  $config->set('punctuation_back_slash', 0);
+  $config->set('punctuation_caret', 0);
+  $config->set('punctuation_colon', 0);
+  $config->set('punctuation_comma', 0);
+  $config->set('punctuation_dollar', 0);
+  $config->set('punctuation_double_quotes', 0);
+  $config->set('punctuation_equal', 0);
+  $config->set('punctuation_exclamation', 0);
+  $config->set('punctuation_greater_than', 0);
+  $config->set('punctuation_hash', 0);
+  $config->set('punctuation_hyphen', 1);
+  $config->set('punctuation_left_curly', 0);
+  $config->set('punctuation_left_parenthesis', 0);
+  $config->set('punctuation_left_square', 0);
+  $config->set('punctuation_less_than', 0);
+  $config->set('punctuation_percent', 0);
+  $config->set('punctuation_period', 0);
+  $config->set('punctuation_pipe', 0);
+  $config->set('punctuation_plus', 0);
+  $config->set('punctuation_question_mark', 0);
+  $config->set('punctuation_quotes', 0);
+  $config->set('punctuation_right_curly', 0);
+  $config->set('punctuation_right_parenthesis', 0);
+  $config->set('punctuation_right_square', 0);
+  $config->set('punctuation_semicolon', 0);
+  $config->set('punctuation_slash', 0);
+  $config->set('punctuation_tilde', 0);
+  $config->set('punctuation_underscore', 0);
 
-/**
- * Empty update since feed paths are no longer supported.
- */
-function pathauto_update_7001() {
-}
+  $config->set('node_pattern', 'content/[node:title]');
+  $config->set('taxonomy_term_pattern', '[term:vocabulary]/[term:name]');
+  $config->set('forum_pattern', '[term:vocabulary]/[term:name]');
+  $config->set('user_pattern', 'users/[user:name]');
 
-/**
- * Update pathauto_taxonomy_[vid]_pattern variables to pathauto_taxonomy_[machinename]_pattern.
- */
-function pathauto_update_7002() {
-  if (module_exists('taxonomy')) {
-    $vocabularies = taxonomy_get_vocabularies();
-    foreach ($vocabularies as $vid => $vocabulary) {
-      if ($vid == update_variable_get('forum_nav_vocabulary', '')) {
-        // Skip the forum vocabulary.
-        continue;
-      }
-      if ($pattern = update_variable_get('pathauto_taxonomy_' . $vid . '_pattern', '')) {
-        variable_set('pathauto_taxonomy_' . $vocabulary->machine_name . '_pattern', $pattern);
-      }
-      update_variable_del('pathauto_taxonomy_' . $vid . '_pattern');
+  // Update with values from the database if present.
+  $results = db_query("SELECT * FROM {variable} WHERE name LIKE 'pathauto_%'");
+  foreach ($results as $row) {
+    $name = str_replace('pathauto_', '', $row->name);
+    $value = unserialize($row->value);
+    if (is_numeric($value)) {
+      $value = (int) $value;
     }
-  }
-}
-
-/**
- * Rename 'taxonomy' variables to use the entity type 'taxonomy_term'.
- */
-function pathauto_update_7003() {
-  $variables = db_select('variable', 'v')
-    ->fields('v', array('name'))
-    ->condition(db_and()
-      ->condition('name', db_like("pathauto_taxonomy_") . '%', 'LIKE')
-      ->condition('name', db_like("pathauto_taxonomy_term_") . '%', 'NOT LIKE')
-    )
-    ->execute()
-    ->fetchCol();
-  foreach ($variables as $variable) {
-    $value = variable_get($variable);
-    update_variable_del($variable);
-    $variable = strtr($variable, array('pathauto_taxonomy_' => 'pathauto_taxonomy_term_'));
-    variable_set($variable, $value);
-  }
-}
-
-/**
- * Remove obsolete variables for removed feed handling.
- */
-function pathauto_update_7004() {
-  update_variable_del('pathauto_node_supportsfeeds');
-  update_variable_del('pathauto_node_applytofeeds');
-  update_variable_del('pathauto_taxonomy_supportsfeeds');
-  update_variable_del('pathauto_taxonomy_applytofeeds');
-  update_variable_del('pathauto_forum_supportsfeeds');
-  update_variable_del('pathauto_forum_applytofeeds');
-  update_variable_del('pathauto_user_supportsfeeds');
-  update_variable_del('pathauto_user_applytofeeds');
-  update_variable_del('pathauto_blog_supportsfeeds');
-  update_variable_del('pathauto_blog_applytofeeds');
-}
-
-/**
- * Fix original incorrect tokens in taxonomy and forum patterns.
- */
-function pathauto_update_7005() {
-  $replacements = array(
-    '[vocabulary:name]' => '[term:vocabulary]',
-    '[vocabulary:' => '[term:vocabulary:',
-    '[term:catpath]' => '[term:name]',
-    '[term:path]' => '[term:name]',
-  );
-  $variables = db_select('variable', 'v')
-    ->fields('v', array('name'))
-    ->condition(db_or()
-      ->condition('name', db_like("pathauto_taxonomy_term_") . '%' . db_like('pattern'), 'LIKE')
-      ->condition('name', db_like("pathauto_forum_") . '%' . db_like('pattern'), 'LIKE')
-    )
-    ->execute()
-    ->fetchCol();
-  foreach ($variables as $variable) {
-    if ($pattern = variable_get($variable)) {
-      $pattern = strtr($pattern, $replacements);
-      variable_set($variable, $pattern);
+    if (in_array($name, array('verbose', 'transliterate', 'reduce_ascii'))) {
+      $value = (bool) $value;
     }
+    update_variable_del($row->name);
+    $config->set($name, $value);
   }
-
-  return 'Your Pathauto taxonomy and forum patterns have been corrected. You may wish to regenerate your taxonomy and forum term URL aliases.';
-}
-
-/**
- * Build a list of Drupal 6 tokens and their Drupal 7 token names.
- */
-function _pathauto_upgrade_token_list() {
-  $tokens = array(
-    //'catpath' => 'node:term-lowest:parent:path][node:term-lowest',
-    //'catalias' => 'node:term-lowest:path',
-    //'termpath' => 'term:parent:path][term:name',
-    //'termalias' => 'term:url:alias',
-    //'bookpathalias' => 'node:book:parent:path',
-  );
+  $config->save();
 }

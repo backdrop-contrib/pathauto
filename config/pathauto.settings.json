@@ -8,9 +8,7 @@
   "update_action": 2,
   "transliterate": false,
   "reduce_ascii": false,
-  "transliterate": false,
   "ignore_words": "a, an, as, at, before, but, by, for, from, is, in, into, like, of, off, on, onto, per, since, than, the, this, that, to, up, via, with",
-  "update_action": 2,
   "punctuation_double_quotes": 0,
   "punctuation_quotes": 0,
   "punctuation_backtick": 0,
@@ -47,6 +45,5 @@
   "taxonomy_term_pattern": "vocabulary]/[term:name]",
   "user_pattern": "users/[user:name]",
   "node_story_en_pattern": "story/en/[node:title]",
-  "node_story_pattern": "story/[node:title]",
-  "": ""
+  "node_story_pattern": "story/[node:title]"
 }
