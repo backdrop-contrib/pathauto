@@ -54,7 +54,7 @@ function node_pathauto($op) {
 
       $languages = array();
       if (module_exists('locale')) {
-        $languages = array(LANGUAGE_NONE => array(
+        $languages = array(LANGUAGE_NONE => (object) array(
           'name' => t('Language neutral'),
           'langcode' => LANGUAGE_NONE,
         )) + language_list();
@@ -68,7 +68,7 @@ function node_pathauto($op) {
           }
         }
         else {
-          $settings['patternitems'][$node_type] = t('Pattern for all @node_type paths', array('@node_type' => $node_type->name));
+          $settings['patternitems'][$node_type_name] = t('Pattern for all @node_type paths', array('@node_type' => $node_type->name));
         }
       }
       return (object) $settings;
