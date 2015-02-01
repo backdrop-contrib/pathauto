@@ -43,7 +43,7 @@ function pathauto_hook_info() {
  */
 function pathauto_module_implements_alter(&$implementations, $hook) {
   if (in_array($hook, array('pathauto', 'path_alias_types'))) {
-    $modules = array('node', 'taxonomy', 'user', 'forum', 'blog');
+    $modules = array('node', 'taxonomy', 'user');
     foreach ($modules as $module) {
       if (module_exists($module)) {
         $implementations[$module] = TRUE;
@@ -144,19 +144,19 @@ function pathauto_menu() {
  *   An entity (e.g. node, taxonomy, user, etc.)
  * @param $bundle
  *   A bundle (e.g. content type, vocabulary ID, etc.)
- * @param $language
+ * @param $langcode
  *   A language code, defaults to the LANGUAGE_NONE constant.
  */
-function pathauto_pattern_load_by_entity($entity, $bundle = '', $language = LANGUAGE_NONE) {
+function pathauto_pattern_load_by_entity($entity, $bundle = '', $langcode = LANGUAGE_NONE) {
   $config = config('pathauto.settings');
   $patterns = &backdrop_static(__FUNCTION__, array());
 
-  $pattern_id = "$entity:$bundle:$language";
+  $pattern_id = "$entity:$bundle:$langcode";
 
   if (!isset($patterns[$pattern_id])) {
     $variables = array();
-    if ($language != LANGUAGE_NONE) {
-      $variables[] = "{$entity}_{$bundle}_{$language}_pattern";
+    if ($langcode != LANGUAGE_NONE) {
+      $variables[] = "{$entity}_{$bundle}_{$langcode}_pattern";
     }
     if ($bundle) {
       $variables[] = "{$entity}_{$bundle}_pattern";
@@ -417,29 +417,17 @@ function pathauto_action_info() {
 /**
  * Returns the language code of the given entity.
  *
- * Backward compatibility layer to ensure that installations running an older
- * version of core where entity_language() is not avilable do not break.
- *
  * @param string $entity_type
  *   An entity type.
  * @param object $entity
  *   An entity object.
- * @param bool $check_language_property
- *   A boolean if TRUE, will attempt to fetch the language code from
- *   $entity->language if the entity_language() function failed or does not
- *   exist. Default is TRUE.
  */
-function pathauto_entity_language($entity_type, $entity, $check_language_property = TRUE) {
-  $langcode = NULL;
-
-  if (function_exists('entity_language')) {
-    $langcode = entity_language($entity_type, $entity);
+function pathauto_entity_language($entity_type, $entity) {
+  $langcode = LANGUAGE_NONE;
+  if (!empty($entity->langcode)) {
+    $langcode = $entity->langcode;
   }
-  elseif ($check_language_property && !empty($entity->language)) {
-    $langcode = $entity->language;
-  }
-
-  return !empty($langcode) ? $langcode : LANGUAGE_NONE;
+  return $langcode;
 }
 
 function pathauto_is_alias_reserved($alias, $source, $langcode = LANGUAGE_NONE) {
@@ -587,7 +575,7 @@ function pathauto_node_update_alias(Node $node, $op, array $options = array()) {
   }
 
   module_load_include('inc', 'pathauto');
-  $uri = entity_uri('node', $node);
+  $uri = $node->uri();
   return pathauto_create_alias('node', $op, $uri['path'], array('node' => $node), $node->type, $options['language']);
 }
 
@@ -680,13 +668,9 @@ function pathauto_taxonomy_term_update_alias($term, $op, array $options = array(
   }
 
   $module = 'taxonomy_term';
-  if ($term->vid == variable_get('forum_nav_vocabulary', '')) {
-    if (module_exists('forum')) {
-      $module = 'forum';
-    }
-    else {
-      return FALSE;
-    }
+  $vocabulary = taxonomy_vocabulary_load($term->vocabulary_name);
+  if (isset($vocabulary->module)) {
+    $module = $vocabulary->module;
   }
 
   // Check that the term has its bundle, which is the vocabulary's machine name.
@@ -706,7 +690,7 @@ function pathauto_taxonomy_term_update_alias($term, $op, array $options = array(
   }
 
   module_load_include('inc', 'pathauto');
-  $uri = entity_uri('taxonomy_term', $term);
+  $uri = $term->uri();
   $result = pathauto_create_alias($module, $op, $uri['path'], array('term' => $term), $term->vocabulary_machine_name, $options['language']);
 
   if (!empty($options['alias children'])) {
@@ -757,7 +741,7 @@ function pathauto_taxonomy_term_update_action($term, $context = array()) {
  */
 
 /**
- * @name pathauto_user Pathauto integration for the core user and blog modules.
+ * @name pathauto_user Pathauto integration for the core user module.
  * @{
  */
 
@@ -780,7 +764,6 @@ function pathauto_user_update($account) {
  */
 function pathauto_user_delete($account) {
   pathauto_entity_path_delete_all('user', $account, "user/{$account->uid}");
-  pathauto_path_delete_all("blog/{$account->uid}");
 }
 
 /**
@@ -812,13 +795,6 @@ function pathauto_user_update_alias(User $account, $op, array $options = array()
     return FALSE;
   }
 
-  $options += array(
-    'alias blog' => module_exists('blog'),
-    // $user->language is not the user entity language, thus we need to skip
-    // the property fallback check.
-    'language' => pathauto_entity_language('user', $account, FALSE),
-  );
-
   // Skip processing if the account has no pattern.
   if (!pathauto_pattern_load_by_entity('user', '', $options['language'])) {
     return FALSE;
@@ -827,11 +803,6 @@ function pathauto_user_update_alias(User $account, $op, array $options = array()
   module_load_include('inc', 'pathauto');
   $uri = entity_uri('user', $account);
   $return = pathauto_create_alias('user', $op, $uri['path'], array('user' => $account), NULL, $options['language']);
-
-  // Because blogs are also associated with users, also generate the blog paths.
-  if (!empty($options['alias blog'])) {
-    pathauto_blog_update_alias($account, $op, $options);
-  }
 
   return $return;
 }
@@ -865,36 +836,6 @@ function pathauto_user_update_alias_multiple(array $uids, $op, array $options = 
  */
 function pathauto_user_update_action($account, $context = array()) {
   pathauto_user_update_alias($account, 'bulkupdate', array('message' => TRUE));
-}
-
-/**
- * Update the blog URL aliases for an individual user account.
- *
- * @param $account
- *   A user account object.
- * @param $op
- *   Operation being performed on the blog ('insert', 'update' or
- *   'bulkupdate').
- * @param $options
- *   An optional array of additional options.
- */
-function pathauto_blog_update_alias(stdClass $account, $op, array $options = array()) {
-  // Skip processing if the blog has no pattern.
-  if (!pathauto_pattern_load_by_entity('blog')) {
-    return FALSE;
-  }
-
-  $options += array(
-    'language' => LANGUAGE_NONE,
-  );
-
-  module_load_include('inc', 'pathauto');
-  if (node_access('create', 'blog', $account)) {
-    return pathauto_create_alias('blog', $op, "blog/{$account->uid}", array('user' => $account), NULL, $options['language']);
-  }
-  else {
-    pathauto_path_delete_all("blog/{$account->uid}");
-  }
 }
 
 /**

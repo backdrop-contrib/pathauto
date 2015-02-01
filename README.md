@@ -6,7 +6,7 @@ automatically generate aliases based on appropriate criteria, with a
 central settings path for site administrators.
 
 Implementations are provided for core entity types: content, taxonomy terms,
-and users (including blogs and tracker pages).
+and users.
 
 Pathauto also provides a way to delete large numbers of aliases.  This feature
 is available at  Administer > Site building > URL aliases > Delete aliases

@@ -15,7 +15,6 @@ function pathauto_install() {
   // Set some default variables necessary for the module to perform.
   $config->set('node_pattern', 'content/[node:title]');
   $config->set('taxonomy_term_pattern', '[term:vocabulary]/[term:name]');
-  $config->set('forum_pattern', '[term:vocabulary]/[term:name]');
   $config->set('user_pattern', 'users/[user:name]');
 
   // Set the default separator character to replace instead of remove (default).
@@ -99,7 +98,6 @@ function pathauto_update_1000() {
 
   $config->set('node_pattern', 'content/[node:title]');
   $config->set('taxonomy_term_pattern', '[term:vocabulary]/[term:name]');
-  $config->set('forum_pattern', '[term:vocabulary]/[term:name]');
   $config->set('user_pattern', 'users/[user:name]');
 
   // Update with values from the database if present.

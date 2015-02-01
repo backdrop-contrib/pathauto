@@ -15,14 +15,8 @@
 function pathauto_path_alias_types() {
   $objects['user/'] = t('Users');
   $objects['node/'] = t('Content');
-  if (module_exists('blog')) {
-    $objects['blog/'] = t('User blogs');
-  }
   if (module_exists('taxonomy')) {
     $objects['taxonomy/term/'] = t('Taxonomy terms');
-  }
-  if (module_exists('forum')) {
-    $objects['forum/'] = t('Forums');
   }
   return $objects;
 }
@@ -60,18 +54,21 @@ function node_pathauto($op) {
 
       $languages = array();
       if (module_exists('locale')) {
-        $languages = array(LANGUAGE_NONE => t('language neutral')) + locale_language_list('name');
+        $languages = array(LANGUAGE_NONE => array(
+          'name' => t('Language neutral'),
+          'langcode' => LANGUAGE_NONE,
+        )) + language_list();
       }
 
-      foreach (node_type_get_names() as $node_type => $node_name) {
-        if (count($languages) && variable_get('language_content_type_' . $node_type, 0)) {
-          $settings['patternitems'][$node_type] = t('Default path pattern for @node_type (applies to all @node_type content types with blank patterns below)', array('@node_type' => $node_name));
-          foreach ($languages as $lang_code => $lang_name) {
-            $settings['patternitems'][$node_type . '_' . $lang_code] = t('Pattern for all @language @node_type paths', array('@node_type' => $node_name, '@language' => $lang_name));
+      foreach (node_type_get_types() as $node_type_name => $node_type) {
+        if (count($languages) && !empty($node_type->settings['node_type_language'])) {
+          $settings['patternitems'][$node_type_name] = t('Default path pattern for @node_type (applies to all @node_type content types with blank patterns below)', array('@node_type' => $node_type->name));
+          foreach ($languages as $langcode => $language) {
+            $settings['patternitems'][$node_type_name . '_' . $langcode] = t('Pattern for all @language @node_type paths', array('@node_type' => $node_type->name, '@language' => $language->name));
           }
         }
         else {
-          $settings['patternitems'][$node_type] = t('Pattern for all @node_type paths', array('@node_type' => $node_name));
+          $settings['patternitems'][$node_type] = t('Pattern for all @node_type paths', array('@node_type' => $node_type->name));
         }
       }
       return (object) $settings;
@@ -140,12 +137,8 @@ function taxonomy_pathauto($op) {
       $vocabularies = taxonomy_get_vocabularies();
       if (count($vocabularies)) {
         $settings['patternitems'] = array();
-        foreach ($vocabularies as $vid => $vocabulary) {
-          if ($vid == variable_get('forum_nav_vocabulary', '')) {
-            // Skip the forum vocabulary.
-            continue;
-          }
-          $settings['patternitems'][$vocabulary->machine_name] = t('Pattern for all %vocab-name paths', array('%vocab-name' => $vocabulary->name));
+        foreach ($vocabularies as $vocabulary_name => $vocabulary) {
+          $settings['patternitems'][$vocabulary_name] = t('Pattern for all %vocab-name paths', array('%vocab-name' => $vocabulary->name));
         }
       }
       return (object) $settings;
@@ -168,10 +161,6 @@ function taxonomy_pathauto_bulk_update_batch_process(&$context) {
   $query->addField('td', 'tid');
   $query->isNull('ua.source');
   $query->condition('td.tid', $context['sandbox']['current'], '>');
-  // Exclude the forums terms.
-  if ($forum_vid = variable_get('forum_nav_vocabulary', '')) {
-    $query->condition('td.vid', $forum_vid, '<>');
-  }
   $query->orderBy('td.tid');
   $query->addTag('pathauto_bulk_update');
   $query->addMetaData('entity', 'taxonomy_term');
@@ -194,69 +183,6 @@ function taxonomy_pathauto_bulk_update_batch_process(&$context) {
   $context['sandbox']['count'] += count($tids);
   $context['sandbox']['current'] = max($tids);
   $context['message'] = t('Updated alias for term @tid.', array('@tid' => end($tids)));
-
-  if ($context['sandbox']['count'] != $context['sandbox']['total']) {
-    $context['finished'] = $context['sandbox']['count'] / $context['sandbox']['total'];
-  }
-}
-
-/**
- * Implements hook_pathauto() for forum module.
- */
-function forum_pathauto($op) {
-  switch ($op) {
-    case 'settings':
-      $settings = array();
-      $settings['module'] = 'forum';
-      $settings['token_type'] = 'term';
-      $settings['groupheader'] = t('Forum paths');
-      $settings['patterndescr'] = t('Pattern for forums and forum containers');
-      $settings['patterndefault'] = '[term:vocabulary]/[term:name]';
-      $settings['batch_update_callback'] = 'forum_pathauto_bulk_update_batch_process';
-      $settings['batch_file'] = backdrop_get_path('module', 'pathauto') . '/pathauto.pathauto.inc';
-      return (object) $settings;
-    default:
-      break;
-  }
-}
-
-/**
- * Batch processing callback; Generate aliases for forums.
- */
-function forum_pathauto_bulk_update_batch_process(&$context) {
-  if (!isset($context['sandbox']['current'])) {
-    $context['sandbox']['count'] = 0;
-    $context['sandbox']['current'] = 0;
-  }
-
-  $query = db_select('taxonomy_term_data', 'td');
-  $query->leftJoin('url_alias', 'ua', "CONCAT('forum/', td.tid) = ua.source");
-  $query->addField('td', 'tid');
-  $query->isNull('ua.source');
-  $query->condition('td.tid', $context['sandbox']['current'], '>');
-  $query->condition('td.vid', variable_get('forum_nav_vocabulary', ''));
-  $query->orderBy('td.tid');
-  $query->addTag('pathauto_bulk_update');
-  $query->addMetaData('entity', 'taxonomy_term');
-
-  // Get the total amount of items to process.
-  if (!isset($context['sandbox']['total'])) {
-    $context['sandbox']['total'] = $query->countQuery()->execute()->fetchField();
-
-    // If there are no nodes to update, the stop immediately.
-    if (!$context['sandbox']['total']) {
-      $context['finished'] = 1;
-      return;
-    }
-  }
-
-  $query->range(0, 25);
-  $tids = $query->execute()->fetchCol();
-
-  pathauto_taxonomy_term_update_alias_multiple($tids, 'bulkupdate');
-  $context['sandbox']['count'] += count($tids);
-  $context['sandbox']['current'] = max($tids);
-  $context['message'] = t('Updated alias for forum @tid.', array('@tid' => end($tids)));
 
   if ($context['sandbox']['count'] != $context['sandbox']['total']) {
     $context['finished'] = $context['sandbox']['count'] / $context['sandbox']['total'];
@@ -315,76 +241,10 @@ function user_pathauto_bulk_update_batch_process(&$context) {
   $query->range(0, 25);
   $uids = $query->execute()->fetchCol();
 
-  pathauto_user_update_alias_multiple($uids, 'bulkupdate', array('alias blog' => FALSE));
+  pathauto_user_update_alias_multiple($uids, 'bulkupdate');
   $context['sandbox']['count'] += count($uids);
   $context['sandbox']['current'] = max($uids);
   $context['message'] = t('Updated alias for user @uid.', array('@uid' => end($uids)));
-
-  if ($context['sandbox']['count'] != $context['sandbox']['total']) {
-    $context['finished'] = $context['sandbox']['count'] / $context['sandbox']['total'];
-  }
-}
-
-/**
- * Implements hook_pathauto().
- */
-function blog_pathauto($op) {
-  switch ($op) {
-    case 'settings':
-      $settings = array();
-      $settings['module'] = 'blog';
-      $settings['token_type'] = 'user';
-      $settings['groupheader'] = t('Blog paths');
-      $settings['patterndescr'] = t('Pattern for blog page paths');
-      $settings['patterndefault'] = 'blogs/[user:name]';
-      $settings['batch_update_callback'] = 'blog_pathauto_bulk_update_batch_process';
-      $settings['batch_file'] = backdrop_get_path('module', 'pathauto') . '/pathauto.pathauto.inc';
-      return (object) $settings;
-    default:
-      break;
-  }
-}
-
-/**
- * Batch processing callback; Generate aliases for blogs.
- */
-function blog_pathauto_bulk_update_batch_process(&$context) {
-  if (!isset($context['sandbox']['current'])) {
-    $context['sandbox']['count'] = 0;
-    $context['sandbox']['current'] = 0;
-  }
-
-  $query = db_select('users', 'u');
-  $query->leftJoin('url_alias', 'ua', "CONCAT('blog/', u.uid) = ua.source");
-  $query->addField('u', 'uid');
-  $query->isNull('ua.source');
-  $query->condition('u.uid', $context['sandbox']['current'], '>');
-  $query->orderBy('u.uid');
-  $query->addTag('pathauto_bulk_update');
-  $query->addMetaData('entity', 'user');
-
-  // Get the total amount of items to process.
-  if (!isset($context['sandbox']['total'])) {
-    $context['sandbox']['total'] = $query->countQuery()->execute()->fetchField();
-
-    // If there are no nodes to update, the stop immediately.
-    if (!$context['sandbox']['total']) {
-      $context['finished'] = 1;
-      return;
-    }
-  }
-
-  $query->range(0, 25);
-  $uids = $query->execute()->fetchCol();
-
-  $accounts = user_load_multiple($uids);
-  foreach ($accounts as $account) {
-    pathauto_blog_update_alias($account, 'bulkupdate');
-  }
-
-  $context['sandbox']['count'] += count($uids);
-  $context['sandbox']['current'] = max($uids);
-  $context['message'] = t('Updated alias for blog user @uid.', array('@uid' => end($uids)));
 
   if ($context['sandbox']['count'] != $context['sandbox']['total']) {
     $context['finished'] = $context['sandbox']['count'] / $context['sandbox']['total'];
