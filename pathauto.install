@@ -105,12 +105,19 @@ function pathauto_update_1000() {
   foreach ($results as $row) {
     $name = str_replace('pathauto_', '', $row->name);
     $value = unserialize($row->value);
+
+    // Cast to proper data types if possible.
     if (is_numeric($value)) {
       $value = (int) $value;
     }
     if (in_array($name, array('verbose', 'transliterate', 'reduce_ascii'))) {
       $value = (bool) $value;
     }
+
+    // Convert old language-neutral variables to include LANGUAGE_NONE.
+    // See https://www.drupal.org/node/865356.
+    $name = str_replace('__pattern', '_und_pattern', $name);
+
     update_variable_del($row->name);
     $config->set($name, $value);
   }
