@@ -75,7 +75,7 @@ function _pathauto_alias_exists($alias, $source, $langcode = LANGUAGE_NONE) {
  *
  * @param $source
  *   An internal Backdrop path.
- * @param $language
+ * @param $langcode
  *   An optional language code to look up the path in.
  * @return
  *   FALSE if no alias was found or an associative array containing the
@@ -83,8 +83,8 @@ function _pathauto_alias_exists($alias, $source, $langcode = LANGUAGE_NONE) {
  *   - pid: Unique path alias identifier.
  *   - alias: The URL alias.
  */
-function _pathauto_existing_alias_data($source, $language = LANGUAGE_NONE) {
-  $pid = db_query_range("SELECT pid FROM {url_alias} WHERE source = :source AND langcode IN (:language, :language_none) ORDER BY langcode DESC, pid DESC", 0, 1, array(':source' => $source, ':language' => $language, ':language_none' => LANGUAGE_NONE))->fetchField();
+function _pathauto_existing_alias_data($source, $langcode = LANGUAGE_NONE) {
+  $pid = db_query_range("SELECT pid FROM {url_alias} WHERE source = :source AND langcode IN (:langcode, :language_none) ORDER BY langcode DESC, pid DESC", 0, 1, array(':source' => $source, ':langcode' => $langcode, ':language_none' => LANGUAGE_NONE))->fetchField();
   return path_load(array('pid' => $pid));
 }
 
@@ -342,7 +342,7 @@ function pathauto_clean_alias($alias) {
  *   For modules which provided pattern items in hook_pathauto(),
  *   the relevant identifier for the specific item to be aliased
  *   (e.g., $node->type).
- * @param $language
+ * @param $langcode
  *   A string specify the path's language.
  *
  * @return array|null|false
@@ -352,10 +352,10 @@ function pathauto_clean_alias($alias) {
  * @see _pathauto_set_alias()
  * @see token_replace()
  */
-function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $language = LANGUAGE_NONE) {
+function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $langcode = LANGUAGE_NONE) {
   $config = config('pathauto.settings');
   // Retrieve and apply the pattern for this content type.
-  $pattern = pathauto_pattern_load_by_entity($module, $type, $language);
+  $pattern = pathauto_pattern_load_by_entity($module, $type, $langcode);
 
   // Allow other modules to alter the pattern.
   $context = array(
@@ -364,7 +364,7 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
     'source' => $source,
     'data' => $data,
     'type' => $type,
-    'language' => &$language,
+    'langcode' => $langcode,
   );
   backdrop_alter('pathauto_pattern', $pattern, $context);
 
@@ -376,7 +376,7 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
   // Special handling when updating an item which is already aliased.
   $existing_alias = NULL;
   if ($op != 'insert') {
-    if ($existing_alias = _pathauto_existing_alias_data($source, $language)) {
+    if ($existing_alias = _pathauto_existing_alias_data($source, $langcode)) {
       switch ($config->get('update_action')) {
         case PATHAUTO_UPDATE_ACTION_NO_NEW:
           // If an alias already exists, and the update action is set to do nothing,
@@ -391,7 +391,7 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
     'sanitize' => FALSE,
     'clear' => TRUE,
     'callback' => 'pathauto_clean_token_values',
-    'langcode' => (object) array('language' => $language),
+    'langcode' => $langcode,
     'pathauto' => TRUE,
   ));
 
@@ -417,7 +417,7 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
 
   // If the alias already exists, generate a new, hopefully unique, variant.
   $original_alias = $alias;
-  pathauto_alias_uniquify($alias, $source, $language);
+  pathauto_alias_uniquify($alias, $source, $langcode);
   if ($original_alias != $alias) {
     // Alert the user why this happened.
     _pathauto_verbose(t('The automatically generated alias %original_alias conflicted with an existing alias. Alias changed to %alias.', array(
@@ -435,7 +435,7 @@ function pathauto_create_alias($module, $op, $source, $data, $type = NULL, $lang
   $path = array(
     'source' => $source,
     'alias' => $alias,
-    'language' => $language,
+    'langcode' => $langcode,
   );
   $path = _pathauto_set_alias($path, $existing_alias, $op);
   return $path;
@@ -516,7 +516,7 @@ function _pathauto_path_is_callback($path) {
  *   - source: The internal system path.
  *   - alias: The URL alias.
  *   - pid: (optional) Unique path alias identifier.
- *   - language: (optional) The language of the alias.
+ *   - langcode: (optional) The language code of the alias.
  * @param $existing_alias
  *   (optional) An associative array of the existing path alias.
  * @param $op

@@ -53,8 +53,7 @@ function hook_pathauto_is_alias_reserved($alias, $source, $langcode) {
  *   - 'source': A string of the source path for the alias (e.g. 'node/1').
  *   - 'data': An array of keyed objects to pass to token_replace().
  *   - 'type': The sub-type or bundle of the object being aliased.
- *   - 'language': A string of the language code for the alias (e.g. 'en').
- *     This can be altered by reference.
+ *   - 'langcode': A string of the language code for the alias (e.g. 'en').
  */
 function hook_pathauto_pattern_alter(&$pattern, array &$context) {
   // Switch out any [node:created:*] tokens with [node:updated:*] on update.
@@ -77,8 +76,7 @@ function hook_pathauto_pattern_alter(&$pattern, array &$context) {
  *     This can be altered by reference.
  *   - 'data': An array of keyed objects to pass to token_replace().
  *   - 'type': The sub-type or bundle of the object being aliased.
- *   - 'language': A string of the language code for the alias (e.g. 'en').
- *     This can be altered by reference.
+ *   - 'langcode': A string of the language code for the alias (e.g. 'en').
  *   - 'pattern': A string of the pattern used for aliasing the object.
  */
 function hook_pathauto_alias_alter(&$alias, array &$context) {
@@ -86,7 +84,7 @@ function hook_pathauto_alias_alter(&$alias, array &$context) {
   $alias .= '.html';
 
   // Force all aliases to be saved as language neutral.
-  $context['language'] = LANGUAGE_NONE;
+  $context['langcode'] = LANGUAGE_NONE;
 }
 
 /**

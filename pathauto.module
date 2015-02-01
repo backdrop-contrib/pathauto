@@ -306,7 +306,7 @@ function pathauto_field_attach_form($entity_type, $entity, &$form, &$form_state,
   if (!isset($entity->path['pathauto'])) {
     if (!empty($id)) {
       module_load_include('inc', 'pathauto');
-      $uri = entity_uri($entity_type, $entity);
+      $uri = $entity->uri();
       $pathauto_alias = pathauto_create_alias($entity_type, 'return', $uri['path'], array($entity_type => $entity), $bundle, $langcode);
       if ($pathauto_alias === FALSE) {
         // If Pathauto is not going to be able to generate an alias, then we
@@ -395,20 +395,14 @@ function pathauto_action_info() {
   $info['pathauto_node_update_action'] = array(
     'type' => 'node',
     'label' => t('Update node alias'),
-    'configurable' => FALSE,
-    'triggers' => array(),
   );
   $info['pathauto_taxonomy_term_update_action'] = array(
     'type' => 'taxonomy_term',
     'label' => t('Update taxonomy term alias'),
-    'configurable' => FALSE,
-    'triggers' => array(),
   );
   $info['pathauto_user_update_action'] = array(
     'type' => 'user',
     'label' => t('Update user alias'),
-    'configurable' => FALSE,
-    'triggers' => array(),
   );
 
   return $info;
@@ -422,7 +416,7 @@ function pathauto_action_info() {
  * @param object $entity
  *   An entity object.
  */
-function pathauto_entity_language($entity_type, $entity) {
+function pathauto_entity_langcode($entity_type, $entity) {
   $langcode = LANGUAGE_NONE;
   if (!empty($entity->langcode)) {
     $langcode = $entity->langcode;
@@ -535,7 +529,7 @@ function pathauto_node_delete($node) {
  */
 function pathauto_form_node_form_alter(&$form, &$form_state) {
   $node = $form_state['node'];
-  $langcode = pathauto_entity_language('node', $node);
+  $langcode = pathauto_entity_langcode('node', $node);
   pathauto_field_attach_form('node', $node, $form, $form_state, $langcode);
 }
 
@@ -567,16 +561,16 @@ function pathauto_node_update_alias(Node $node, $op, array $options = array()) {
     return FALSE;
   }
 
-  $options += array('language' => pathauto_entity_language('node', $node));
+  $options += array('langcode' => pathauto_entity_langcode('node', $node));
 
   // Skip processing if the node has no pattern.
-  if (!pathauto_pattern_load_by_entity('node', $node->type, $options['language'])) {
+  if (!pathauto_pattern_load_by_entity('node', $node->type, $options['langcode'])) {
     return FALSE;
   }
 
   module_load_include('inc', 'pathauto');
   $uri = $node->uri();
-  return pathauto_create_alias('node', $op, $uri['path'], array('node' => $node), $node->type, $options['language']);
+  return pathauto_create_alias('node', $op, $uri['path'], array('node' => $node), $node->type, $options['langcode']);
 }
 
 /**
@@ -647,7 +641,7 @@ function pathauto_taxonomy_term_delete($term) {
  */
 function pathauto_form_taxonomy_form_term_alter(&$form, $form_state) {
   $term = $form_state['term'];
-  $langcode = pathauto_entity_language('taxonomy_term', $term);
+  $langcode = pathauto_entity_langcode('taxonomy_term', $term);
   pathauto_field_attach_form('taxonomy_term', $term, $form, $form_state, $langcode);
 }
 
@@ -668,35 +662,29 @@ function pathauto_taxonomy_term_update_alias($term, $op, array $options = array(
   }
 
   $module = 'taxonomy_term';
-  $vocabulary = taxonomy_vocabulary_load($term->vocabulary_name);
+  $vocabulary = taxonomy_vocabulary_load($term->vocabulary);
   if (isset($vocabulary->module)) {
     $module = $vocabulary->module;
   }
 
-  // Check that the term has its bundle, which is the vocabulary's machine name.
-  if (!isset($term->vocabulary_machine_name)) {
-    $vocabulary = taxonomy_vocabulary_load($term->vid);
-    $term->vocabulary_machine_name = $vocabulary->machine_name;
-  }
-
   $options += array(
     'alias children' => FALSE,
-    'language' => pathauto_entity_language('taxonomy_term', $term),
+    'langcode' => pathauto_entity_langcode('taxonomy_term', $term),
   );
 
   // Skip processing if the term has no pattern.
-  if (!pathauto_pattern_load_by_entity($module, $term->vocabulary_machine_name)) {
+  if (!pathauto_pattern_load_by_entity($module, $term->vocabulary)) {
     return FALSE;
   }
 
   module_load_include('inc', 'pathauto');
   $uri = $term->uri();
-  $result = pathauto_create_alias($module, $op, $uri['path'], array('term' => $term), $term->vocabulary_machine_name, $options['language']);
+  $result = pathauto_create_alias($module, $op, $uri['path'], array('term' => $term), $term->vocabulary, $options['langcode']);
 
   if (!empty($options['alias children'])) {
     // For all children generate new aliases.
     $options['alias children'] = FALSE;
-    unset($options['language']);
+    unset($options['langcode']);
     foreach (taxonomy_get_tree($term->vid, $term->tid) as $subterm) {
       pathauto_taxonomy_term_update_alias($subterm, $op, $options);
     }
@@ -795,14 +783,16 @@ function pathauto_user_update_alias(User $account, $op, array $options = array()
     return FALSE;
   }
 
+  $options += array('langcode' => LANGUAGE_NONE);
+
   // Skip processing if the account has no pattern.
-  if (!pathauto_pattern_load_by_entity('user', '', $options['language'])) {
+  if (!pathauto_pattern_load_by_entity('user', '', $options['langcode'])) {
     return FALSE;
   }
 
   module_load_include('inc', 'pathauto');
-  $uri = entity_uri('user', $account);
-  $return = pathauto_create_alias('user', $op, $uri['path'], array('user' => $account), NULL, $options['language']);
+  $uri = $account->uri();
+  $return = pathauto_create_alias('user', $op, $uri['path'], array('user' => $account), NULL, $options['langcode']);
 
   return $return;
 }

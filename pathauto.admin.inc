@@ -109,6 +109,7 @@ function pathauto_patterns_form_submit($form, &$form_state) {
   }
 
   $config->save();
+  backdrop_set_message(t('The configuration options have been saved.'));
 }
 
 /**
@@ -160,7 +161,7 @@ function pathauto_settings_form($form) {
     '#description' => t('Maximum length of aliases to generate. 100 is the recommended length. @max is the maximum possible length. See <a href="@pathauto-help">Pathauto help</a> for details.', array('@pathauto-help' => url('admin/help/pathauto'), '@max' => $max_length)),
     '#element_validate' => array('_pathauto_validate_numeric_element'),
   );
-  $form['component_length'] = array(
+  $form['max_component_length'] = array(
     '#type' => 'textfield',
     '#title' => t('Maximum component length'),
     '#size' => 3,
@@ -256,7 +257,7 @@ function pathauto_settings_form_submit($form, &$form_state) {
   $config->set('separator', $values['separator']);
   $config->set('case', $values['case']);
   $config->set('max_length', $values['max_length']);
-  $config->set('component_length', $values['component_length']);
+  $config->set('max_component_length', $values['max_component_length']);
   $config->set('update_action', $values['update_action']);
   $config->set('transliterate', $values['transliterate']);
   $config->set('reduce_ascii', $values['reduce_ascii']);
@@ -268,6 +269,7 @@ function pathauto_settings_form_submit($form, &$form_state) {
   }
 
   $config->save();
+  backdrop_set_message(t('The configuration options have been saved.'));
 }
 
 /**

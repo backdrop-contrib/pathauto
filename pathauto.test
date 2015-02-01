@@ -25,11 +25,11 @@ class PathautoTestHelper extends BackdropWebTestCase {
     $this->assertIdentical($tokens[$token], $expected, t("Token value for [@type:@token] was '@actual', expected value '@expected'.", array('@type' => $type, '@token' => $token, '@actual' => $tokens[$token], '@expected' => $expected)));
   }
 
-  function saveAlias($source, $alias, $language = LANGUAGE_NONE) {
+  function saveAlias($source, $alias, $langcode = LANGUAGE_NONE) {
     $alias = array(
       'source' => $source,
       'alias' => $alias,
-      'language' => $language,
+      'langcode' => $langcode,
     );
     path_save($alias);
     return $alias;
@@ -60,10 +60,10 @@ class PathautoTestHelper extends BackdropWebTestCase {
     $this->assertNoAliasExists(array('source' => $uri['path']));
   }
 
-  function assertAlias($source, $expected_alias, $language = LANGUAGE_NONE) {
+  function assertAlias($source, $expected_alias, $langcode = LANGUAGE_NONE) {
     backdrop_clear_path_cache($source);
-    $alias = backdrop_get_path_alias($source, $language);
-    $this->assertIdentical($alias, $expected_alias, t("Alias for %source with language '@language' was %actual, expected %expected.", array('%source' => $source, '%actual' => $alias, '%expected' => $expected_alias, '@language' => $language)));
+    $alias = backdrop_get_path_alias($source, $langcode);
+    $this->assertIdentical($alias, $expected_alias, t("Alias for %source with language '@language' was %actual, expected %expected.", array('%source' => $source, '%actual' => $alias, '%expected' => $expected_alias, '@language' => $langcode)));
   }
 
   function assertAliasExists($conditions) {
@@ -89,18 +89,17 @@ class PathautoTestHelper extends BackdropWebTestCase {
       'machine_name' => $name,
       'nodes' => array('article' => 'article'),
     );
-    $vocabulary = (object) $vocabulary;
+    $vocabulary = new TaxonomyVocabulary($vocabulary);
     taxonomy_vocabulary_save($vocabulary);
     return $vocabulary;
   }
 
-  function addTerm(stdClass $vocabulary, array $term = array()) {
+  function addTerm(TaxonomyVocabulary $vocabulary, array $term = array()) {
     $term += array(
       'name' => backdrop_strtolower($this->randomName(5)),
-      'vocabulary_machine_name' => $vocabulary->machine_name,
-      'vid' => $vocabulary->vid,
+      'vocabulary' => $vocabulary->machine_name,
     );
-    $term = (object) $term;
+    $term = new TaxonomyTerm($term);
     taxonomy_term_save($term);
     return $term;
   }
@@ -143,18 +142,19 @@ class PathautoUnitTestCase extends PathautoTestHelper {
     $config->set('node_story_pattern', 'story/[node:title]');
     $config->set('pathauto_node_pattern', 'content/[node:title]');
     $config->set('pathauto_user_pattern', 'users/[user:name]');
+    $config->save();
 
     $tests = array(
-      array('entity' => 'node', 'bundle' => 'story', 'language' => 'fr', 'expected' => 'story/[node:title]'),
-      array('entity' => 'node', 'bundle' => 'story', 'language' => 'en', 'expected' => 'story/en/[node:title]'),
-      array('entity' => 'node', 'bundle' => 'story', 'language' => LANGUAGE_NONE, 'expected' => 'story/[node:title]'),
-      array('entity' => 'node', 'bundle' => 'page', 'language' => 'en', 'expected' => 'content/[node:title]'),
-      array('entity' => 'user', 'bundle' => 'user', 'language' => LANGUAGE_NONE, 'expected' => 'users/[user:name]'),
-      array('entity' => 'invalid-entity', 'bundle' => '', 'language' => LANGUAGE_NONE, 'expected' => ''),
+      array('entity' => 'node', 'bundle' => 'story', 'langcode' => 'fr', 'expected' => 'story/[node:title]'),
+      array('entity' => 'node', 'bundle' => 'story', 'langcode' => 'en', 'expected' => 'story/en/[node:title]'),
+      array('entity' => 'node', 'bundle' => 'story', 'langcode' => LANGUAGE_NONE, 'expected' => 'story/[node:title]'),
+      array('entity' => 'node', 'bundle' => 'page', 'langcode' => 'en', 'expected' => 'content/[node:title]'),
+      array('entity' => 'user', 'bundle' => 'user', 'langcode' => LANGUAGE_NONE, 'expected' => 'users/[user:name]'),
+      array('entity' => 'invalid-entity', 'bundle' => '', 'langcode' => LANGUAGE_NONE, 'expected' => ''),
     );
     foreach ($tests as $test) {
-      $actual = pathauto_pattern_load_by_entity($test['entity'], $test['bundle'], $test['language']);
-      $this->assertIdentical($actual, $test['expected'], t("pathauto_pattern_load_by_entity('@entity', '@bundle', '@language') returned '@actual', expected '@expected'", array('@entity' => $test['entity'], '@bundle' => $test['bundle'], '@language' => $test['language'], '@actual' => $actual, '@expected' => $test['expected'])));
+      $actual = pathauto_pattern_load_by_entity($test['entity'], $test['bundle'], $test['langcode']);
+      $this->assertIdentical($actual, $test['expected'], t("pathauto_pattern_load_by_entity('@entity', '@bundle', '@language') returned '@actual', expected '@expected'", array('@entity' => $test['entity'], '@bundle' => $test['bundle'], '@language' => $test['langcode'], '@actual' => $actual, '@expected' => $test['expected'])));
     }
   }
 
@@ -164,8 +164,9 @@ class PathautoUnitTestCase extends PathautoTestHelper {
   function testCleanString() {
     $config = config('pathauto.settings');
     $tests = array();
-    $config->set('pathauto_ignore_words', ', in, is,that, the  , this, with, ');
-    $config->set('pathauto_max_component_length', 35);
+    $config->set('ignore_words', ', in, is,that, the  , this, with, ');
+    $config->set('max_component_length', 35);
+    $config->save();
 
     // Test the 'ignored words' removal.
     $tests['this'] = 'this';
@@ -225,11 +226,13 @@ class PathautoUnitTestCase extends PathautoTestHelper {
     $config = config('pathauto.settings');
     // Test PATHAUTO_UPDATE_ACTION_NO_NEW with unaliased node and 'insert'.
     $config->set('pathauto_update_action', PATHAUTO_UPDATE_ACTION_NO_NEW);
+    $config->save();
     $node = $this->backdropCreateNode(array('title' => 'First title'));
     $this->assertEntityAlias('node', $node, 'content/first-title');
 
     // Default action is PATHAUTO_UPDATE_ACTION_DELETE.
     $config->set('pathauto_update_action', PATHAUTO_UPDATE_ACTION_DELETE);
+    $config->save();
     $node->title = 'Second title';
     pathauto_node_update($node);
     $this->assertEntityAlias('node', $node, 'content/second-title');
@@ -237,12 +240,14 @@ class PathautoUnitTestCase extends PathautoTestHelper {
 
     // Test PATHAUTO_UPDATE_ACTION_LEAVE
     $config->set('pathauto_update_action', PATHAUTO_UPDATE_ACTION_LEAVE);
+    $config->save();
     $node->title = 'Third title';
     pathauto_node_update($node);
     $this->assertEntityAlias('node', $node, 'content/third-title');
     $this->assertAliasExists(array('source' => "node/{$node->nid}", 'alias' => 'content/second-title'));
 
     $config->set('pathauto_update_action', PATHAUTO_UPDATE_ACTION_DELETE);
+    $config->save();
     $node->title = 'Fourth title';
     pathauto_node_update($node);
     $this->assertEntityAlias('node', $node, 'content/fourth-title');
@@ -252,6 +257,7 @@ class PathautoUnitTestCase extends PathautoTestHelper {
     path_delete($older_path);
 
     $config->set('pathauto_update_action', PATHAUTO_UPDATE_ACTION_NO_NEW);
+    $config->save();
     $node->title = 'Fifth title';
     pathauto_node_update($node);
     $this->assertEntityAlias('node', $node, 'content/fourth-title');
@@ -288,6 +294,7 @@ class PathautoUnitTestCase extends PathautoTestHelper {
   function testPathTokens() {
     $config = config('pathauto.settings');
     $config->set('pathauto_taxonomy_term_pattern', '[term:parent:url:path]/[term:name]');
+    $config->save();
     $vocab = $this->addVocabulary();
 
     $term1 = $this->addTerm($vocab, array('name' => 'Parent term'));
@@ -307,6 +314,7 @@ class PathautoUnitTestCase extends PathautoTestHelper {
     $vocab = $this->addVocabulary(array('machine_name' => 'old_name'));
     $config->set('pathauto_taxonomy_term_pattern', 'base');
     $config->set("pathauto_taxonomy_term_old_name_pattern", 'bundle');
+    $config->save();
     $this->assertEntityPattern('taxonomy_term', 'old_name', LANGUAGE_NONE, 'bundle');
 
     // Rename the vocabulary's machine name, which should cause its pattern
@@ -326,6 +334,7 @@ class PathautoUnitTestCase extends PathautoTestHelper {
     $config = config('pathauto.settings');
     $config->set('pathauto_node_page_pattern', '[node:title]');
     $config->set('pathauto_punctuation_period', PATHAUTO_PUNCTUATION_DO_NOTHING);
+    $config->save();
 
     // Check that Pathauto does not create an alias of '/admin'.
     $node = $this->backdropCreateNode(array('title' => 'Admin', 'type' => 'page'));
@@ -362,6 +371,7 @@ class PathautoFunctionalTestHelper extends PathautoTestHelper {
 
     // Set pathauto settings we assume to be as-is in this test.
     $this->config->set('pathauto_node_page_pattern', 'content/[node:title]');
+    $this->config->save();
 
     // Allow other modules to add additional permissions for the admin user.
     $permissions = array(
@@ -397,7 +407,8 @@ class PathautoFunctionalTestCase extends PathautoFunctionalTestHelper {
   function testNodeEditing() {
     $this->config = config('pathauto.settings');
     // Delete the default node pattern. Only the page content type will have a pattern.
-    $this->config->clean('pathauto_node_pattern');
+    $this->config->set('pathauto_node_pattern', '');
+    $this->config->save();
 
     // Ensure that the Pathauto checkbox is checked by default on the node add form.
     $this->backdropGet('node/add/page');
@@ -406,8 +417,7 @@ class PathautoFunctionalTestCase extends PathautoFunctionalTestHelper {
     // Create node for testing by previewing and saving the node form.
     $title = ' Testing: node title [';
     $automatic_alias = 'content/testing-node-title';
-    $this->backdropPost(NULL, array('title' => $title), 'Preview');
-    $this->backdropPost(NULL, array(), 'Save');
+    $this->backdropPost(NULL, array('title' => $title), 'Save');
     $node = $this->backdropGetNodeByTitle($title);
 
     // Look for alias generated in the form.
@@ -421,11 +431,13 @@ class PathautoFunctionalTestCase extends PathautoFunctionalTestHelper {
 
     // Disable the update action. The checkbox should not be visible.
     $this->config->set('pathauto_update_action', 0);
+    $this->config->save();
     $this->backdropGet("node/{$node->nid}/edit");
     $this->assertNoFieldById('edit-path-pathauto');
 
     // Reset the update action back to default. The checkbox should be visible.
-    $this->config->del('pathauto_update_action');
+    $this->config->set('pathauto_update_action', 1);
+    $this->config->save();
     $this->backdropGet("node/{$node->nid}/edit");
     $this->assertFieldChecked('edit-path-pathauto');
 
@@ -473,7 +485,8 @@ class PathautoFunctionalTestCase extends PathautoFunctionalTestHelper {
 
     // Set the page pattern to use only tokens so we can test the checkbox
     // behavior if none of the tokens have a value currently.
-    $this->config->set('pathauto_node_page_pattern', '[node:title]');
+    $this->config->set('node_page_pattern', '[node:title]');
+    $this->config->save();
 
     // Create a node with an empty title. The Pathauto checkbox should still be
     // visible but unchecked.
@@ -503,11 +516,11 @@ class PathautoFunctionalTestCase extends PathautoFunctionalTestHelper {
     $this->deleteAllAliases();
 
     $edit = array(
-      'operation' => 'pathauto_update_alias',
-      "nodes[{$node1->nid}]" => TRUE,
+      'action' => 'pathauto_node_update_action',
+      "bulk_form[0]" => TRUE,
     );
-    $this->backdropPost('admin/content', $edit, t('Update'));
-    $this->assertText('Updated URL alias for 1 node.');
+    $this->backdropPost('admin/content', $edit, t('Execute'));
+    $this->assertRaw(format_string('%action was applied to 1 item', array('%action' => 'Update node alias')));
 
     $this->assertEntityAlias('node', $node1, 'content/' . $node1->title);
     $this->assertEntityAlias('node', $node2, 'node/' . $node2->nid);
@@ -582,11 +595,11 @@ class PathautoFunctionalTestCase extends PathautoFunctionalTestHelper {
     $this->deleteAllAliases();
 
     $edit = array(
-      'operation' => 'pathauto_update_alias',
-      "accounts[{$account->uid}]" => TRUE,
+      'action' => 'pathauto_user_update_action',
+      'bulk_form[' . ($account->uid - 1) . ']' => TRUE,
     );
-    $this->backdropPost('admin/people', $edit, t('Update'));
-    $this->assertText('Updated URL alias for 1 user account.');
+    $this->backdropPost('admin/people', $edit, t('Execute'));
+    $this->assertRaw(format_string('%action was applied to 1 item.', array('%action' => 'Update user alias')));
 
     $this->assertEntityAlias('user', $account, 'users/' . backdrop_strtolower($account->name));
     $this->assertEntityAlias('user', $this->admin_user, 'user/' . $this->admin_user->uid);
@@ -594,45 +607,45 @@ class PathautoFunctionalTestCase extends PathautoFunctionalTestHelper {
 
   function testSettingsValidation() {
     $edit = array();
-    $edit['pathauto_max_length'] = 'abc';
-    $edit['pathauto_max_component_length'] = 'abc';
+    $edit['max_length'] = 'abc';
+    $edit['max_component_length'] = 'abc';
     $this->backdropPost('admin/config/search/path/settings', $edit, 'Save configuration');
     $this->assertText('The field Maximum alias length is not a valid number.');
     $this->assertText('The field Maximum component length is not a valid number.');
     $this->assertNoText('The configuration options have been saved.');
 
-    $edit['pathauto_max_length'] = '0';
-    $edit['pathauto_max_component_length'] = '0';
+    $edit['max_length'] = '0';
+    $edit['max_component_length'] = '0';
     $this->backdropPost('admin/config/search/path/settings', $edit, 'Save configuration');
     $this->assertText('The field Maximum alias length cannot be less than 1.');
     $this->assertText('The field Maximum component length cannot be less than 1.');
     $this->assertNoText('The configuration options have been saved.');
 
-    $edit['pathauto_max_length'] = '999';
-    $edit['pathauto_max_component_length'] = '999';
+    $edit['max_length'] = '999';
+    $edit['max_component_length'] = '999';
     $this->backdropPost('admin/config/search/path/settings', $edit, 'Save configuration');
     $this->assertText('The field Maximum alias length cannot be greater than 255.');
     $this->assertText('The field Maximum component length cannot be greater than 255.');
     $this->assertNoText('The configuration options have been saved.');
 
-    $edit['pathauto_max_length'] = '50';
-    $edit['pathauto_max_component_length'] = '50';
+    $edit['max_length'] = '50';
+    $edit['max_component_length'] = '50';
     $this->backdropPost('admin/config/search/path/settings', $edit, 'Save configuration');
     $this->assertText('The configuration options have been saved.');
   }
 
   function testPatternsValidation() {
     $edit = array();
-    $edit['pathauto_node_pattern'] = '[node:title]/[user:name]/[term:name]';
-    $edit['pathauto_node_page_pattern'] = 'page';
+    $edit['node_pattern'] = '[node:title]/[user:name]/[term:name]';
+    $edit['node_page_pattern'] = 'page';
     $this->backdropPost('admin/config/search/path/patterns', $edit, 'Save configuration');
     $this->assertText('The Default path pattern (applies to all content types with blank patterns below) is using the following invalid tokens: [user:name], [term:name].');
     $this->assertText('The Pattern for all Basic page paths cannot contain fewer than one token.');
     $this->assertNoText('The configuration options have been saved.');
 
-    $edit['pathauto_node_pattern'] = '[node:title]';
-    $edit['pathauto_node_page_pattern'] = 'page/[node:title]';
-    $edit['pathauto_node_article_pattern'] = '';
+    $edit['node_pattern'] = '[node:title]';
+    $edit['node_page_pattern'] = 'page/[node:title]';
+    $edit['node_article_pattern'] = '';
     $this->backdropPost('admin/config/search/path/patterns', $edit, 'Save configuration');
     $this->assertText('The configuration options have been saved.');
   }
@@ -653,7 +666,8 @@ class PathautoFunctionalTestCase extends PathautoFunctionalTestHelper {
     $edit['pass']   = user_password();
     $edit['path'] = array('pathauto' => TRUE);
     $edit['status'] = 1;
-    $account = user_save(backdrop_anonymous_user(), $edit);
+    $account = new User($edit);
+    $account->save();
     $this->assertEntityAlias('user', $account, 'users/test-user');
   }
 }
@@ -661,13 +675,18 @@ class PathautoFunctionalTestCase extends PathautoFunctionalTestHelper {
 class PathautoLocaleTestCase extends PathautoFunctionalTestHelper {
 
   function setUp(array $modules = array()) {
+    $modules[] = 'language';
     $modules[] = 'locale';
     $modules[] = 'translation';
     parent::setUp($modules, array('administer languages'));
 
     // Add predefined French language and reset the locale cache.
-    require_once BACKDROP_ROOT . '/includes/locale.inc';
-    locale_add_language('fr', NULL, NULL, LANGUAGE_LTR, '', 'fr');
+    $language = (object) array(
+      'langcode' => 'fr',
+      'name' => 'French',
+      'direction' => LANGUAGE_LTR,
+    );
+    language_save($language);
     backdrop_language_initialize();
   }
 
@@ -678,7 +697,7 @@ class PathautoLocaleTestCase extends PathautoFunctionalTestHelper {
   function testLanguageAliases() {
     $node = array(
       'title' => 'English node',
-      'language' => 'en',
+      'langcode' => 'en',
       'body' => array('en' => array(array())),
       'path' => array(
         'alias' => 'english-node',
@@ -686,7 +705,7 @@ class PathautoLocaleTestCase extends PathautoFunctionalTestHelper {
       ),
     );
     $node = $this->backdropCreateNode($node);
-    $english_alias = path_load(array('alias' => 'english-node', 'language' => 'en'));
+    $english_alias = path_load(array('alias' => 'english-node', 'langcode' => 'en'));
     $this->assertTrue($english_alias, 'Alias created with proper language.');
 
     // Also save a French alias that should not be left alone, even though
