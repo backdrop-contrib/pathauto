@@ -23,18 +23,17 @@ function pathauto_path_alias_types() {
 
 /**
  * Implements hook_pathauto().
- *
- * This function is empty so that the other core module implementations can be
- * defined in this file. This is because in pathauto_module_implements_alter()
- * we add pathauto to be included first. The module system then peforms a
- * check on any subsequent run if this function still exists. If this does not
- * exist, than this file will not get included and the core implementations
- * will never get run.
- *
- * @see pathauto_module_implements_alter().
  */
-function pathauto_pathauto() {
-  // Empty hook; see the above comment.
+function pathauto_pathauto($op) {
+  $return = array();
+  $modules = array('node', 'taxonomy', 'user');
+  foreach ($modules as $module) {
+    if (module_exists($module)) {
+      $return[] = module_invoke($module, 'pathauto', $op);
+    }
+  }
+
+  return $return;
 }
 
 /**
