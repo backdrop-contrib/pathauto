@@ -33,9 +33,8 @@ function pathauto_tokens($type, $tokens, array $data = array(), array $options =
         case 'join-path':
           module_load_include('inc', 'pathauto');
           $values = array();
-          foreach (element_children($array) as $key) {
-            $value = is_array($array[$key]) ? render($array[$key]) : (string) $array[$key];
-            $value = pathauto_cleanstring($value, $options);
+          foreach ($array as $key => $value) {
+            $value = pathauto_cleanstring((string) $array[$key], $options);
             $values[] = $value;
           }
           $replacements[$original] = implode('/', $values);

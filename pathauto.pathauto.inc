@@ -45,9 +45,9 @@ function node_pathauto($op) {
       $settings = array();
       $settings['module'] = 'node';
       $settings['token_type'] = 'node';
-      $settings['groupheader'] = t('Content paths');
-      $settings['patterndescr'] = t('Default path pattern (applies to all content types with blank patterns below)');
-      $settings['patterndefault'] = 'content/[node:title]';
+      $settings['group_header'] = t('Content paths');
+      $settings['pattern_description'] = t('Default path pattern (applies to all content types with blank patterns below)');
+      $settings['pattern_default'] = 'content/[node:title]';
       $settings['batch_update_callback'] = 'node_pathauto_bulk_update_batch_process';
       $settings['batch_file'] = backdrop_get_path('module', 'pathauto') . '/pathauto.pathauto.inc';
 
@@ -60,14 +60,14 @@ function node_pathauto($op) {
       }
 
       foreach (node_type_get_types() as $node_type_name => $node_type) {
-        if (count($languages) && !empty($node_type->settings['node_type_language'])) {
-          $settings['patternitems'][$node_type_name] = t('Default path pattern for @node_type (applies to all @node_type content types with blank patterns below)', array('@node_type' => $node_type->name));
+        if (count($languages) && !empty($node_type->settings['language'])) {
+          $settings['pattern_items'][$node_type_name] = t('Default path pattern for @node_type (applies to all @node_type content types with blank patterns below)', array('@node_type' => $node_type->name));
           foreach ($languages as $langcode => $language) {
-            $settings['patternitems'][$node_type_name . '_' . $langcode] = t('Pattern for all @language @node_type paths', array('@node_type' => $node_type->name, '@language' => $language->name));
+            $settings['pattern_items'][$node_type_name . '_' . $langcode] = t('Pattern for all @language @node_type paths', array('@node_type' => $node_type->name, '@language' => $language->name));
           }
         }
         else {
-          $settings['patternitems'][$node_type_name] = t('Pattern for all @node_type paths', array('@node_type' => $node_type->name));
+          $settings['pattern_items'][$node_type_name] = t('Pattern for all @node_type paths', array('@node_type' => $node_type->name));
         }
       }
       return (object) $settings;
@@ -127,17 +127,17 @@ function taxonomy_pathauto($op) {
       $settings = array();
       $settings['module'] = 'taxonomy_term';
       $settings['token_type'] = 'term';
-      $settings['groupheader'] = t('Taxonomy term paths');
-      $settings['patterndescr'] = t('Default path pattern (applies to all vocabularies with blank patterns below)');
-      $settings['patterndefault'] = '[term:vocabulary]/[term:name]';
+      $settings['group_header'] = t('Taxonomy term paths');
+      $settings['pattern_description'] = t('Default path pattern (applies to all vocabularies with blank patterns below)');
+      $settings['pattern_default'] = '[term:vocabulary]/[term:name]';
       $settings['batch_update_callback'] = 'taxonomy_pathauto_bulk_update_batch_process';
       $settings['batch_file'] = backdrop_get_path('module', 'pathauto') . '/pathauto.pathauto.inc';
 
       $vocabularies = taxonomy_get_vocabularies();
       if (count($vocabularies)) {
-        $settings['patternitems'] = array();
+        $settings['pattern_items'] = array();
         foreach ($vocabularies as $vocabulary_name => $vocabulary) {
-          $settings['patternitems'][$vocabulary_name] = t('Pattern for all %vocab-name paths', array('%vocab-name' => $vocabulary->name));
+          $settings['pattern_items'][$vocabulary_name] = t('Pattern for all %vocab-name paths', array('%vocab-name' => $vocabulary->name));
         }
       }
       return (object) $settings;
@@ -197,9 +197,9 @@ function user_pathauto($op) {
       $settings = array();
       $settings['module'] = 'user';
       $settings['token_type'] = 'user';
-      $settings['groupheader'] = t('User paths');
-      $settings['patterndescr'] = t('Pattern for user account page paths');
-      $settings['patterndefault'] = 'users/[user:name]';
+      $settings['group_header'] = t('User paths');
+      $settings['pattern_description'] = t('Pattern for user account page paths');
+      $settings['pattern_default'] = 'users/[user:name]';
       $settings['batch_update_callback'] = 'user_pathauto_bulk_update_batch_process';
       $settings['batch_file'] = backdrop_get_path('module', 'pathauto') . '/pathauto.pathauto.inc';
       return (object) $settings;

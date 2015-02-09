@@ -15,16 +15,21 @@
  */
 function pathauto_patterns_form($form, $form_state) {
   $config = config('pathauto.settings');
+
+  $form['help'] = array(
+    '#markup' => '<p>' . t('Path patterns automatically alias new content based on wildcards called "tokens". For example the URL "node/10" might be automatically aliased to "blog/my-first-post" using the pattern "blog/[node:title]".') . '</p>',
+  );
+
   // Call the hook on all modules - an array of 'settings' objects is returned
   $all_settings = module_invoke_all('pathauto', 'settings');
   foreach ($all_settings as $settings) {
     $module = $settings->module;
-    $patterndescr = $settings->patterndescr;
-    $groupheader = $settings->groupheader;
+    $pattern_description = $settings->pattern_description;
+    $group_header = $settings->group_header;
 
     $form[$module] = array(
       '#type' => 'fieldset',
-      '#title' => $groupheader,
+      '#title' => $group_header,
       '#collapsible' => TRUE,
       '#collapsed' => FALSE,
     );
@@ -33,7 +38,7 @@ function pathauto_patterns_form($form, $form_state) {
     $variable = $module . '_pattern';
     $form[$module][$variable] = array(
       '#type' => 'textfield',
-      '#title' => $patterndescr,
+      '#title' => $pattern_description,
       '#default_value' => $config->get($variable),
       '#size' => 65,
       '#maxlength' => 1280,
@@ -46,12 +51,12 @@ function pathauto_patterns_form($form, $form_state) {
 
     // If the module supports a set of specialized patterns, set
     // them up here
-    if (isset($settings->patternitems)) {
-      foreach ($settings->patternitems as $itemname => $itemlabel) {
-        $variable = $module . '_' . $itemname . '_pattern';
+    if (isset($settings->pattern_items)) {
+      foreach ($settings->pattern_items as $item_name => $item_label) {
+        $variable = $module . '_' . $item_name . '_pattern';
         $form[$module][$variable] = array(
           '#type' => 'textfield',
-          '#title' => $itemlabel,
+          '#title' => $item_label,
           '#default_value' => $config->get($variable),
           '#size' => 65,
           '#maxlength' => 1280,
@@ -66,16 +71,11 @@ function pathauto_patterns_form($form, $form_state) {
 
     // Display the user documentation of placeholders supported by
     // this module, as a description on the last pattern
-    $form[$module]['token_help'] = array(
-      '#title' => t('Replacement patterns'),
-      '#type' => 'fieldset',
-      '#collapsible' => TRUE,
-      '#collapsed' => TRUE,
+    $variables = array(
+      'token_types' => array($settings->token_type),
+      'text' => t('Browse available tokens for @type.', array('@type' => $group_header)),
     );
-    $form[$module]['token_help']['help'] = array(
-      '#theme' => 'token_tree',
-      '#token_types' => array($settings->token_type),
-    );
+    $form[$module]['#description'] = '<p>' . t('Each of the fields below support tokens.') . ' ' . theme('token_tree_link', $variables) . '</p>';
   }
 
   $form['actions']['#type'] = 'actions';
@@ -100,9 +100,9 @@ function pathauto_patterns_form_submit($form, &$form_state) {
     $config->set($variable, $values[$variable]);
 
     // Save specialized patterns per module
-    if (isset($settings->patternitems)) {
-      foreach ($settings->patternitems as $itemname => $itemlabel) {
-        $variable = $module . '_' . $itemname . '_pattern';
+    if (isset($settings->pattern_items)) {
+      foreach ($settings->pattern_items as $item_name => $item_label) {
+        $variable = $module . '_' . $item_name . '_pattern';
         $config->set($variable, $values[$variable]);
       }
     }
@@ -151,35 +151,30 @@ function pathauto_settings_form($form) {
   $max_length = _pathauto_get_schema_alias_maxlength();
 
   $form['max_length'] = array(
-    '#type' => 'textfield',
+    '#type' => 'number',
     '#title' => t('Maximum alias length'),
-    '#size' => 3,
-    '#maxlength' => 3,
     '#default_value' => $config->get('max_length'),
-    '#min_value' => 1,
-    '#max_value' => $max_length,
+    '#step' => 1,
+    '#min' => 1,
+    '#max' => $max_length,
     '#description' => t('Maximum length of aliases to generate. 100 is the recommended length. @max is the maximum possible length. See <a href="@pathauto-help">Pathauto help</a> for details.', array('@pathauto-help' => url('admin/help/pathauto'), '@max' => $max_length)),
-    '#element_validate' => array('_pathauto_validate_numeric_element'),
   );
   $form['max_component_length'] = array(
-    '#type' => 'textfield',
+    '#type' => 'number',
     '#title' => t('Maximum component length'),
-    '#size' => 3,
-    '#maxlength' => 3,
     '#default_value' => $config->get('max_component_length'),
-    '#min_value' => 1,
-    '#max_value' => $max_length,
+    '#step' => 1,
+    '#min' => 1,
+    '#max' => $max_length,
     '#description' => t('Maximum text length of any component in the alias (e.g., [title]). 100 is the recommended length. @max is the maximum possible length. See <a href="@pathauto-help">Pathauto help</a> for details.', array('@pathauto-help' => url('admin/help/pathauto'), '@max' => $max_length)),
-    '#element_validate' => array('_pathauto_validate_numeric_element'),
   );
-
 
   $description = t('What should Pathauto do when updating an existing content item which already has an alias?');
   if (module_exists('redirect')) {
     $description .= ' ' . t('The <a href="!url">Redirect module settings</a> affect whether a redirect is created when an alias is deleted.', array('!url' => url('admin/config/search/redirect/settings')));
   }
   else {
-    $description .= ' ' . t('Considering installing the <a href="!url">Redirect module</a> to get redirects when your aliases change.', array('!url' => 'http://drupal.org/project/redirect'));
+    $description .= ' ' . t('Considering installing the <a href="!url">Redirect module</a> to get redirects when your aliases change.', array('!url' => 'https://github.com/backdrop-contrib/redirect'));
   }
   $form['update_action'] = array(
     '#type' => 'radios',
@@ -273,23 +268,6 @@ function pathauto_settings_form_submit($form, &$form_state) {
 }
 
 /**
- * Validate a form element that should have an numeric value.
- */
-function _pathauto_validate_numeric_element($element, &$form_state) {
-  $value = $element['#value'];
-
-  if (!is_numeric($value)) {
-    form_error($element, t('The field %name is not a valid number.', array('%name' => $element['#title'])));
-  }
-  elseif (isset($element['#max_value']) && $value > $element['#max_value']) {
-    form_error($element, t('The field %name cannot be greater than @max.', array('%name' => $element['#title'], '@max' => $element['#max_value'])));
-  }
-  elseif (isset($element['#min_value']) && $value < $element['#min_value']) {
-    form_error($element, t('The field %name cannot be less than @min.', array('%name' => $element['#title'], '@min' => $element['#min_value'])));
-  }
-}
-
-/**
  * Validate pathauto_settings_form form submissions.
  */
 function pathauto_settings_form_validate($form, &$form_state) {
@@ -323,6 +301,10 @@ function pathauto_settings_form_validate($form, &$form_state) {
 function pathauto_bulk_update_form() {
   $form['#update_callbacks'] = array();
 
+  $form['help'] = array(
+    '#markup' => '<p>' . t('Bulk generation will only generate URL aliases for items that currently have no aliases. This is typically used when installing Pathauto on a site that has existing un-aliased content that needs to be aliased in bulk.') . '</p>',
+  );
+
   $form['update'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Select the types of un-aliased paths for which to generate URL aliases'),
@@ -334,14 +316,14 @@ function pathauto_bulk_update_form() {
   foreach ($pathauto_settings as $settings) {
     if (!empty($settings->batch_update_callback)) {
       $form['#update_callbacks'][$settings->batch_update_callback] = $settings;
-      $form['update']['#options'][$settings->batch_update_callback] = $settings->groupheader;
+      $form['update']['#options'][$settings->batch_update_callback] = $settings->group_header;
     }
   }
 
   $form['actions']['#type'] = 'actions';
   $form['actions']['submit'] = array(
     '#type' => 'submit',
-    '#value' => t('Update'),
+    '#value' => t('Bulk generate paths'),
   );
 
   return $form;

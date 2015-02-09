@@ -98,6 +98,7 @@ class PathautoTestHelper extends BackdropWebTestCase {
     $term += array(
       'name' => backdrop_strtolower($this->randomName(5)),
       'vocabulary' => $vocabulary->machine_name,
+      'parent' => array(0),
     );
     $term = new TaxonomyTerm($term);
     taxonomy_term_save($term);
@@ -225,13 +226,13 @@ class PathautoUnitTestCase extends PathautoTestHelper {
   function testUpdateActions() {
     $config = config('pathauto.settings');
     // Test PATHAUTO_UPDATE_ACTION_NO_NEW with unaliased node and 'insert'.
-    $config->set('pathauto_update_action', PATHAUTO_UPDATE_ACTION_NO_NEW);
+    $config->set('update_action', PATHAUTO_UPDATE_ACTION_NO_NEW);
     $config->save();
     $node = $this->backdropCreateNode(array('title' => 'First title'));
     $this->assertEntityAlias('node', $node, 'content/first-title');
 
     // Default action is PATHAUTO_UPDATE_ACTION_DELETE.
-    $config->set('pathauto_update_action', PATHAUTO_UPDATE_ACTION_DELETE);
+    $config->set('update_action', PATHAUTO_UPDATE_ACTION_DELETE);
     $config->save();
     $node->title = 'Second title';
     pathauto_node_update($node);
@@ -239,14 +240,14 @@ class PathautoUnitTestCase extends PathautoTestHelper {
     $this->assertNoAliasExists(array('alias' => 'content/first-title'));
 
     // Test PATHAUTO_UPDATE_ACTION_LEAVE
-    $config->set('pathauto_update_action', PATHAUTO_UPDATE_ACTION_LEAVE);
+    $config->set('update_action', PATHAUTO_UPDATE_ACTION_LEAVE);
     $config->save();
     $node->title = 'Third title';
     pathauto_node_update($node);
     $this->assertEntityAlias('node', $node, 'content/third-title');
     $this->assertAliasExists(array('source' => "node/{$node->nid}", 'alias' => 'content/second-title'));
 
-    $config->set('pathauto_update_action', PATHAUTO_UPDATE_ACTION_DELETE);
+    $config->set('update_action', PATHAUTO_UPDATE_ACTION_DELETE);
     $config->save();
     $node->title = 'Fourth title';
     pathauto_node_update($node);
@@ -256,7 +257,7 @@ class PathautoUnitTestCase extends PathautoTestHelper {
     $older_path = $this->assertAliasExists(array('source' => "node/{$node->nid}", 'alias' => 'content/second-title'));
     path_delete($older_path);
 
-    $config->set('pathauto_update_action', PATHAUTO_UPDATE_ACTION_NO_NEW);
+    $config->set('update_action', PATHAUTO_UPDATE_ACTION_NO_NEW);
     $config->save();
     $node->title = 'Fifth title';
     pathauto_node_update($node);
@@ -293,14 +294,14 @@ class PathautoUnitTestCase extends PathautoTestHelper {
    */
   function testPathTokens() {
     $config = config('pathauto.settings');
-    $config->set('pathauto_taxonomy_term_pattern', '[term:parent:url:path]/[term:name]');
+    $config->set('taxonomy_term_pattern', '[term:parent:url:path]/[term:name]');
     $config->save();
     $vocab = $this->addVocabulary();
 
     $term1 = $this->addTerm($vocab, array('name' => 'Parent term'));
     $this->assertEntityAlias('taxonomy_term', $term1, 'parent-term');
 
-    $term2 = $this->addTerm($vocab, array('name' => 'Child term', 'parent' => $term1->tid));
+    $term2 = $this->addTerm($vocab, array('name' => 'Child term', 'parent' => array($term1->tid)));
     $this->assertEntityAlias('taxonomy_term', $term2, 'parent-term/child-term');
 
     $this->saveEntityAlias('taxonomy_term', $term1, 'My Crazy/Alias/');
@@ -312,28 +313,29 @@ class PathautoUnitTestCase extends PathautoTestHelper {
     $config = config('pathauto.settings');
     // Create a vocabulary and test that it's pattern variable works.
     $vocab = $this->addVocabulary(array('machine_name' => 'old_name'));
-    $config->set('pathauto_taxonomy_term_pattern', 'base');
-    $config->set("pathauto_taxonomy_term_old_name_pattern", 'bundle');
+    $config->set('taxonomy_term_pattern', 'base');
+    $config->set('taxonomy_term_old_name_pattern', 'bundle');
     $config->save();
     $this->assertEntityPattern('taxonomy_term', 'old_name', LANGUAGE_NONE, 'bundle');
 
     // Rename the vocabulary's machine name, which should cause its pattern
     // variable to also be renamed.
-    $vocab->machine_name = 'new_name';
-    taxonomy_vocabulary_save($vocab);
-    $this->assertEntityPattern('taxonomy_term', 'new_name', LANGUAGE_NONE, 'bundle');
-    $this->assertEntityPattern('taxonomy_term', 'old_name', LANGUAGE_NONE, 'base');
+    // @todo: Renaming vocabularies in Backdrop is not supported. Remove?
+    //$vocab->machine_name = 'new_name';
+    //taxonomy_vocabulary_save($vocab);
+    //$this->assertEntityPattern('taxonomy_term', 'new_name', LANGUAGE_NONE, 'bundle');
+    //$this->assertEntityPattern('taxonomy_term', 'old_name', LANGUAGE_NONE, 'base');
 
     // Delete the vocabulary, which should cause its pattern variable to also
     // be deleted.
-    taxonomy_vocabulary_delete($vocab->vid);
+    taxonomy_vocabulary_delete($vocab->machine_name);
     $this->assertEntityPattern('taxonomy_term', 'new_name', LANGUAGE_NONE, 'base');
   }
 
   function testNoExistingPathAliases() {
     $config = config('pathauto.settings');
-    $config->set('pathauto_node_page_pattern', '[node:title]');
-    $config->set('pathauto_punctuation_period', PATHAUTO_PUNCTUATION_DO_NOTHING);
+    $config->set('node_page_pattern', '[node:title]');
+    $config->set('punctuation_period', PATHAUTO_PUNCTUATION_DO_NOTHING);
     $config->save();
 
     // Check that Pathauto does not create an alias of '/admin'.
@@ -430,13 +432,13 @@ class PathautoFunctionalTestCase extends PathautoFunctionalTestHelper {
     $this->assertText($title, 'Node accessible through automatic alias.');
 
     // Disable the update action. The checkbox should not be visible.
-    $this->config->set('pathauto_update_action', 0);
+    $this->config->set('update_action', PATHAUTO_UPDATE_ACTION_NO_NEW);
     $this->config->save();
     $this->backdropGet("node/{$node->nid}/edit");
     $this->assertNoFieldById('edit-path-pathauto');
 
     // Reset the update action back to default. The checkbox should be visible.
-    $this->config->set('pathauto_update_action', 1);
+    $this->config->set('update_action', PATHAUTO_UPDATE_ACTION_LEAVE);
     $this->config->save();
     $this->backdropGet("node/{$node->nid}/edit");
     $this->assertFieldChecked('edit-path-pathauto');
@@ -609,28 +611,28 @@ class PathautoFunctionalTestCase extends PathautoFunctionalTestHelper {
     $edit = array();
     $edit['max_length'] = 'abc';
     $edit['max_component_length'] = 'abc';
-    $this->backdropPost('admin/config/search/path/settings', $edit, 'Save configuration');
-    $this->assertText('The field Maximum alias length is not a valid number.');
-    $this->assertText('The field Maximum component length is not a valid number.');
+    $this->backdropPost('admin/config/search/path/patterns/settings', $edit, 'Save configuration');
+    $this->assertText('Maximum alias length must be a number.');
+    $this->assertText('Maximum component length must be a number.');
     $this->assertNoText('The configuration options have been saved.');
 
     $edit['max_length'] = '0';
     $edit['max_component_length'] = '0';
-    $this->backdropPost('admin/config/search/path/settings', $edit, 'Save configuration');
-    $this->assertText('The field Maximum alias length cannot be less than 1.');
-    $this->assertText('The field Maximum component length cannot be less than 1.');
+    $this->backdropPost('admin/config/search/path/patterns/settings', $edit, 'Save configuration');
+    $this->assertText('Maximum alias length must be higher or equal to 1.');
+    $this->assertText('Maximum component length must be higher or equal to 1.');
     $this->assertNoText('The configuration options have been saved.');
 
     $edit['max_length'] = '999';
     $edit['max_component_length'] = '999';
-    $this->backdropPost('admin/config/search/path/settings', $edit, 'Save configuration');
-    $this->assertText('The field Maximum alias length cannot be greater than 255.');
-    $this->assertText('The field Maximum component length cannot be greater than 255.');
+    $this->backdropPost('admin/config/search/path/patterns/settings', $edit, 'Save configuration');
+    $this->assertText('Maximum alias length must be below or equal to 255.');
+    $this->assertText('Maximum component length must be below or equal to 255.');
     $this->assertNoText('The configuration options have been saved.');
 
     $edit['max_length'] = '50';
     $edit['max_component_length'] = '50';
-    $this->backdropPost('admin/config/search/path/settings', $edit, 'Save configuration');
+    $this->backdropPost('admin/config/search/path/patterns/settings', $edit, 'Save configuration');
     $this->assertText('The configuration options have been saved.');
   }
 
@@ -749,7 +751,7 @@ class PathautoBulkUpdateTestCase extends PathautoFunctionalTestHelper {
       'update[node_pathauto_bulk_update_batch_process]' => TRUE,
       'update[user_pathauto_bulk_update_batch_process]' => TRUE,
     );
-    $this->backdropPost('admin/config/search/path/update_bulk', $edit, t('Update'));
+    $this->backdropPost('admin/config/search/path/bulk-update', $edit, t('Bulk generate paths'));
     $this->assertText('Generated 7 URL aliases.'); // 5 nodes + 2 users
 
     // Check that aliases have actually been created.
@@ -762,7 +764,7 @@ class PathautoBulkUpdateTestCase extends PathautoFunctionalTestHelper {
     $new_node = $this->backdropCreateNode(array('path' => array('alias' => '', 'pathauto' => FALSE)));
 
     // Run the update again which should only run against the new node.
-    $this->backdropPost('admin/config/search/path/update_bulk', $edit, t('Update'));
+    $this->backdropPost('admin/config/search/path/bulk-update', $edit, t('Bulk generate paths'));
     $this->assertText('Generated 1 URL alias.'); // 1 node + 0 users
 
     $this->assertEntityAliasExists('node', $new_node);

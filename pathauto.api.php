@@ -85,15 +85,15 @@ function hook_path_alias_types() {
  *   patterns).  Each object should have the following members:
  *   - 'module': The module or entity type.
  *   - 'token_type': Which token type should be allowed in the patterns form.
- *   - 'groupheader': Translated label for the settings group
- *   - 'patterndescr': The translated label for the default pattern (e.g.,
+ *   - 'group_header': Translated label for the settings group
+ *   - 'pattern_description': The translated label for the default pattern (e.g.,
  *      t('Default path pattern (applies to all content types with blank
  *      patterns below)')
- *   - 'patterndefault': Default pattern  (e.g. 'content/[node:title]'
+ *   - 'pattern_default': Default pattern  (e.g. 'content/[node:title]'
  *   - 'batch_update_callback': The name of function that should be ran for
  *      bulk update. @see node_pathauto_bulk_update_batch_process for example
  *   - 'batch_file': The name of the file with the bulk update function.
- *   - 'patternitems': Optional. An array of descritpions keyed by bundles.
+ *   - 'pattern_items': Optional. An array of descriptions keyed by bundles.
  */
 function hook_pathauto($op) {
   switch ($op) {
@@ -101,14 +101,14 @@ function hook_pathauto($op) {
       $settings = array();
       $settings['module'] = 'file';
       $settings['token_type'] = 'file';
-      $settings['groupheader'] = t('File paths');
-      $settings['patterndescr'] = t('Default path pattern (applies to all file types with blank patterns below)');
-      $settings['patterndefault'] = 'files/[file:name]';
+      $settings['group_header'] = t('File paths');
+      $settings['pattern_description'] = t('Default path pattern (applies to all file types with blank patterns below)');
+      $settings['pattern_default'] = 'files/[file:name]';
       $settings['batch_update_callback'] = 'file_entity_pathauto_bulk_update_batch_process';
-      $settings['batch_file'] = drupal_get_path('module', 'file_entity') . '/file_entity.pathauto.inc';
+      $settings['batch_file'] = backdrop_get_path('module', 'file_entity') . '/file_entity.pathauto.inc';
 
       foreach (file_type_get_enabled_types() as $file_type => $type) {
-        $settings['patternitems'][$file_type] = t('Pattern for all @file_type paths.', array('@file_type' => $type->label));
+        $settings['pattern_items'][$file_type] = t('Pattern for all @file_type paths.', array('@file_type' => $type->label));
       }
       return (object) $settings;
 

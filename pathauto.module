@@ -37,27 +37,6 @@ function pathauto_hook_info() {
 }
 
 /**
- * Implements hook_help().
- */
-function pathauto_help($path, $arg) {
-  switch ($path) {
-    case 'admin/help#pathauto':
-      module_load_include('inc', 'pathauto');
-      $output = '<h3>' . t('About') . '</h3>';
-      $output .= '<p>' . t('Provides a mechanism for modules to automatically generate aliases for the content they manage.') . '</p>';
-      $output .= '<h3>' . t('Settings') . '</h3>';
-      $output .= '<dl>';
-      $output .= '<dt>' . t('Maximum alias and component length') . '</dt>';
-      $output .= '<dd>' . t('The <strong>maximum alias length</strong> and <strong>maximum component length</strong> values default to 100 and have a limit of @max from Pathauto. This length is limited by the length of the "alias" column of the url_alias database table. The default database schema for this column is @max. If you set a length that is equal to that of the one set in the "alias" column it will cause problems in situations where the system needs to append additional words to the aliased URL. You should enter a value that is the length of the "alias" column minus the length of any strings that might get added to the end of the URL. The length of strings that might get added to the end of your URLs depends on which modules you have enabled and on your Pathauto settings. The recommended and default value is 100.', array('@max' => _pathauto_get_schema_alias_maxlength())) . '</dd>';
-      $output .= '</dl>';
-      return $output;
-    case 'admin/config/search/path/update_bulk':
-      $output = '<p>' . t('Bulk generation will only generate URL aliases for items that currently have no aliases. This is typically used when installing Pathauto on a site that has existing un-aliased content that needs to be aliased in bulk.') . '</p>';
-      return $output;
-  }
-}
-
-/**
  * Implements hook_permission().
  */
 function pathauto_permission() {
@@ -86,16 +65,25 @@ function pathauto_menu() {
     'weight' => 10,
     'file' => 'pathauto.admin.inc',
   );
-  $items['admin/config/search/path/settings'] = array(
-    'title' => 'Settings',
+  $items['admin/config/search/path/patterns/list'] = array(
+    'title' => 'Pattern List',
+    'page callback' => 'backdrop_get_form',
+    'page arguments' => array('pathauto_patterns_form'),
+    'access arguments' => array('administer pathauto'),
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => 0,
+    'file' => 'pathauto.admin.inc',
+  );
+  $items['admin/config/search/path/patterns/settings'] = array(
+    'title' => 'Pattern Settings',
     'page callback' => 'backdrop_get_form',
     'page arguments' => array('pathauto_settings_form'),
     'access arguments' => array('administer pathauto'),
     'type' => MENU_LOCAL_TASK,
-    'weight' => 20,
+    'weight' => 5,
     'file' => 'pathauto.admin.inc',
   );
-  $items['admin/config/search/path/update_bulk'] = array(
+  $items['admin/config/search/path/bulk-update'] = array(
     'title' => 'Bulk generate',
     'page callback' => 'backdrop_get_form',
     'page arguments' => array('pathauto_bulk_update_form'),
@@ -665,7 +653,7 @@ function pathauto_taxonomy_term_update_alias($term, $op, array $options = array(
     // For all children generate new aliases.
     $options['alias children'] = FALSE;
     unset($options['langcode']);
-    foreach (taxonomy_get_tree($term->vid, $term->tid) as $subterm) {
+    foreach (taxonomy_get_tree($term->vocabulary, $term->tid) as $subterm) {
       pathauto_taxonomy_term_update_alias($subterm, $op, $options);
     }
   }
