@@ -1,5 +1,11 @@
-Pathauto
-========
+Pathauto (Deprecated)
+=====================
+
+**NOTE:** The Pathauto contrib module has been deprecated, as equivalent
+functionality has been added to Backdrop core v1.1.0. You no longer need this
+module. This module will not receive any further updates.
+
+---
 
 The Pathauto module provides support functions for other modules to
 automatically generate aliases based on appropriate criteria, with a
@@ -20,10 +26,6 @@ heavy weight to search terms which appear in a page's URL. By
 automatically using keywords based directly on the page content in the URL,
 relevant search engine hits for your page can be significantly
 enhanced.
-
-*Important note*: This project is targeted for inclusion in Backdrop 1.1.0, due
-May 15, 2015. It is likely that after upgrading to Backdrop 1.1.0, you will no
-longer need this module.
 
 Installation
 ------------
